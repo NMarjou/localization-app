@@ -1,4 +1,4 @@
-import cron from "node-cron";
+import cron, { type ScheduledTask } from "node-cron";
 import { getLogger } from "./utils/logger.js";
 import { runBackfill } from "./handlers/backfill.js";
 
@@ -12,7 +12,7 @@ import { runBackfill } from "./handlers/backfill.js";
  * Caveat: node-cron runs in-process — if the machine is asleep at a
  * scheduled time, that run is simply missed (the next run still fires).
  */
-export function startScheduler(): cron.ScheduledTask {
+export function startScheduler(): ScheduledTask {
   const logger = getLogger();
   const expression = process.env.BACKFILL_CRON?.trim() || "0 */4 * * *";
 
