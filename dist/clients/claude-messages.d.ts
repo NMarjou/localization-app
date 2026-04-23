@@ -9,6 +9,11 @@ export declare class ClaudeMessagesClient {
     translate(job: TranslationJob): Promise<ClaudeResponse>;
     private parseResponse;
     private validateJSON;
+    /**
+     * Strip markdown code fences (```json ... ``` or ``` ... ```) that
+     * Claude sometimes wraps JSON responses in, despite instructions.
+     */
+    private stripCodeFences;
     private extractUsage;
     private sleep;
 }

@@ -7,12 +7,22 @@ export class LokaliseClient {
     projectId;
     logger;
     glossaryCache = new Map();
+    baseLanguageIso;
+    // Short-TTL cache + in-flight dedupe for listKeys. When a single source
+    // update fans out to N target languages we'd otherwise hit listKeys N
+    // times simultaneously and get rate-limited.
+    listKeysCache;
+    listKeysInFlight;
+    keyCache = new Map();
+    keyInFlight = new Map();
+    static LIST_KEYS_TTL_MS = 60_000;
+    static KEY_TTL_MS = 60_000;
     constructor() {
         const env = getEnv();
         this.projectId = env.LOKALISE_PROJECT_ID;
         this.logger = getLogger();
         this.http = new HttpClient({
-            baseUrl: "https://api.lokalise.com/api2",
+            baseUrl: "https://api.lokalise.com/api2/",
             apiKey: env.LOKALISE_API_KEY,
             maxRetries: 3,
             retryDelay: 1000,
@@ -28,7 +38,7 @@ export class LokaliseClient {
                 params.filter_langs = language;
             }
             const response = await this.http.get(path, params);
-            return response.data;
+            return response.key;
         }
         catch (error) {
             if (error instanceof LokaliseError && error.statusCode === 404) {
@@ -54,21 +64,38 @@ export class LokaliseClient {
         };
     }
     async getKeyWithAllTranslations(keyId) {
+        const now = Date.now();
+        const cached = this.keyCache.get(keyId);
+        if (cached && now - cached.at < LokaliseClient.KEY_TTL_MS) {
+            this.logger.debug({ keyId }, "Fetching key with all translations (cached)");
+            return cached.key;
+        }
+        const existing = this.keyInFlight.get(keyId);
+        if (existing) {
+            this.logger.debug({ keyId }, "Fetching key with all translations (awaiting in-flight)");
+            return existing;
+        }
         this.logger.debug({ keyId }, "Fetching key with all translations");
-        try {
-            const path = `/projects/${this.projectId}/keys/${keyId}`;
-            const params = {
-                include_translations: 1,
-            };
-            const response = await this.http.get(path, params);
-            return response.data;
-        }
-        catch (error) {
-            if (error instanceof LokaliseError && error.statusCode === 404) {
-                throw new LokaliseError(`Key not found: ${keyId}`, 404);
+        const promise = (async () => {
+            try {
+                const path = `/projects/${this.projectId}/keys/${keyId}`;
+                const params = { include_translations: 1 };
+                const response = await this.http.get(path, params);
+                this.keyCache.set(keyId, { at: Date.now(), key: response.key });
+                return response.key;
             }
-            throw error;
-        }
+            catch (error) {
+                if (error instanceof LokaliseError && error.statusCode === 404) {
+                    throw new LokaliseError(`Key not found: ${keyId}`, 404);
+                }
+                throw error;
+            }
+            finally {
+                this.keyInFlight.delete(keyId);
+            }
+        })();
+        this.keyInFlight.set(keyId, promise);
+        return promise;
     }
     async getGlossary(language) {
         const cacheKey = language ? `glossary:${language}` : "glossary:all";
@@ -96,34 +123,62 @@ export class LokaliseClient {
         }
     }
     async listKeys(filters) {
+        const cacheKey = JSON.stringify(filters ?? {});
+        const now = Date.now();
+        // 1. Hot cache hit
+        if (this.listKeysCache &&
+            this.listKeysCache.cacheKey === cacheKey &&
+            now - this.listKeysCache.at < LokaliseClient.LIST_KEYS_TTL_MS) {
+            this.logger.debug({ filters }, "Listing keys (cached)");
+            return this.listKeysCache.keys;
+        }
+        // 2. In-flight dedupe — a concurrent fan-out should share one request
+        if (this.listKeysInFlight &&
+            this.listKeysInFlight.cacheKey === cacheKey) {
+            this.logger.debug({ filters }, "Listing keys (awaiting in-flight)");
+            return this.listKeysInFlight.promise;
+        }
         this.logger.debug({ filters }, "Listing keys");
-        try {
-            const path = `/projects/${this.projectId}/keys`;
-            const params = {
-                include_translations: 1,
-                limit: filters?.limit || 100,
-                offset: filters?.offset || 0,
-            };
-            if (filters?.tag) {
-                params.filter_tags = filters.tag;
+        const promise = (async () => {
+            try {
+                const path = `/projects/${this.projectId}/keys`;
+                const params = {
+                    include_translations: 1,
+                    limit: filters?.limit || 100,
+                    offset: filters?.offset || 0,
+                };
+                if (filters?.tag)
+                    params.filter_tags = filters.tag;
+                if (filters?.file)
+                    params.filter_filenames = filters.file;
+                const response = await this.http.get(path, params);
+                this.listKeysCache = { at: Date.now(), keys: response.keys, cacheKey };
+                return response.keys;
             }
-            if (filters?.file) {
-                params.filter_filenames = filters.file;
+            catch (error) {
+                throw new LokaliseError(`Failed to list keys: ${error instanceof Error ? error.message : String(error)}`, 500);
             }
-            const response = await this.http.get(path, params);
-            return response.data;
-        }
-        catch (error) {
-            throw new LokaliseError(`Failed to list keys: ${error instanceof Error ? error.message : String(error)}`, 500);
-        }
+            finally {
+                if (this.listKeysInFlight?.cacheKey === cacheKey) {
+                    this.listKeysInFlight = undefined;
+                }
+            }
+        })();
+        this.listKeysInFlight = { cacheKey, promise };
+        return promise;
     }
-    async updateKeyTranslation(translationId, translation, reviewed) {
-        this.logger.debug({ translationId, reviewed }, "Updating translation");
+    async updateKeyTranslation(translationId, translation, _reviewed) {
+        this.logger.debug({ translationId }, "Updating translation");
         try {
             const path = `/projects/${this.projectId}/translations/${translationId}`;
+            // AI-generated translations are always pushed as unverified so a
+            // human translator reviews them before they count as approved.
+            // `is_reviewed` is forced false, `is_unverified` forced true,
+            // regardless of whether Claude flagged the string.
             const body = {
                 translation,
-                is_reviewed: reviewed,
+                is_reviewed: false,
+                is_unverified: true,
             };
             await this.http.put(path, body);
             this.logger.debug({ translationId }, "Translation updated");
@@ -139,6 +194,54 @@ export class LokaliseClient {
     }
     getProjectId() {
         return this.projectId;
+    }
+    /**
+     * Ensure `tag` is present on the given key. Lokalise tags live on keys,
+     * not individual translations. This is a no-op if the tag is already
+     * present (so it's safe to call redundantly from each fan-out branch).
+     */
+    async ensureKeyTag(keyId, tag, existingTags) {
+        if (existingTags.includes(tag))
+            return;
+        const merged = Array.from(new Set([...existingTags, tag]));
+        const path = `/projects/${this.projectId}/keys/${keyId}`;
+        this.logger.debug({ keyId, tag }, "Adding tag to key");
+        try {
+            await this.http.put(path, { tags: merged });
+            // Invalidate cached copy so subsequent fetches see the new tag.
+            this.keyCache.delete(String(keyId));
+        }
+        catch (error) {
+            this.logger.warn({
+                keyId,
+                tag,
+                error: error instanceof Error ? error.message : String(error),
+            }, "Failed to add tag to key");
+        }
+    }
+    /**
+     * Fetch the project's base language ISO (e.g. "en-US"). Cached in-memory
+     * after the first call.
+     */
+    async getBaseLanguageIso() {
+        if (this.baseLanguageIso)
+            return this.baseLanguageIso;
+        const path = `/projects/${this.projectId}`;
+        const response = await this.http.get(path);
+        if (!response.base_language_iso) {
+            throw new LokaliseError("Project has no base_language_iso", 500);
+        }
+        this.baseLanguageIso = response.base_language_iso;
+        this.logger.debug({ baseLanguageIso: this.baseLanguageIso }, "Loaded project base language");
+        return this.baseLanguageIso;
+    }
+    /**
+     * Fetch all language ISO codes configured in the project.
+     */
+    async listProjectLanguages() {
+        const path = `/projects/${this.projectId}/languages`;
+        const response = await this.http.get(path);
+        return response.languages.map((l) => l.lang_iso);
     }
 }
 let _lokaliseClient;

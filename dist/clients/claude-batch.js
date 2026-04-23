@@ -3,8 +3,8 @@ import { getEnv } from "../config/env.js";
 import { getLogger } from "../utils/logger.js";
 import { ClaudeError, ValidationError } from "../utils/errors.js";
 const MODEL_MAP = {
-    "haiku-4-5": "claude-3-5-haiku-20241022",
-    "sonnet-4-6": "claude-3-5-sonnet-20241022",
+    "haiku-4-5": "claude-haiku-4-5",
+    "sonnet-4-6": "claude-sonnet-4-6",
 };
 export class ClaudeBatchClient {
     client;
@@ -153,7 +153,8 @@ export class ClaudeBatchClient {
     }
     parseResponse(content, jobId) {
         try {
-            const parsed = JSON.parse(content);
+            const cleaned = this.stripCodeFences(content);
+            const parsed = JSON.parse(cleaned);
             if (!parsed.translations || typeof parsed.translations !== "object") {
                 throw new ValidationError("Response missing translations object");
             }
@@ -167,6 +168,11 @@ export class ClaudeBatchClient {
         catch (error) {
             throw new ClaudeError(`Failed to parse result: ${error instanceof Error ? error.message : String(error)}`, 500);
         }
+    }
+    stripCodeFences(text) {
+        const trimmed = text.trim();
+        const fenced = trimmed.match(/^```(?:json)?\s*\n?([\s\S]*?)\n?```$/i);
+        return fenced ? fenced[1].trim() : trimmed;
     }
     sleep(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));

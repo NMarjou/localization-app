@@ -102,6 +102,23 @@ export class WebhookHandler {
         )
       );
 
+      // Build key_id -> translation_id map for the target language so we
+      // can PUT updates later (Lokalise's PUT endpoint takes translation_id).
+      // Also stash existing tags so we can add "AI-translated" after push.
+      context.keyIdToTranslationId = {};
+      context.keyIdToTags = {};
+      for (const key of allKeys) {
+        const t = key.translations?.find(
+          (t: any) => t.language_iso === context.targetLanguage
+        );
+        if (t) {
+          context.keyIdToTranslationId[String(key.key_id)] = String(
+            t.translation_id
+          );
+        }
+        context.keyIdToTags[String(key.key_id)] = key.tags ?? [];
+      }
+
       // Get context keys (2 before, 2 after)
       const allKeysInProject = await client.listKeys({ limit: 1000 });
       const contextKeysByTargetId = new Map();
@@ -239,21 +256,46 @@ export class WebhookHandler {
       for (const [keyId, translation] of Object.entries(
         response.translations
       )) {
+        // Compare as strings — flag.key_id is typed as string per
+        // PromptResponse, but Claude may also emit it as a number.
         const flags = response.flags?.filter(
-          (f: any) => f.key_id === parseInt(keyId)
+          (f: any) => String(f.key_id) === String(keyId)
         );
         const reviewed = !flags || flags.length === 0;
 
+        const translationId = context.keyIdToTranslationId?.[keyId];
+        if (!translationId) {
+          this.getLogger().warn(
+            {
+              eventId: context.eventId,
+              keyId,
+              targetLanguage: context.targetLanguage,
+            },
+            "No translation_id found for key; skipping push"
+          );
+          continue;
+        }
+
         await lokaliseClient().updateKeyTranslation(
-          keyId,
+          translationId,
           translation as string,
           reviewed
+        );
+
+        // Tag the key so it's visible in Lokalise that the content was
+        // produced by the AI pipeline. Idempotent — only PUTs if absent.
+        const existingTags = context.keyIdToTags?.[keyId] ?? [];
+        await lokaliseClient().ensureKeyTag(
+          keyId,
+          "AI-translated",
+          existingTags
         );
 
         this.getLogger().debug(
           {
             eventId: context.eventId,
             keyId,
+            translationId,
             reviewed,
             flagCount: flags?.length || 0,
           },

@@ -1,4 +1,6 @@
 export interface Translation {
+    translation_id: number;
+    key_id?: number;
     language_iso: string;
     translation: string;
     is_reviewed: boolean;
@@ -46,5 +48,17 @@ export interface LokaliseApiResponse<T> {
         limit: number;
         offset: number;
     };
+}
+export interface LokaliseKeysResponse {
+    project_id: string;
+    keys: LokaliseKey[];
+}
+export interface LokaliseKeyResponse {
+    project_id: string;
+    key: LokaliseKey;
+}
+export interface LokaliseGlossaryResponse {
+    project_id: string;
+    data: GlossaryTerm[];
 }
 //# sourceMappingURL=lokalise.d.ts.map

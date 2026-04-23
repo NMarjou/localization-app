@@ -10,6 +10,7 @@ export declare class ClaudeBatchClient {
     private formatBatchRequests;
     private parseBatchResults;
     private parseResponse;
+    private stripCodeFences;
     private sleep;
 }
 //# sourceMappingURL=claude-batch.d.ts.map

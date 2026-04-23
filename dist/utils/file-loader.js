@@ -1,6 +1,18 @@
 import { readFile } from "fs/promises";
 import { join } from "path";
 import { getLogger } from "./logger.js";
+/**
+ * Try the full locale code first (e.g. "fr_FR"), then fall back to the
+ * base language ("fr"). Handles both "fr_FR" and "fr-FR" separators.
+ */
+function candidateDirs(language) {
+    const candidates = new Set();
+    candidates.add(language);
+    const base = language.split(/[-_]/)[0];
+    if (base && base !== language)
+        candidates.add(base);
+    return [...candidates];
+}
 export class FileLoader {
     logger = getLogger();
     glossaryCache = new Map();
@@ -11,19 +23,22 @@ export class FileLoader {
             this.logger.debug({ language }, "Returning cached glossary");
             return this.glossaryCache.get(cacheKey);
         }
-        try {
-            const filePath = join(process.cwd(), "locales", language, "glossary.json");
-            this.logger.debug({ filePath }, "Loading glossary from file");
-            const content = await readFile(filePath, "utf-8");
-            const glossary = JSON.parse(content);
-            this.glossaryCache.set(cacheKey, glossary);
-            this.logger.debug({ language, terms: Object.keys(glossary).length }, "Glossary loaded");
-            return glossary;
+        for (const dir of candidateDirs(language)) {
+            try {
+                const filePath = join(process.cwd(), "locales", dir, "glossary.json");
+                this.logger.debug({ filePath }, "Loading glossary from file");
+                const content = await readFile(filePath, "utf-8");
+                const glossary = JSON.parse(content);
+                this.glossaryCache.set(cacheKey, glossary);
+                this.logger.debug({ language, dir, terms: Object.keys(glossary).length }, "Glossary loaded");
+                return glossary;
+            }
+            catch {
+                // Try next candidate
+            }
         }
-        catch (error) {
-            this.logger.warn({ language, error: error instanceof Error ? error.message : String(error) }, "Failed to load glossary, returning empty");
-            return {};
-        }
+        this.logger.warn({ language, tried: candidateDirs(language) }, "Failed to load glossary, returning empty");
+        return {};
     }
     async loadTranslationMemory(language) {
         const cacheKey = `tm:${language}`;
@@ -31,19 +46,22 @@ export class FileLoader {
             this.logger.debug({ language }, "Returning cached translation memory");
             return this.tmCache.get(cacheKey);
         }
-        try {
-            const filePath = join(process.cwd(), "locales", language, "tm.json");
-            this.logger.debug({ filePath }, "Loading translation memory from file");
-            const content = await readFile(filePath, "utf-8");
-            const tm = JSON.parse(content);
-            this.tmCache.set(cacheKey, tm);
-            this.logger.debug({ language, entries: tm.length }, "Translation memory loaded");
-            return tm;
+        for (const dir of candidateDirs(language)) {
+            try {
+                const filePath = join(process.cwd(), "locales", dir, "tm.json");
+                this.logger.debug({ filePath }, "Loading translation memory from file");
+                const content = await readFile(filePath, "utf-8");
+                const tm = JSON.parse(content);
+                this.tmCache.set(cacheKey, tm);
+                this.logger.debug({ language, dir, entries: tm.length }, "Translation memory loaded");
+                return tm;
+            }
+            catch {
+                // Try next candidate
+            }
         }
-        catch (error) {
-            this.logger.warn({ language, error: error instanceof Error ? error.message : String(error) }, "Failed to load translation memory, returning empty");
-            return [];
-        }
+        this.logger.warn({ language, tried: candidateDirs(language) }, "Failed to load translation memory, returning empty");
+        return [];
     }
     clearCache(language) {
         if (language) {

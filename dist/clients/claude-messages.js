@@ -3,8 +3,8 @@ import { getEnv } from "../config/env.js";
 import { getLogger } from "../utils/logger.js";
 import { ClaudeError, ValidationError } from "../utils/errors.js";
 const MODEL_MAP = {
-    "haiku-4-5": "claude-3-5-haiku-20241022",
-    "sonnet-4-6": "claude-3-5-sonnet-20241022",
+    "haiku-4-5": "claude-haiku-4-5",
+    "sonnet-4-6": "claude-sonnet-4-6",
 };
 export class ClaudeMessagesClient {
     client;
@@ -77,8 +77,9 @@ export class ClaudeMessagesClient {
     }
     parseResponse(content, jobId) {
         try {
-            this.validateJSON(content);
-            const parsed = JSON.parse(content);
+            const cleaned = this.stripCodeFences(content);
+            this.validateJSON(cleaned);
+            const parsed = JSON.parse(cleaned);
             if (!parsed.translations || typeof parsed.translations !== "object") {
                 throw new ValidationError("Response missing translations object");
             }
@@ -103,6 +104,15 @@ export class ClaudeMessagesClient {
         catch (error) {
             throw new ValidationError(`Invalid JSON in Claude response: ${error instanceof Error ? error.message : String(error)}`);
         }
+    }
+    /**
+     * Strip markdown code fences (```json ... ``` or ``` ... ```) that
+     * Claude sometimes wraps JSON responses in, despite instructions.
+     */
+    stripCodeFences(text) {
+        const trimmed = text.trim();
+        const fenced = trimmed.match(/^```(?:json)?\s*\n?([\s\S]*?)\n?```$/i);
+        return fenced ? fenced[1].trim() : trimmed;
     }
     extractUsage(usage) {
         return {

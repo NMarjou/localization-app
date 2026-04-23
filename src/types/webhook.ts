@@ -36,6 +36,17 @@ export interface WebhookContext {
   sourceLanguage: string;
   targetLanguage: string;
   keyIds: number[];
+  /**
+   * Map of key_id -> translation_id for the target language,
+   * built while fetching keys from Lokalise. Needed because the
+   * Lokalise PUT endpoint expects translation_id, not key_id.
+   */
+  keyIdToTranslationId?: Record<string, string>;
+  /**
+   * Map of key_id -> tags currently on the key. Used to decide
+   * whether the "AI-translated" tag needs to be added after push.
+   */
+  keyIdToTags?: Record<string, string[]>;
   requestId?: string;
   batchId?: string;
   timestamp: number;

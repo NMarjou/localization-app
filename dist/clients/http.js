@@ -91,7 +91,11 @@ export class HttpClient {
         }
     }
     buildUrl(path, params) {
-        const url = new URL(path, this.baseUrl);
+        // Strip leading slash so new URL() preserves the base URL's path segment
+        // (e.g. "/api2"). Without this, an absolute path replaces it entirely.
+        const relativePath = path.startsWith("/") ? path.slice(1) : path;
+        const base = this.baseUrl.endsWith("/") ? this.baseUrl : this.baseUrl + "/";
+        const url = new URL(relativePath, base);
         if (params) {
             Object.entries(params).forEach(([key, value]) => {
                 if (value !== undefined && value !== null) {

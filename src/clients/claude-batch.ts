@@ -12,8 +12,8 @@ import type {
 import type { PromptResponse } from "../types/prompt.js";
 
 const MODEL_MAP: Record<ModelOption, string> = {
-  "haiku-4-5": "claude-3-5-haiku-20241022",
-  "sonnet-4-6": "claude-3-5-sonnet-20241022",
+  "haiku-4-5": "claude-haiku-4-5",
+  "sonnet-4-6": "claude-sonnet-4-6",
 };
 
 export class ClaudeBatchClient {
@@ -229,7 +229,8 @@ export class ClaudeBatchClient {
 
   private parseResponse(content: string, jobId: string): ClaudeResponse {
     try {
-      const parsed = JSON.parse(content) as PromptResponse;
+      const cleaned = this.stripCodeFences(content);
+      const parsed = JSON.parse(cleaned) as PromptResponse;
 
       if (!parsed.translations || typeof parsed.translations !== "object") {
         throw new ValidationError("Response missing translations object");
@@ -247,6 +248,14 @@ export class ClaudeBatchClient {
         500
       );
     }
+  }
+
+  private stripCodeFences(text: string): string {
+    const trimmed = text.trim();
+    const fenced = trimmed.match(
+      /^```(?:json)?\s*\n?([\s\S]*?)\n?```$/i
+    );
+    return fenced ? fenced[1].trim() : trimmed;
   }
 
   private sleep(ms: number): Promise<void> {

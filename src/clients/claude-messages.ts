@@ -11,8 +11,8 @@ import type {
 import type { PromptResponse } from "../types/prompt.js";
 
 const MODEL_MAP: Record<ModelOption, string> = {
-  "haiku-4-5": "claude-3-5-haiku-20241022",
-  "sonnet-4-6": "claude-3-5-sonnet-20241022",
+  "haiku-4-5": "claude-haiku-4-5",
+  "sonnet-4-6": "claude-sonnet-4-6",
 };
 
 export class ClaudeMessagesClient {
@@ -112,8 +112,9 @@ export class ClaudeMessagesClient {
 
   private parseResponse(content: string, jobId: string): ClaudeResponse {
     try {
-      this.validateJSON(content);
-      const parsed = JSON.parse(content) as PromptResponse;
+      const cleaned = this.stripCodeFences(content);
+      this.validateJSON(cleaned);
+      const parsed = JSON.parse(cleaned) as PromptResponse;
 
       if (!parsed.translations || typeof parsed.translations !== "object") {
         throw new ValidationError("Response missing translations object");
@@ -145,6 +146,18 @@ export class ClaudeMessagesClient {
         `Invalid JSON in Claude response: ${error instanceof Error ? error.message : String(error)}`
       );
     }
+  }
+
+  /**
+   * Strip markdown code fences (```json ... ``` or ``` ... ```) that
+   * Claude sometimes wraps JSON responses in, despite instructions.
+   */
+  private stripCodeFences(text: string): string {
+    const trimmed = text.trim();
+    const fenced = trimmed.match(
+      /^```(?:json)?\s*\n?([\s\S]*?)\n?```$/i
+    );
+    return fenced ? fenced[1].trim() : trimmed;
   }
 
   private extractUsage(usage: Anthropic.Messages.Usage): ClaudeUsage {
