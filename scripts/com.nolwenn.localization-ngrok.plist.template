@@ -10,7 +10,7 @@
     <array>
         <string>NGROK_PATH</string>
         <string>http</string>
-        <string>--domain=countable-robotics-climate.ngrok-free.dev</string>
+        <string>--url=https://countable-robotics-climate.ngrok-free.dev</string>
         <string>3000</string>
     </array>
 

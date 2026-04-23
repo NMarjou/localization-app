@@ -58,8 +58,8 @@ if [[ -n "${NGROK_DOMAIN:-}" ]]; then
   RENDERED_NGROK=$(echo "$RENDERED_NGROK" | sed \
     -e "s|countable-robotics-climate.ngrok-free.dev|$NGROK_DOMAIN|g")
 elif [[ "${NGROK_DOMAIN:-unset}" == "" ]]; then
-  # NGROK_DOMAIN was explicitly set to empty string: drop the --domain flag.
-  RENDERED_NGROK=$(echo "$RENDERED_NGROK" | grep -v '\-\-domain=')
+  # NGROK_DOMAIN was explicitly set to empty string: drop the --url flag.
+  RENDERED_NGROK=$(echo "$RENDERED_NGROK" | grep -v '\-\-url=')
 fi
 
 echo "$RENDERED_NGROK" > "$NGROK_PLIST"
