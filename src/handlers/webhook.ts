@@ -1,0 +1,337 @@
+import { createHmac } from "crypto";
+import { Request, Response } from "express";
+import { getLogger } from "../utils/logger.js";
+import { WebhookError } from "../utils/errors.js";
+import { claudeClient } from "../clients/claude.js";
+import { lokaliseClient } from "../clients/lokalise.js";
+import { promptManager } from "../builders/prompt-manager.js";
+import type {
+  LokaliseWebhookEvent,
+  WebhookContext,
+  PendingBatch,
+} from "../types/webhook.js";
+
+export class WebhookHandler {
+  private pendingBatches = new Map<string, PendingBatch>();
+  private logger?: ReturnType<typeof getLogger>;
+
+  private getLogger(): ReturnType<typeof getLogger> {
+    if (!this.logger) {
+      this.logger = getLogger();
+    }
+    return this.logger;
+  }
+
+  validateSignature(
+    payload: string,
+    signature: string,
+    secret: string
+  ): boolean {
+    const expected = createHmac("sha256", secret)
+      .update(payload)
+      .digest("hex");
+    return expected === signature;
+  }
+
+  async handleEvent(
+    event: LokaliseWebhookEvent,
+    context: WebhookContext
+  ): Promise<void> {
+    this.getLogger().debug(
+      { eventType: event.event, eventId: context.eventId },
+      "Processing webhook event"
+    );
+
+    switch (event.event) {
+      case "translation.updated":
+        await this.handleTranslationRequest(event, context);
+        break;
+      case "translation.approved":
+        await this.handleTranslationApproved(event, context);
+        break;
+      default:
+        this.getLogger().debug(
+          { eventType: event.event, eventId: context.eventId },
+          "Ignoring event type"
+        );
+    }
+  }
+
+  private getTranslationText(
+    key: any,
+    languageIso: string
+  ): string {
+    const translation = key.translations?.find(
+      (t: any) => t.language_iso === languageIso
+    );
+    return translation?.translation || "";
+  }
+
+  private async handleTranslationRequest(
+    event: LokaliseWebhookEvent,
+    context: WebhookContext
+  ): Promise<void> {
+    try {
+      if (!event.bundle.translations || event.bundle.translations.length === 0) {
+        this.getLogger().warn({ eventId: context.eventId }, "No translations in bundle");
+        return;
+      }
+
+      const translation = event.bundle.translations[0];
+      context.targetLanguage = translation.language_iso;
+      context.sourceLanguage = translation.source_language_iso || "en";
+      context.keyIds = event.bundle.translations.map((t) => t.key_id);
+
+      this.getLogger().debug(
+        {
+          eventId: context.eventId,
+          sourceLanguage: context.sourceLanguage,
+          targetLanguage: context.targetLanguage,
+          keyCount: context.keyIds.length,
+        },
+        "Extracting translation request"
+      );
+
+      const client = lokaliseClient();
+      const allKeys = await Promise.all(
+        context.keyIds.map((keyId) =>
+          client.getKeyWithAllTranslations(String(keyId))
+        )
+      );
+
+      // Get context keys (2 before, 2 after)
+      const allKeysInProject = await client.listKeys({ limit: 1000 });
+      const contextKeysByTargetId = new Map();
+
+      for (const keyId of context.keyIds) {
+        const index = allKeysInProject.findIndex((k) => String(k.key_id) === String(keyId));
+        if (index !== -1) {
+          contextKeysByTargetId.set(
+            keyId,
+            {
+              before: allKeysInProject.slice(Math.max(0, index - 2), index),
+              after: allKeysInProject.slice(
+                index + 1,
+                Math.min(allKeysInProject.length, index + 3)
+              ),
+            }
+          );
+        }
+      }
+
+      const strings = allKeys.map((key) => ({
+        key_id: key.key_id,
+        key_name: key.key_name,
+        value: this.getTranslationText(key, context.sourceLanguage),
+        string_type: undefined as any,
+        max_char_limit: key.character_limit,
+        screen_or_section: key.platforms?.[0],
+      }));
+
+      const firstKeyContextKeys = contextKeysByTargetId.get(context.keyIds[0]);
+      const translationRequest = {
+        target_language: context.targetLanguage,
+        strings,
+        context: {
+          before: firstKeyContextKeys?.before?.map((k: any) => ({
+            key_id: k.key_id,
+            key_name: k.key_name,
+            value: this.getTranslationText(k, context.sourceLanguage),
+          })),
+          after: firstKeyContextKeys?.after?.map((k: any) => ({
+            key_id: k.key_id,
+            key_name: k.key_name,
+            value: this.getTranslationText(k, context.sourceLanguage),
+          })),
+        },
+      };
+
+      const promptMessages = await promptManager().buildMessages(translationRequest);
+
+      const response = await claudeClient.translate(promptMessages);
+
+      if ("batch_id" in response) {
+        context.batchId = response.batch_id;
+        this.pendingBatches.set(response.batch_id, {
+          batchId: response.batch_id,
+          context,
+          createdAt: Date.now(),
+          pollCount: 0,
+        });
+
+        this.getLogger().info(
+          {
+            eventId: context.eventId,
+            batchId: response.batch_id,
+            targetLanguage: context.targetLanguage,
+          },
+          "Batch submitted, will poll for completion"
+        );
+      } else {
+        await this.pushResults(response, context);
+      }
+    } catch (error) {
+      this.getLogger().error(
+        {
+          eventId: context.eventId,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        "Translation request failed"
+      );
+    }
+  }
+
+  private async handleTranslationApproved(
+    event: LokaliseWebhookEvent,
+    context: WebhookContext
+  ): Promise<void> {
+    try {
+      if (!event.bundle.translations || event.bundle.translations.length === 0) {
+        return;
+      }
+
+      const translation = event.bundle.translations[0];
+      context.targetLanguage = translation.language_iso;
+      context.sourceLanguage = translation.source_language_iso || "en";
+      context.keyIds = event.bundle.translations.map((t) => t.key_id);
+
+      this.getLogger().debug(
+        {
+          eventId: context.eventId,
+          targetLanguage: context.targetLanguage,
+          keyIds: context.keyIds,
+        },
+        "Translation approved, updating TM"
+      );
+
+      // Implementation for TM updates would go here
+      // For now, just log the approval
+    } catch (error) {
+      this.getLogger().error(
+        {
+          eventId: context.eventId,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        "Translation approval handling failed"
+      );
+    }
+  }
+
+  async pushResults(
+    response: any,
+    context: WebhookContext
+  ): Promise<void> {
+    if (!response.success) {
+      this.getLogger().error(
+        {
+          eventId: context.eventId,
+          error: response.error,
+        },
+        "Claude translation failed"
+      );
+      return;
+    }
+
+    try {
+      for (const [keyId, translation] of Object.entries(
+        response.translations
+      )) {
+        const flags = response.flags?.filter(
+          (f: any) => f.key_id === parseInt(keyId)
+        );
+        const reviewed = !flags || flags.length === 0;
+
+        await lokaliseClient().updateKeyTranslation(
+          keyId,
+          translation as string,
+          reviewed
+        );
+
+        this.getLogger().debug(
+          {
+            eventId: context.eventId,
+            keyId,
+            reviewed,
+            flagCount: flags?.length || 0,
+          },
+          "Translation pushed to Lokalise"
+        );
+      }
+
+      this.getLogger().info(
+        {
+          eventId: context.eventId,
+          targetLanguage: context.targetLanguage,
+          keyCount: context.keyIds.length,
+        },
+        "Results pushed to Lokalise"
+      );
+    } catch (error) {
+      this.getLogger().error(
+        {
+          eventId: context.eventId,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        "Failed to push results"
+      );
+      throw error;
+    }
+  }
+
+  async pollPendingBatches(): Promise<void> {
+    const now = Date.now();
+
+    for (const [batchId, pending] of this.pendingBatches) {
+      try {
+        pending.pollCount++;
+
+        const status = await claudeClient.pollBatchResult(batchId);
+
+        if (status && status.length > 0) {
+          const response = status[0];
+          await this.pushResults(response, pending.context);
+          this.pendingBatches.delete(batchId);
+
+          this.getLogger().info(
+            {
+              batchId,
+              targetLanguage: pending.context.targetLanguage,
+              pollCount: pending.pollCount,
+            },
+            "Batch completed"
+          );
+        }
+      } catch (error) {
+        const age = now - pending.createdAt;
+        const maxAge = 24 * 60 * 60 * 1000;
+
+        if (age > maxAge) {
+          this.pendingBatches.delete(batchId);
+          this.getLogger().error(
+            {
+              batchId,
+              age,
+              pollCount: pending.pollCount,
+            },
+            "Batch expired, removing from queue"
+          );
+        } else if (error instanceof Error) {
+          this.getLogger().warn(
+            {
+              batchId,
+              pollCount: pending.pollCount,
+              error: error.message,
+            },
+            "Batch poll failed, will retry"
+          );
+        }
+      }
+    }
+  }
+
+  getPendingBatchCount(): number {
+    return this.pendingBatches.size;
+  }
+}
+
+export const webhookHandler = new WebhookHandler();
