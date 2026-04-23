@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.nolwenn.localization-ngrok</string>
+
+    <!-- NGROK_PATH and WORKING_DIR are filled in by install-launchd.sh. -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>NGROK_PATH</string>
+        <string>http</string>
+        <string>--domain=countable-robotics-climate.ngrok-free.dev</string>
+        <string>3000</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>WORKING_DIR</string>
+
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>WORKING_DIR/logs/ngrok.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>WORKING_DIR/logs/ngrok.err.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
+
+    <!-- Throttle restarts in case ngrok keeps crashing. -->
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+</dict>
+</plist>
