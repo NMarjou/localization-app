@@ -1,6 +1,7 @@
 import { timingSafeEqual } from "crypto";
 import { Request, Response } from "express";
 import { getLogger } from "../utils/logger.js";
+import { recordEvent } from "../utils/event-log.js";
 import { WebhookError } from "../utils/errors.js";
 import { claudeClient } from "../clients/claude.js";
 import { lokaliseClient } from "../clients/lokalise.js";
@@ -198,6 +199,15 @@ export class WebhookHandler {
         },
         "Translation request failed"
       );
+      recordEvent(
+        "error",
+        `Translation failed for ${context.targetLanguage}`,
+        {
+          eventId: context.eventId,
+          targetLanguage: context.targetLanguage,
+          error: error instanceof Error ? error.message : String(error),
+        }
+      );
     }
   }
 
@@ -310,6 +320,15 @@ export class WebhookHandler {
           keyCount: context.keyIds.length,
         },
         "Results pushed to Lokalise"
+      );
+      recordEvent(
+        "translation_pushed",
+        `Pushed ${context.keyIds.length} key(s) → ${context.targetLanguage}`,
+        {
+          eventId: context.eventId,
+          targetLanguage: context.targetLanguage,
+          keyCount: context.keyIds.length,
+        }
       );
     } catch (error) {
       this.getLogger().error(

@@ -1,4 +1,5 @@
 import { getLogger } from "../utils/logger.js";
+import { recordEvent } from "../utils/event-log.js";
 import { lokaliseClient } from "../clients/lokalise.js";
 import { webhookHandler } from "./webhook.js";
 import type {
@@ -55,6 +56,7 @@ export async function runBackfill(
   };
 
   logger.info({ runId, opts }, "Backfill run starting");
+  recordEvent("backfill_started", "Backfill run starting", { runId, opts });
 
   const client = lokaliseClient();
   const sourceLang = await client.getBaseLanguageIso();
@@ -183,5 +185,10 @@ export async function runBackfill(
   summary.durationMs = Date.now() - started;
 
   logger.info({ ...summary }, "Backfill run complete");
+  recordEvent(
+    summary.errors > 0 ? "error" : "backfill_completed",
+    `Backfill complete: ${summary.submitted} submitted, ${summary.errors} errors`,
+    summary as unknown as Record<string, unknown>
+  );
   return summary;
 }

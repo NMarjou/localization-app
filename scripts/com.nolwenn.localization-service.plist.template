@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.nolwenn.localization-service</string>
+
+    <!-- Update NODE_PATH and WORKING_DIR below before installing. -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>NODE_PATH</string>
+        <string>WORKING_DIR/dist/index.js</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>WORKING_DIR</string>
+
+    <!-- Start at login and keep alive. -->
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+
+    <!-- Log stdout/stderr to files so you can tail them for debugging. -->
+    <key>StandardOutPath</key>
+    <string>WORKING_DIR/logs/service.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>WORKING_DIR/logs/service.err.log</string>
+
+    <!-- Inherit environment from your shell. Don't put secrets here;
+         the service reads them from the .env file at WORKING_DIR. -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>NODE_ENV</key>
+        <string>production</string>
+    </dict>
+
+    <!-- Throttle restart attempts if the service crashes repeatedly. -->
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+</dict>
+</plist>
