@@ -1,9 +1,13 @@
 import express from "express";
 import { getEnv } from "./config/env.js";
 import { getLogger } from "./utils/logger.js";
+import path from "path";
+import { fileURLToPath } from "url";
 import { webhookHandler } from "./handlers/webhook.js";
 import { runBackfill } from "./handlers/backfill.js";
+import { startScheduler } from "./scheduler.js";
 import { lokaliseClient } from "./clients/lokalise.js";
+import { listEvents, getStartedAt, } from "./utils/event-log.js";
 /**
  * Map Lokalise's real event names to the internal names the handler
  * switches on. We intentionally map "proofread" (reviewed) to the internal
@@ -123,6 +127,26 @@ app.get("/health", (req, res) => {
         timestamp: new Date().toISOString(),
     });
 });
+// Status endpoint — JSON snapshot of recent events, counts, uptime.
+// Consumed by the UI dashboard at /ui.
+app.get("/status", (req, res) => {
+    const events = listEvents(100);
+    const errorsLastHour = events.filter((e) => e.type === "error" && Date.now() - e.timestamp < 3600_000).length;
+    res.json({
+        startedAt: getStartedAt(),
+        uptimeMs: Date.now() - getStartedAt(),
+        pendingBatches: webhookHandler.getPendingBatchCount(),
+        eventCount: events.length,
+        errorsLastHour,
+        cron: process.env.BACKFILL_CRON?.trim() || "0 */4 * * *",
+        events,
+    });
+});
+// Serve the dashboard UI (kept at repo root so no build step is needed).
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+app.get("/ui", (_req, res) => {
+    res.sendFile(path.join(__dirname, "..", "ui.html"));
+});
 // Manual backfill trigger. Same logic as the (future) nightly job.
 // Auth: X-Secret header with WEBHOOK_SECRET (same as webhook endpoints).
 // Body (optional): { keyIds?: number[], languages?: string[], maxItems?: number }
@@ -216,10 +240,13 @@ const pollInterval = setInterval(() => {
         .pollPendingBatches()
         .catch((error) => logger.error({ error: error instanceof Error ? error.message : String(error) }, "Batch polling failed"));
 }, 30 * 1000);
+// Periodic backfill (default: every 4 hours, override with BACKFILL_CRON).
+const scheduledBackfill = startScheduler();
 // Graceful shutdown
 const shutdown = () => {
     logger.info("Shutting down server");
     clearInterval(pollInterval);
+    scheduledBackfill.stop();
     server.close(() => {
         logger.info("Server closed");
         process.exit(0);

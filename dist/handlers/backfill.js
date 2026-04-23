@@ -1,4 +1,5 @@
 import { getLogger } from "../utils/logger.js";
+import { recordEvent } from "../utils/event-log.js";
 import { lokaliseClient } from "../clients/lokalise.js";
 import { webhookHandler } from "./webhook.js";
 /**
@@ -27,6 +28,7 @@ export async function runBackfill(opts = {}) {
         durationMs: 0,
     };
     logger.info({ runId, opts }, "Backfill run starting");
+    recordEvent("backfill_started", "Backfill run starting", { runId, opts });
     const client = lokaliseClient();
     const sourceLang = await client.getBaseLanguageIso();
     // Figure out the target-language universe (project languages minus source).
@@ -121,6 +123,7 @@ export async function runBackfill(opts = {}) {
     summary.skipped = workItems.length - limited.length;
     summary.durationMs = Date.now() - started;
     logger.info({ ...summary }, "Backfill run complete");
+    recordEvent(summary.errors > 0 ? "error" : "backfill_completed", `Backfill complete: ${summary.submitted} submitted, ${summary.errors} errors`, summary);
     return summary;
 }
 //# sourceMappingURL=backfill.js.map
