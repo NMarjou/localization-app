@@ -1,5 +1,6 @@
-import { readFile } from "fs/promises";
-import { join } from "path";
+import { readFile, writeFile, mkdir } from "fs/promises";
+import { existsSync } from "fs";
+import { join, dirname } from "path";
 import { getLogger } from "./logger.js";
 
 export interface TranslationMemoryEntry {
@@ -106,6 +107,73 @@ export class FileLoader {
       this.tmCache.clear();
       this.logger.debug("Cleared all caches");
     }
+  }
+
+  /**
+   * Append a reviewed source→target pair to the TM file for the given
+   * language. Dedupes — if the exact pair is already present, no-op.
+   * Uses the same fallback directory lookup as loadTranslationMemory (so
+   * a "fr_FR" update writes to "locales/fr/tm.json" if only the base
+   * folder exists). If no folder exists yet, creates one at the full
+   * locale code.
+   */
+  async appendTranslationMemoryEntry(
+    language: string,
+    entry: TranslationMemoryEntry
+  ): Promise<{ appended: boolean; filePath: string; total: number }> {
+    if (!entry.source || !entry.target) {
+      throw new Error("TM entry requires non-empty source and target");
+    }
+
+    // Find the existing TM file to update. Prefer the most specific
+    // directory that already has a tm.json.
+    const candidates = candidateDirs(language);
+    let filePath: string | undefined;
+    for (const dir of candidates) {
+      const candidate = join(process.cwd(), "locales", dir, "tm.json");
+      if (existsSync(candidate)) {
+        filePath = candidate;
+        break;
+      }
+    }
+    // No file yet — create it under the full locale code.
+    if (!filePath) {
+      filePath = join(process.cwd(), "locales", language, "tm.json");
+      await mkdir(dirname(filePath), { recursive: true });
+    }
+
+    let tm: TranslationMemoryEntry[] = [];
+    if (existsSync(filePath)) {
+      const content = await readFile(filePath, "utf-8");
+      tm = JSON.parse(content) as TranslationMemoryEntry[];
+    }
+
+    // Dedupe: exact source+target already present.
+    const duplicate = tm.some(
+      (e) => e.source === entry.source && e.target === entry.target
+    );
+    if (duplicate) {
+      this.logger.debug(
+        { language, filePath, source: entry.source },
+        "TM entry already present, skipping"
+      );
+      return { appended: false, filePath, total: tm.length };
+    }
+
+    tm.push(entry);
+    await writeFile(filePath, JSON.stringify(tm, null, 2), "utf-8");
+
+    // Invalidate in-memory cache so subsequent loads see the new entry.
+    this.tmCache.delete(`tm:${language}`);
+    for (const dir of candidates) {
+      this.tmCache.delete(`tm:${dir}`);
+    }
+
+    this.logger.info(
+      { language, filePath, total: tm.length },
+      "TM entry appended"
+    );
+    return { appended: true, filePath, total: tm.length };
   }
 }
 

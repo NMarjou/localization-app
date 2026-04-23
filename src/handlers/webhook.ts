@@ -5,6 +5,7 @@ import { recordEvent } from "../utils/event-log.js";
 import { WebhookError } from "../utils/errors.js";
 import { claudeClient } from "../clients/claude.js";
 import { lokaliseClient } from "../clients/lokalise.js";
+import { fileLoader } from "../utils/file-loader.js";
 import { promptManager } from "../builders/prompt-manager.js";
 import type {
   LokaliseWebhookEvent,
@@ -234,8 +235,58 @@ export class WebhookHandler {
         "Translation approved, updating TM"
       );
 
-      // Implementation for TM updates would go here
-      // For now, just log the approval
+      // For each approved key, pull source + target values and append
+      // the pair to locales/{targetLang}/tm.json.
+      const client = lokaliseClient();
+      for (const keyId of context.keyIds) {
+        try {
+          const key = await client.getKeyWithAllTranslations(String(keyId));
+
+          const sourceText = this.getTranslationText(key, context.sourceLanguage);
+          const targetText = this.getTranslationText(key, context.targetLanguage);
+
+          if (!sourceText || !targetText) {
+            this.getLogger().warn(
+              {
+                eventId: context.eventId,
+                keyId,
+                hasSource: !!sourceText,
+                hasTarget: !!targetText,
+              },
+              "Skipping TM update: missing source or target text"
+            );
+            continue;
+          }
+
+          const result = await fileLoader().appendTranslationMemoryEntry(
+            context.targetLanguage,
+            { source: sourceText, target: targetText }
+          );
+
+          recordEvent(
+            "translation_pushed",
+            result.appended
+              ? `TM updated for ${context.targetLanguage} (${result.total} entries)`
+              : `TM unchanged for ${context.targetLanguage} (duplicate)`,
+            {
+              eventId: context.eventId,
+              keyId,
+              targetLanguage: context.targetLanguage,
+              appended: result.appended,
+              total: result.total,
+            }
+          );
+        } catch (err) {
+          this.getLogger().error(
+            {
+              eventId: context.eventId,
+              keyId,
+              error: err instanceof Error ? err.message : String(err),
+            },
+            "Failed to update TM for key"
+          );
+        }
+      }
     } catch (error) {
       this.getLogger().error(
         {
@@ -244,6 +295,10 @@ export class WebhookHandler {
         },
         "Translation approval handling failed"
       );
+      recordEvent("error", "TM update failed", {
+        eventId: context.eventId,
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 

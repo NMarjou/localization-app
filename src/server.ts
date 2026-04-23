@@ -43,8 +43,9 @@ const EVENT_NAME_MAP: Record<string, LokaliseWebhookEventType> = {
  *
  *  - Source-language edit → fan out to one event per non-source target
  *    language (translate source → each target).
- *  - Non-source-language edit (target-language edit) → return [] so we
- *    don't overwrite human translator work or our own pushes.
+ *  - Non-source-language edit (target-language edit) → emit a single
+ *    "translation.approved" event so we can append the reviewed pair to
+ *    the TM. Never re-translates — protects human translator work.
  *  - Unknown event → null (caller returns 400).
  */
 async function adaptLokaliseEvent(
@@ -80,9 +81,25 @@ async function adaptLokaliseEvent(
     ];
   }
 
-  // Target-language edit: skip to avoid loops and stomping humans.
+  // Target-language edit: don't re-translate. Emit an "approved" event
+  // so the handler can append the reviewed source→target pair to the TM.
   if (editedLanguage !== sourceLanguageIso) {
-    return [];
+    return [
+      {
+        event: "translation.approved",
+        project_id: projectId,
+        bundle: {
+          translations: [
+            {
+              key_id: Number(keyId),
+              language_iso: editedLanguage,
+              words: 0,
+              source_language_iso: sourceLanguageIso,
+            },
+          ],
+        },
+      },
+    ];
   }
 
   // Source edit: fan out to every non-source project language.
