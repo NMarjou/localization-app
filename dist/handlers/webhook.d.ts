@@ -3,7 +3,13 @@ export declare class WebhookHandler {
     private pendingBatches;
     private logger?;
     private getLogger;
-    validateSignature(payload: string, signature: string, secret: string): boolean;
+    /**
+     * Lokalise webhooks authenticate by echoing a configured secret verbatim
+     * in one of three headers (X-Secret, X-Api-Key, or a custom header).
+     * There is no HMAC. We do a constant-time equality check against
+     * WEBHOOK_SECRET.
+     */
+    validateSecret(received: string, secret: string): boolean;
     handleEvent(event: LokaliseWebhookEvent, context: WebhookContext): Promise<void>;
     private getTranslationText;
     private handleTranslationRequest;

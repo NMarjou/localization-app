@@ -7,21 +7,29 @@ const logger = getLogger();
 const app = express();
 // Middleware
 app.use(express.json());
-// HMAC validation middleware
+// Lokalise webhook paths (Lokalise UI uses /webhooks by default; we accept both).
+const WEBHOOK_PATHS = new Set(["/webhook", "/webhooks"]);
+// Secret-header validation middleware.
+// Lokalise sends the configured secret verbatim in one of:
+//   X-Secret | X-Api-Key | a custom header (configured in Lokalise UI)
+// If the user picks "Custom", set WEBHOOK_HEADER_NAME in .env to match.
 app.use((req, res, next) => {
-    if (req.path !== "/webhook") {
+    // Only enforce on POST; GET is a health probe from Lokalise's URL validator.
+    if (req.method !== "POST" || !WEBHOOK_PATHS.has(req.path)) {
         return next();
     }
-    const signature = req.headers["x-lokalise-signature"];
-    if (!signature) {
-        logger.warn({ path: req.path }, "Missing webhook signature");
-        return res.status(401).json({ error: "Missing signature" });
+    const customHeader = process.env.WEBHOOK_HEADER_NAME?.toLowerCase();
+    const received = (customHeader && req.headers[customHeader]) ||
+        req.headers["x-secret"] ||
+        req.headers["x-api-key"];
+    if (!received) {
+        logger.warn({ path: req.path }, "Missing webhook secret header");
+        return res.status(401).json({ error: "Missing secret header" });
     }
-    const payload = JSON.stringify(req.body);
-    const isValid = webhookHandler.validateSignature(payload, signature, env.WEBHOOK_SECRET);
+    const isValid = webhookHandler.validateSecret(received, env.WEBHOOK_SECRET);
     if (!isValid) {
-        logger.warn({ path: req.path, signature: signature.slice(0, 10) + "..." }, "Invalid webhook signature");
-        return res.status(401).json({ error: "Invalid signature" });
+        logger.warn({ path: req.path }, "Invalid webhook secret");
+        return res.status(401).json({ error: "Invalid secret" });
     }
     next();
 });
@@ -33,8 +41,13 @@ app.get("/health", (req, res) => {
         timestamp: new Date().toISOString(),
     });
 });
-// Webhook endpoint
-app.post("/webhook", async (req, res) => {
+// Respond 200 to any HEAD/GET probe on the webhook path so Lokalise URL
+// validation passes regardless of which verb it probes with.
+app.get(["/webhook", "/webhooks"], (_req, res) => {
+    res.status(200).json({ status: "ok" });
+});
+// Webhook endpoint (accepts both /webhook and /webhooks).
+app.post(["/webhook", "/webhooks"], async (req, res) => {
     const eventId = req.headers["x-lokalise-event-id"];
     try {
         const event = req.body;

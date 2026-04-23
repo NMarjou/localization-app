@@ -1,4 +1,4 @@
-import { createHmac } from "crypto";
+import { timingSafeEqual } from "crypto";
 import { getLogger } from "../utils/logger.js";
 import { claudeClient } from "../clients/claude.js";
 import { lokaliseClient } from "../clients/lokalise.js";
@@ -12,11 +12,20 @@ export class WebhookHandler {
         }
         return this.logger;
     }
-    validateSignature(payload, signature, secret) {
-        const expected = createHmac("sha256", secret)
-            .update(payload)
-            .digest("hex");
-        return expected === signature;
+    /**
+     * Lokalise webhooks authenticate by echoing a configured secret verbatim
+     * in one of three headers (X-Secret, X-Api-Key, or a custom header).
+     * There is no HMAC. We do a constant-time equality check against
+     * WEBHOOK_SECRET.
+     */
+    validateSecret(received, secret) {
+        if (typeof received !== "string" || typeof secret !== "string")
+            return false;
+        const a = Buffer.from(received);
+        const b = Buffer.from(secret);
+        if (a.length !== b.length)
+            return false;
+        return timingSafeEqual(a, b);
     }
     async handleEvent(event, context) {
         this.getLogger().debug({ eventType: event.event, eventId: context.eventId }, "Processing webhook event");
