@@ -8,6 +8,10 @@ export class PromptManager {
     logger = getLogger();
     systemPromptBuilder = new SystemPromptBuilder();
     userPromptBuilder = new UserPromptBuilder();
+    projectId;
+    constructor(projectId) {
+        this.projectId = projectId;
+    }
     async buildMessages(request, useCache = true) {
         this.logger.debug({ language: request.target_language, useCache }, "Building prompt messages");
         this.validateRequest(request);
@@ -54,7 +58,7 @@ export class PromptManager {
     }
     async buildConfig(language) {
         const styleGuide = getStyleGuide(language);
-        const loader = fileLoader();
+        const loader = fileLoader(this.projectId);
         const glossary = await loader.loadGlossary(language);
         const translationMemory = await loader.loadTranslationMemory(language);
         return {
@@ -64,16 +68,17 @@ export class PromptManager {
         };
     }
     clearCache(language) {
-        fileLoader().clearCache(language);
+        fileLoader(this.projectId).clearCache(language);
         this.logger.debug({ language }, "Cleared file loader cache");
     }
 }
-let _promptManager;
-function getPromptManagerInstance() {
-    if (!_promptManager) {
-        _promptManager = new PromptManager();
+const _promptManagers = new Map();
+function getPromptManagerInstance(projectId) {
+    const key = projectId ?? "__default__";
+    if (!_promptManagers.has(key)) {
+        _promptManagers.set(key, new PromptManager(projectId));
     }
-    return _promptManager;
+    return _promptManagers.get(key);
 }
 export { getPromptManagerInstance as promptManager };
 //# sourceMappingURL=prompt-manager.js.map

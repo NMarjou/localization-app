@@ -29,13 +29,30 @@ export class ClaudeMessagesClient {
     async translate(job) {
         this.getLogger().debug({ jobId: job.job_id, model: job.model }, "Starting translation request");
         const modelId = MODEL_MAP[job.model];
+        // Estimate output tokens: each translation averages ~40 tokens, minimum 2048.
+        const stringCount = job.prompt_messages.messages.reduce((n, m) => {
+            const text = typeof m.content === "string" ? m.content : JSON.stringify(m.content);
+            return n + (text.match(/"key_id"/g)?.length ?? 0);
+        }, 0);
+        const maxTokens = Math.max(2048, stringCount * 60);
         for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
             try {
+                // On JSON parse retry, append a hard reminder to the last user message.
+                const messages = attempt > 0
+                    ? [
+                        ...job.prompt_messages.messages.slice(0, -1),
+                        {
+                            role: "user",
+                            content: (job.prompt_messages.messages.at(-1)?.content ?? "") +
+                                "\n\nIMPORTANT: Your previous response was not valid JSON. Return ONLY a raw JSON object. No markdown, no code fences, no explanation.",
+                        },
+                    ]
+                    : job.prompt_messages.messages;
                 const response = await this.getClient().messages.create({
                     model: modelId,
-                    max_tokens: 4096,
+                    max_tokens: maxTokens,
                     system: job.prompt_messages.system,
-                    messages: job.prompt_messages.messages,
+                    messages,
                 });
                 const content = response.content[0];
                 if (content.type !== "text") {
@@ -52,16 +69,20 @@ export class ClaudeMessagesClient {
                 return parsed;
             }
             catch (error) {
-                if (error instanceof ClaudeError) {
+                // Retry on JSON parse failures and rate limits; fail fast on everything else.
+                const isParseError = error instanceof ValidationError ||
+                    (error instanceof ClaudeError && error.message.includes("parse"));
+                const isRateLimit = error instanceof Anthropic.RateLimitError;
+                if ((isParseError || isRateLimit) && attempt < this.maxRetries) {
+                    const delay = this.retryDelay * Math.pow(2, attempt);
+                    this.getLogger().warn({ attempt, delay, reason: isRateLimit ? "rate_limit" : "json_parse" }, "Retrying translation");
+                    await this.sleep(delay);
+                    continue;
+                }
+                if (error instanceof ClaudeError || error instanceof ValidationError) {
                     throw error;
                 }
                 if (error instanceof Anthropic.RateLimitError) {
-                    if (attempt < this.maxRetries) {
-                        const delay = this.retryDelay * Math.pow(2, attempt);
-                        this.getLogger().warn({ attempt, delay }, "Rate limited, retrying");
-                        await this.sleep(delay);
-                        continue;
-                    }
                     throw new ClaudeError("Rate limited after retries", 429);
                 }
                 if (error instanceof Anthropic.APIError) {
@@ -108,11 +129,18 @@ export class ClaudeMessagesClient {
     /**
      * Strip markdown code fences (```json ... ``` or ``` ... ```) that
      * Claude sometimes wraps JSON responses in, despite instructions.
+     * Uses string operations instead of regex to handle large responses reliably.
      */
     stripCodeFences(text) {
         const trimmed = text.trim();
-        const fenced = trimmed.match(/^```(?:json)?\s*\n?([\s\S]*?)\n?```$/i);
-        return fenced ? fenced[1].trim() : trimmed;
+        if (!trimmed.startsWith("```"))
+            return trimmed;
+        const firstNewline = trimmed.indexOf("\n");
+        if (firstNewline === -1)
+            return trimmed;
+        const body = trimmed.slice(firstNewline + 1);
+        const lastFence = body.lastIndexOf("```");
+        return lastFence !== -1 ? body.slice(0, lastFence).trim() : body.trim();
     }
     extractUsage(usage) {
         return {

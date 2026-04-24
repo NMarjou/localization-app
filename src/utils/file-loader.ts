@@ -24,6 +24,27 @@ export class FileLoader {
   private logger = getLogger();
   private glossaryCache: Map<string, Record<string, string>> = new Map();
   private tmCache: Map<string, TranslationMemoryEntry[]> = new Map();
+  private projectId?: string;
+
+  constructor(projectId?: string) {
+    this.projectId = projectId;
+  }
+
+  /**
+   * Returns candidate base directories to search for locale files.
+   * Tries project-namespaced paths first (locales/{projectId}/{lang}),
+   * then falls back to legacy flat structure (locales/{lang}).
+   */
+  private baseDirs(language: string): string[] {
+    const dirs: string[] = [];
+    for (const lang of candidateDirs(language)) {
+      if (this.projectId) {
+        dirs.push(join(process.cwd(), "locales", this.projectId, lang));
+      }
+      dirs.push(join(process.cwd(), "locales", lang));
+    }
+    return dirs;
+  }
 
   async loadGlossary(language: string): Promise<Record<string, string>> {
     const cacheKey = `glossary:${language}`;
@@ -33,9 +54,9 @@ export class FileLoader {
       return this.glossaryCache.get(cacheKey)!;
     }
 
-    for (const dir of candidateDirs(language)) {
+    for (const dir of this.baseDirs(language)) {
       try {
-        const filePath = join(process.cwd(), "locales", dir, "glossary.json");
+        const filePath = join(dir, "glossary.json");
         this.logger.debug({ filePath }, "Loading glossary from file");
 
         const content = await readFile(filePath, "utf-8");
@@ -54,7 +75,7 @@ export class FileLoader {
     }
 
     this.logger.warn(
-      { language, tried: candidateDirs(language) },
+      { language, tried: this.baseDirs(language) },
       "Failed to load glossary, returning empty"
     );
     return {};
@@ -70,9 +91,9 @@ export class FileLoader {
       return this.tmCache.get(cacheKey)!;
     }
 
-    for (const dir of candidateDirs(language)) {
+    for (const dir of this.baseDirs(language)) {
       try {
-        const filePath = join(process.cwd(), "locales", dir, "tm.json");
+        const filePath = join(dir, "tm.json");
         this.logger.debug({ filePath }, "Loading translation memory from file");
 
         const content = await readFile(filePath, "utf-8");
@@ -91,7 +112,7 @@ export class FileLoader {
     }
 
     this.logger.warn(
-      { language, tried: candidateDirs(language) },
+      { language, tried: this.baseDirs(language) },
       "Failed to load translation memory, returning empty"
     );
     return [];
@@ -125,20 +146,21 @@ export class FileLoader {
       throw new Error("TM entry requires non-empty source and target");
     }
 
-    // Find the existing TM file to update. Prefer the most specific
-    // directory that already has a tm.json.
-    const candidates = candidateDirs(language);
+    // Find the existing TM file to update. Prefer the most specific directory.
     let filePath: string | undefined;
-    for (const dir of candidates) {
-      const candidate = join(process.cwd(), "locales", dir, "tm.json");
+    for (const dir of this.baseDirs(language)) {
+      const candidate = join(dir, "tm.json");
       if (existsSync(candidate)) {
         filePath = candidate;
         break;
       }
     }
-    // No file yet — create it under the full locale code.
+    // No file yet — create it under project-namespaced path (or legacy if no projectId).
     if (!filePath) {
-      filePath = join(process.cwd(), "locales", language, "tm.json");
+      const base = this.projectId
+        ? join(process.cwd(), "locales", this.projectId, language)
+        : join(process.cwd(), "locales", language);
+      filePath = join(base, "tm.json");
       await mkdir(dirname(filePath), { recursive: true });
     }
 
@@ -165,7 +187,7 @@ export class FileLoader {
 
     // Invalidate in-memory cache so subsequent loads see the new entry.
     this.tmCache.delete(`tm:${language}`);
-    for (const dir of candidates) {
+    for (const dir of candidateDirs(language)) {
       this.tmCache.delete(`tm:${dir}`);
     }
 
@@ -177,13 +199,14 @@ export class FileLoader {
   }
 }
 
-let _fileLoader: FileLoader | undefined;
+const _fileLoaders = new Map<string, FileLoader>();
 
-function getFileLoaderInstance(): FileLoader {
-  if (!_fileLoader) {
-    _fileLoader = new FileLoader();
+function getFileLoaderInstance(projectId?: string): FileLoader {
+  const key = projectId ?? "__default__";
+  if (!_fileLoaders.has(key)) {
+    _fileLoaders.set(key, new FileLoader(projectId));
   }
-  return _fileLoader;
+  return _fileLoaders.get(key)!;
 }
 
 export { getFileLoaderInstance as fileLoader };

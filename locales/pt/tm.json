@@ -40278,5 +40278,17 @@
   {
     "source": "| (vertical bar)",
     "target": "| (barra vertical)"
+  },
+  {
+    "source": "The cell header cannot be empty.",
+    "target": "O cabeçalho da célula não pode estar vazio."
+  },
+  {
+    "source": "Grid reset",
+    "target": "Reposição da grelha"
+  },
+  {
+    "source": "Talent review",
+    "target": "Avaliação de talentos"
   }
 ]

@@ -1,6 +1,7 @@
-import type { LokaliseWebhookEvent, WebhookContext } from "../types/webhook.js";
+import type { LokaliseWebhookEvent, WebhookContext, BackfillChunkMeta } from "../types/webhook.js";
 export declare class WebhookHandler {
     private pendingBatches;
+    private pendingBackfillBatches;
     private logger?;
     private getLogger;
     /**
@@ -16,6 +17,7 @@ export declare class WebhookHandler {
     private handleTranslationApproved;
     pushResults(response: any, context: WebhookContext): Promise<void>;
     pollPendingBatches(): Promise<void>;
+    registerBackfillBatch(batchId: string, jobMeta: Map<string, BackfillChunkMeta>, runId: string): void;
     getPendingBatchCount(): number;
 }
 export declare const webhookHandler: WebhookHandler;

@@ -39,6 +39,33 @@ export class ClaudeClient {
         this.getLogger().debug({ batchId }, "Polling batch result");
         return this.batchClient.pollBatchCompletion(batchId, maxWaitMs);
     }
+    /** Always uses the Messages API (synchronous). Used by backfill concurrency loop. */
+    async translateSync(prompts, model = DEFAULT_MODEL) {
+        this.validatePrompts(prompts);
+        const jobId = this.generateJobId();
+        const job = {
+            job_id: jobId,
+            prompt_messages: prompts,
+            model,
+            estimated_tokens: this.estimateTokens(prompts),
+            is_batch: false,
+        };
+        return this.messagesClient.translate(job);
+    }
+    async submitBackfillBatch(jobs) {
+        this.getLogger().debug({ jobCount: jobs.length }, "Submitting backfill batch");
+        const translationJobs = jobs.map(j => ({
+            job_id: j.id,
+            prompt_messages: j.prompts,
+            model: j.model,
+            estimated_tokens: j.estimatedStringCount * 60,
+            is_batch: true,
+        }));
+        return this.batchClient.submitBatch(translationJobs);
+    }
+    async getBatchResultsIfReady(batchId) {
+        return this.batchClient.getBatchResultsIfReady(batchId);
+    }
     async handleBatchJob(job, options) {
         this.getLogger().debug({ jobId: job.job_id }, "Submitting batch job");
         const batchId = await this.batchClient.submitBatch([job]);

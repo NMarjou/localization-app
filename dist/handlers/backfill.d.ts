@@ -5,6 +5,8 @@ export interface BackfillOptions {
     languages?: string[];
     /** Cap how many (key, lang) pairs we fire. Useful for manual dry-runs. */
     maxItems?: number;
+    /** Target a specific project. Default: all configured projects. */
+    projectId?: string;
 }
 export interface BackfillSummary {
     runId: string;
@@ -16,16 +18,7 @@ export interface BackfillSummary {
     durationMs: number;
 }
 /**
- * Find keys whose en-US source has been reviewed but whose target
- * translations are either missing or older than the source, and push
- * each stale target through the normal translate pipeline.
- *
- * Used by:
- *  - POST /trigger/backfill (manual)
- *  - scheduled nightly job (later)
- *
- * Runs async: caller should kick this off and not await unless they want
- * the full summary.
+ * Run backfill for all configured projects (or a specific one via opts.projectId).
  */
-export declare function runBackfill(opts?: BackfillOptions): Promise<BackfillSummary>;
+export declare function runBackfill(opts?: BackfillOptions): Promise<BackfillSummary[]>;
 //# sourceMappingURL=backfill.d.ts.map

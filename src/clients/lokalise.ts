@@ -32,9 +32,9 @@ export class LokaliseClient {
   private static LIST_KEYS_TTL_MS = 60_000;
   private static KEY_TTL_MS = 60_000;
 
-  constructor() {
+  constructor(projectId?: string) {
     const env = getEnv();
-    this.projectId = env.LOKALISE_PROJECT_ID;
+    this.projectId = projectId ?? env.LOKALISE_PROJECT_ID ?? (() => { throw new Error("No Lokalise project ID configured"); })();
     this.logger = getLogger();
 
     this.http = new HttpClient({
@@ -231,6 +231,46 @@ export class LokaliseClient {
     return promise;
   }
 
+  /**
+   * Fetch every key in the project by paginating through all pages.
+   * Uses a page size of 500 (Lokalise's max). Not cached — intended for
+   * backfill runs where completeness matters more than speed.
+   */
+  /**
+   * Fetch every key in the project by paginating through all pages.
+   * Uses a page size of 500 (Lokalise's max). Not cached — intended for
+   * backfill runs where completeness matters more than speed.
+   */
+  async listAllKeys(filters?: Omit<ListKeysFilters, "limit" | "offset">): Promise<LokaliseKey[]> {
+    const PAGE_SIZE = 500;
+    const all: LokaliseKey[] = [];
+    let page = 1;
+
+    while (true) {
+      this.logger.debug({ page, pageSize: PAGE_SIZE }, "Fetching keys page");
+
+      const path = `/projects/${this.projectId}/keys`;
+      const params: Record<string, unknown> = {
+        include_translations: 1,
+        limit: PAGE_SIZE,
+        page,
+      };
+
+      if (filters?.tag) params.filter_tags = filters.tag;
+      if (filters?.file) params.filter_filenames = filters.file;
+
+      const response = await this.http.get<LokaliseKeysResponse>(path, params);
+      const keys = response.keys ?? [];
+      all.push(...keys);
+
+      if (keys.length < PAGE_SIZE) break;
+      page++;
+    }
+
+    this.logger.debug({ total: all.length }, "All keys fetched");
+    return all;
+  }
+
   async updateKeyTranslation(
     translationId: string,
     translation: string,
@@ -260,6 +300,24 @@ export class LokaliseClient {
         500
       );
     }
+  }
+
+  async bulkUpdateTranslations(
+    updates: Array<{ translationId: string; translation: string; reviewed: boolean }>
+  ): Promise<void> {
+    // Lokalise doesn't support bulk PUT on /translations — use concurrent individual calls.
+    const CONCURRENCY = 3;
+    this.logger.debug({ count: updates.length }, "Bulk updating translations");
+    for (let i = 0; i < updates.length; i += CONCURRENCY) {
+      const batch = updates.slice(i, i + CONCURRENCY);
+      await Promise.all(batch.map(({ translationId, translation }) =>
+        this.http.put<void>(
+          `/projects/${this.projectId}/translations/${translationId}`,
+          { translation, is_reviewed: false, is_unverified: true }
+        )
+      ));
+    }
+    this.glossaryCache.clear();
   }
 
   clearGlossaryCache(): void {
@@ -304,6 +362,33 @@ export class LokaliseClient {
     }
   }
 
+  async bulkEnsureKeyTags(
+    keysNeedingTag: Array<{ keyId: string; existingTags: string[] }>,
+    tag: string
+  ): Promise<void> {
+    if (keysNeedingTag.length === 0) return;
+    const toUpdate = keysNeedingTag.filter(k => !k.existingTags.includes(tag));
+    if (toUpdate.length === 0) return;
+
+    const BATCH_SIZE = 500;
+    for (let i = 0; i < toUpdate.length; i += BATCH_SIZE) {
+      const batch = toUpdate.slice(i, i + BATCH_SIZE);
+      const path = `/projects/${this.projectId}/keys`;
+      const body = {
+        keys: batch.map(({ keyId, existingTags }) => ({
+          key_id: Number(keyId),
+          tags: Array.from(new Set([...existingTags, tag])),
+        })),
+      };
+      this.logger.debug({ count: batch.length }, "Bulk updating key tags");
+      await this.http.put<void>(path, body);
+      // Invalidate cached copies
+      for (const { keyId } of batch) {
+        this.keyCache.delete(keyId);
+      }
+    }
+  }
+
   /**
    * Fetch the project's base language ISO (e.g. "en-US"). Cached in-memory
    * after the first call.
@@ -338,13 +423,15 @@ export class LokaliseClient {
   }
 }
 
-let _lokaliseClient: LokaliseClient | undefined;
+const _lokaliseClients = new Map<string, LokaliseClient>();
 
-function getLokaliseClientInstance(): LokaliseClient {
-  if (!_lokaliseClient) {
-    _lokaliseClient = new LokaliseClient();
+function getLokaliseClientInstance(projectId?: string): LokaliseClient {
+  const env = getEnv();
+  const id = projectId ?? env.LOKALISE_PROJECT_ID ?? "default";
+  if (!_lokaliseClients.has(id)) {
+    _lokaliseClients.set(id, new LokaliseClient(projectId));
   }
-  return _lokaliseClient;
+  return _lokaliseClients.get(id)!;
 }
 
 export { getLokaliseClientInstance as lokaliseClient };

@@ -40278,5 +40278,13 @@
   {
     "source": "| (vertical bar)",
     "target": "| (縦棒)"
+  },
+  {
+    "source": "The cell header cannot be empty.",
+    "target": "セルヘッダーを空にすることはできません。"
+  },
+  {
+    "source": "Talent review",
+    "target": "タレントレビュー"
   }
 ]

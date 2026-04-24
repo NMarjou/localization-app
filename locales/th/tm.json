@@ -40278,5 +40278,17 @@
   {
     "source": "| (vertical bar)",
     "target": "| (เครื่องหมายทับตั้งหรือเวอร์ติเคิลบาร์)"
+  },
+  {
+    "source": "Talent review",
+    "target": "การตรวจสอบความสามารถ"
+  },
+  {
+    "source": "The cell header cannot be empty.",
+    "target": "ส่วนหัวของเซลล์ไม่สามารถว่างได้"
+  },
+  {
+    "source": "Grid reset",
+    "target": "รีเซ็ตกริด"
   }
 ]

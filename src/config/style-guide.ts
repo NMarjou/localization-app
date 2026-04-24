@@ -59,12 +59,6 @@ export const localeSpecificRules: Record<string, string> = {
 - Keep line length reasonable for readability
 - Use full-width punctuation`,
 
-  zh: `Chinese-Specific Rules:
-- Use Simplified Chinese (Mandarin)
-- Use formal register (敬语) for professional content
-- Avoid regional variations
-- Ensure clarity for non-native speakers
-- Use proper punctuation spacing`,
 };
 
 export function getStyleGuide(language?: string): string {

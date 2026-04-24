@@ -6,8 +6,9 @@ dotenv.config();
 const envSchema = z.object({
   ANTHROPIC_API_KEY: z.string().min(1, "ANTHROPIC_API_KEY is required"),
   LOKALISE_API_KEY: z.string().min(1, "LOKALISE_API_KEY is required"),
-  LOKALISE_PROJECT_ID: z.string().min(1, "LOKALISE_PROJECT_ID is required"),
-  WEBHOOK_SECRET: z.string().min(1, "WEBHOOK_SECRET is required"),
+  // Optional: kept for single-project fallback. Prefer projects.json for multi-project.
+  LOKALISE_PROJECT_ID: z.string().optional(),
+  WEBHOOK_SECRET: z.string().optional(),
   PORT: z.coerce.number().default(3000),
   NODE_ENV: z
     .enum(["development", "production", "test"])

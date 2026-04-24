@@ -40278,5 +40278,17 @@
   {
     "source": "| (vertical bar)",
     "target": "| (garis vertikal)"
+  },
+  {
+    "source": "Talent review",
+    "target": "Ulasan Talenta"
+  },
+  {
+    "source": "Grid reset",
+    "target": "Atur ulang grid"
+  },
+  {
+    "source": "The cell header cannot be empty.",
+    "target": "Header sel tidak boleh kosong."
   }
 ]

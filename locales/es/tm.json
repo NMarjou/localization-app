@@ -40278,5 +40278,17 @@
   {
     "source": "| (vertical bar)",
     "target": "| (barra vertical)"
+  },
+  {
+    "source": "Talent review",
+    "target": "Revisión de talento"
+  },
+  {
+    "source": "The cell header cannot be empty.",
+    "target": "El encabezado de celda no puede estar vacío."
+  },
+  {
+    "source": "Grid reset",
+    "target": "Restablecimiento de cuadrícula"
   }
 ]

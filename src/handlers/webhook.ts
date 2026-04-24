@@ -11,10 +11,16 @@ import type {
   LokaliseWebhookEvent,
   WebhookContext,
   PendingBatch,
+  BackfillChunkMeta,
 } from "../types/webhook.js";
 
 export class WebhookHandler {
   private pendingBatches = new Map<string, PendingBatch>();
+  private pendingBackfillBatches = new Map<string, {
+    jobMeta: Map<string, BackfillChunkMeta>;
+    runId: string;
+    createdAt: number;
+  }>();
   private logger?: ReturnType<typeof getLogger>;
 
   private getLogger(): ReturnType<typeof getLogger> {
@@ -97,12 +103,16 @@ export class WebhookHandler {
         "Extracting translation request"
       );
 
-      const client = lokaliseClient();
-      const allKeys = await Promise.all(
-        context.keyIds.map((keyId) =>
-          client.getKeyWithAllTranslations(String(keyId))
-        )
-      );
+      const client = lokaliseClient(context.projectId);
+      const allKeys = context.prefetchedKeys
+        ? context.prefetchedKeys.filter((k) =>
+            context.keyIds.includes(Number(k.key_id))
+          )
+        : await Promise.all(
+            context.keyIds.map((keyId) =>
+              client.getKeyWithAllTranslations(String(keyId))
+            )
+          );
 
       // Build key_id -> translation_id map for the target language so we
       // can PUT updates later (Lokalise's PUT endpoint takes translation_id).
@@ -121,33 +131,37 @@ export class WebhookHandler {
         context.keyIdToTags[String(key.key_id)] = key.tags ?? [];
       }
 
-      // Get context keys (2 before, 2 after)
-      const allKeysInProject = await client.listKeys({ limit: 1000 });
+      // Get context keys (2 before, 2 after) — only for single-key requests
+      // (real-time webhooks). For large batches context per key isn't meaningful
+      // and the extra listKeys call adds latency.
       const contextKeysByTargetId = new Map();
-
-      for (const keyId of context.keyIds) {
+      if (context.keyIds.length === 1) {
+        const allKeysInProject = await client.listKeys({ limit: 1000 });
+        const keyId = context.keyIds[0];
         const index = allKeysInProject.findIndex((k) => String(k.key_id) === String(keyId));
         if (index !== -1) {
-          contextKeysByTargetId.set(
-            keyId,
-            {
-              before: allKeysInProject.slice(Math.max(0, index - 2), index),
-              after: allKeysInProject.slice(
-                index + 1,
-                Math.min(allKeysInProject.length, index + 3)
-              ),
-            }
-          );
+          contextKeysByTargetId.set(keyId, {
+            before: allKeysInProject.slice(Math.max(0, index - 2), index),
+            after: allKeysInProject.slice(
+              index + 1,
+              Math.min(allKeysInProject.length, index + 3)
+            ),
+          });
         }
       }
 
+      const resolveKeyName = (raw: any): string =>
+        typeof raw === "object" && raw !== null
+          ? (raw.web ?? raw.other ?? raw.ios ?? raw.android ?? JSON.stringify(raw))
+          : String(raw);
+
       const strings = allKeys.map((key) => ({
         key_id: key.key_id,
-        key_name: key.key_name,
+        key_name: resolveKeyName(key.key_name),
         value: this.getTranslationText(key, context.sourceLanguage),
         string_type: undefined as any,
         max_char_limit: key.character_limit,
-        screen_or_section: key.platforms?.[0],
+        screen_or_section: "web",
       }));
 
       const firstKeyContextKeys = contextKeysByTargetId.get(context.keyIds[0]);
@@ -157,41 +171,53 @@ export class WebhookHandler {
         context: {
           before: firstKeyContextKeys?.before?.map((k: any) => ({
             key_id: k.key_id,
-            key_name: k.key_name,
+            key_name: resolveKeyName(k.key_name),
             value: this.getTranslationText(k, context.sourceLanguage),
           })),
           after: firstKeyContextKeys?.after?.map((k: any) => ({
             key_id: k.key_id,
-            key_name: k.key_name,
+            key_name: resolveKeyName(k.key_name),
             value: this.getTranslationText(k, context.sourceLanguage),
           })),
         },
       };
 
-      const promptMessages = await promptManager().buildMessages(translationRequest);
+      // Split into chunks of 50 keys to keep Claude responses clean and parseable.
+      // Large batches (300+ keys) cause Claude to wrap JSON in code fences.
+      const CHUNK_SIZE = 50;
+      const allTranslations: Record<string, string> = {};
+      const allFlags: any[] = [];
 
-      const response = await claudeClient.translate(promptMessages);
+      for (let i = 0; i < translationRequest.strings.length; i += CHUNK_SIZE) {
+        const chunk = translationRequest.strings.slice(i, i + CHUNK_SIZE);
+        const chunkRequest = { ...translationRequest, strings: chunk };
+        const promptMessages = await promptManager(context.projectId).buildMessages(chunkRequest);
+        const chunkResponse = await claudeClient.translate(promptMessages);
 
-      if ("batch_id" in response) {
-        context.batchId = response.batch_id;
-        this.pendingBatches.set(response.batch_id, {
-          batchId: response.batch_id,
-          context,
-          createdAt: Date.now(),
-          pollCount: 0,
-        });
+        if ("batch_id" in chunkResponse) {
+          // Batch API path — store and stop chunking (whole request is async).
+          context.batchId = chunkResponse.batch_id;
+          this.pendingBatches.set(chunkResponse.batch_id, {
+            batchId: chunkResponse.batch_id,
+            context,
+            createdAt: Date.now(),
+            pollCount: 0,
+          });
+          this.getLogger().info(
+            { eventId: context.eventId, batchId: chunkResponse.batch_id },
+            "Batch submitted, will poll for completion"
+          );
+          return;
+        }
 
-        this.getLogger().info(
-          {
-            eventId: context.eventId,
-            batchId: response.batch_id,
-            targetLanguage: context.targetLanguage,
-          },
-          "Batch submitted, will poll for completion"
-        );
-      } else {
-        await this.pushResults(response, context);
+        if (chunkResponse.success) {
+          Object.assign(allTranslations, chunkResponse.translations);
+          if (chunkResponse.flags) allFlags.push(...chunkResponse.flags);
+        }
       }
+
+      const response = { success: true, translations: allTranslations, flags: allFlags };
+      await this.pushResults(response, context);
     } catch (error) {
       this.getLogger().error(
         {
@@ -237,7 +263,7 @@ export class WebhookHandler {
 
       // For each approved key, pull source + target values and append
       // the pair to locales/{targetLang}/tm.json.
-      const client = lokaliseClient();
+      const client = lokaliseClient(context.projectId);
       for (const keyId of context.keyIds) {
         try {
           const key = await client.getKeyWithAllTranslations(String(keyId));
@@ -258,7 +284,7 @@ export class WebhookHandler {
             continue;
           }
 
-          const result = await fileLoader().appendTranslationMemoryEntry(
+          const result = await fileLoader(context.projectId).appendTranslationMemoryEntry(
             context.targetLanguage,
             { source: sourceText, target: targetText }
           );
@@ -318,11 +344,13 @@ export class WebhookHandler {
     }
 
     try {
-      for (const [keyId, translation] of Object.entries(
-        response.translations
-      )) {
-        // Compare as strings — flag.key_id is typed as string per
-        // PromptResponse, but Claude may also emit it as a number.
+      const entries = Object.entries(response.translations);
+
+      // Build bulk update payload
+      const updates: Array<{ translationId: string; translation: string; reviewed: boolean }> = [];
+      const keysNeedingTag: Array<{ keyId: string; existingTags: string[] }> = [];
+
+      for (const [keyId, translation] of entries) {
         const flags = response.flags?.filter(
           (f: any) => String(f.key_id) === String(keyId)
         );
@@ -331,58 +359,40 @@ export class WebhookHandler {
         const translationId = context.keyIdToTranslationId?.[keyId];
         if (!translationId) {
           this.getLogger().warn(
-            {
-              eventId: context.eventId,
-              keyId,
-              targetLanguage: context.targetLanguage,
-            },
+            { eventId: context.eventId, keyId, targetLanguage: context.targetLanguage },
             "No translation_id found for key; skipping push"
           );
           continue;
         }
 
-        await lokaliseClient().updateKeyTranslation(
-          translationId,
-          translation as string,
-          reviewed
-        );
-
-        // Tag the key so it's visible in Lokalise that the content was
-        // produced by the AI pipeline. Idempotent — only PUTs if absent.
-        const existingTags = context.keyIdToTags?.[keyId] ?? [];
-        await lokaliseClient().ensureKeyTag(
+        updates.push({ translationId, translation: translation as string, reviewed });
+        keysNeedingTag.push({
           keyId,
-          "AI-translated",
-          existingTags
-        );
-
-        this.getLogger().debug(
-          {
-            eventId: context.eventId,
-            keyId,
-            translationId,
-            reviewed,
-            flagCount: flags?.length || 0,
-          },
-          "Translation pushed to Lokalise"
-        );
+          existingTags: context.keyIdToTags?.[keyId] ?? [],
+        });
       }
+
+      // Single bulk API call instead of N individual calls
+      await lokaliseClient(context.projectId).bulkUpdateTranslations(updates);
+
+      // Bulk tag update — only keys missing the tag
+      await lokaliseClient(context.projectId).bulkEnsureKeyTags(keysNeedingTag, "AI-translated");
 
       this.getLogger().info(
         {
           eventId: context.eventId,
           targetLanguage: context.targetLanguage,
-          keyCount: context.keyIds.length,
+          keyCount: updates.length,
         },
         "Results pushed to Lokalise"
       );
       recordEvent(
         "translation_pushed",
-        `Pushed ${context.keyIds.length} key(s) → ${context.targetLanguage}`,
+        `Pushed ${updates.length} key(s) → ${context.targetLanguage}`,
         {
           eventId: context.eventId,
           targetLanguage: context.targetLanguage,
-          keyCount: context.keyIds.length,
+          keyCount: updates.length,
         }
       );
     } catch (error) {
@@ -446,6 +456,54 @@ export class WebhookHandler {
         }
       }
     }
+
+    // Poll backfill batches
+    for (const [batchId, pending] of this.pendingBackfillBatches) {
+      try {
+        const results = await claudeClient.getBatchResultsIfReady(batchId);
+        if (!results) continue;
+
+        this.getLogger().info({ batchId, resultCount: results.length }, "Backfill batch completed");
+
+        // Process each chunk result
+        for (const result of results) {
+          if (!result.success) continue;
+          const meta = pending.jobMeta.get(result.job_id);
+          if (!meta) continue;
+
+          const context: WebhookContext = {
+            eventId: `${pending.runId}:${result.job_id}`,
+            sourceLanguage: '',
+            targetLanguage: meta.targetLang,
+            keyIds: meta.keyIds,
+            keyIdToTranslationId: meta.keyIdToTranslationId,
+            keyIdToTags: meta.keyIdToTags,
+            timestamp: Date.now(),
+          };
+          await this.pushResults(result, context);
+        }
+
+        this.pendingBackfillBatches.delete(batchId);
+        recordEvent('backfill_completed', `Backfill batch processed: ${results.length} chunks`, { batchId, runId: pending.runId });
+      } catch (err) {
+        const age = Date.now() - pending.createdAt;
+        if (age > 24 * 60 * 60 * 1000) {
+          this.pendingBackfillBatches.delete(batchId);
+          this.getLogger().error({ batchId }, "Backfill batch expired");
+        } else {
+          this.getLogger().warn({ batchId, error: err instanceof Error ? err.message : String(err) }, "Backfill batch poll failed, will retry");
+        }
+      }
+    }
+  }
+
+  registerBackfillBatch(
+    batchId: string,
+    jobMeta: Map<string, BackfillChunkMeta>,
+    runId: string
+  ): void {
+    this.pendingBackfillBatches.set(batchId, { jobMeta, runId, createdAt: Date.now() });
+    this.getLogger().info({ batchId, runId, chunks: jobMeta.size }, "Backfill batch registered for polling");
   }
 
   getPendingBatchCount(): number {

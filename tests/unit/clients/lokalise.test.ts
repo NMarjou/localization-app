@@ -50,10 +50,10 @@ vi.mock("../../../src/clients/http.js", () => {
   const MockHttpClient = class {
     async get(path: string) {
       if (path.includes("/keys/12345678")) {
-        return { data: mockLokaliseKey };
+        return { key: mockLokaliseKey };
       }
       if (path.includes("/keys") && !path.includes("/keys/")) {
-        return mockLokaliseKeysList;
+        return { keys: mockLokaliseKeysList.data };
       }
       if (path.includes("/glossary_terms")) {
         return mockLokaliseGlossary;

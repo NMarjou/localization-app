@@ -8,6 +8,7 @@ import { webhookHandler } from "./handlers/webhook.js";
 import { runBackfill } from "./handlers/backfill.js";
 import { startScheduler } from "./scheduler.js";
 import { lokaliseClient } from "./clients/lokalise.js";
+import { getProject, loadProjects } from "./config/projects.js";
 import {
   listEvents,
   getStartedAt,
@@ -103,7 +104,7 @@ async function adaptLokaliseEvent(
   }
 
   // Source edit: fan out to every non-source project language.
-  const allLanguages = await lokaliseClient().listProjectLanguages();
+  const allLanguages = await lokaliseClient(projectId).listProjectLanguages();
   const targets = allLanguages.filter((l) => l !== sourceLanguageIso);
 
   return targets.map((target) => ({
@@ -135,14 +136,13 @@ const WEBHOOK_PATHS = new Set(["/webhook", "/webhooks"]);
 // Secret-header validation middleware.
 // Lokalise sends the configured secret verbatim in one of:
 //   X-Secret | X-Api-Key | a custom header (configured in Lokalise UI)
-// If the user picks "Custom", set WEBHOOK_HEADER_NAME in .env to match.
+// We validate against the per-project secret from projects.json.
 app.use((req: Request, res: Response, next) => {
   // Only enforce on POST; GET is a health probe from Lokalise's URL validator.
   if (req.method !== "POST" || !WEBHOOK_PATHS.has(req.path)) {
     return next();
   }
 
-  // TEMP: log all incoming headers so we can see what Lokalise actually sends.
   logger.info({ path: req.path, headers: req.headers }, "Incoming webhook headers");
 
   const customHeader = process.env.WEBHOOK_HEADER_NAME?.toLowerCase();
@@ -156,10 +156,26 @@ app.use((req: Request, res: Response, next) => {
     return res.status(401).json({ error: "Missing secret header" });
   }
 
-  const isValid = webhookHandler.validateSecret(received, env.WEBHOOK_SECRET);
-  if (!isValid) {
-    logger.warn({ path: req.path }, "Invalid webhook secret");
-    return res.status(401).json({ error: "Invalid secret" });
+  // Look up the project from the payload and validate against its secret.
+  const projectId = req.body?.project?.id;
+  if (projectId) {
+    const project = getProject(projectId);
+    if (!project) {
+      logger.warn({ path: req.path, projectId }, "Unknown project in webhook");
+      return res.status(401).json({ error: "Unknown project" });
+    }
+    if (!webhookHandler.validateSecret(received, project.webhookSecret)) {
+      logger.warn({ path: req.path, projectId }, "Invalid webhook secret");
+      return res.status(401).json({ error: "Invalid secret" });
+    }
+  } else {
+    // Fallback: validate against any known project secret (e.g. ping events with no body)
+    const allProjects = loadProjects();
+    const valid = allProjects.some((p) => webhookHandler.validateSecret(received, p.webhookSecret));
+    if (!valid) {
+      logger.warn({ path: req.path }, "Invalid webhook secret (no project id in body)");
+      return res.status(401).json({ error: "Invalid secret" });
+    }
   }
 
   next();
@@ -208,7 +224,10 @@ app.post("/trigger/backfill", (req: Request, res: Response) => {
     (req.headers["x-secret"] as string) ||
     (req.headers["x-api-key"] as string);
 
-  if (!received || !webhookHandler.validateSecret(received, env.WEBHOOK_SECRET)) {
+  // Validate against any configured project secret
+  const allProjects = loadProjects();
+  const isValid = received && allProjects.some((p) => webhookHandler.validateSecret(received, p.webhookSecret));
+  if (!isValid) {
     logger.warn({ path: req.path }, "Invalid or missing secret on backfill trigger");
     return res.status(401).json({ error: "Invalid secret" });
   }
@@ -222,6 +241,7 @@ app.post("/trigger/backfill", (req: Request, res: Response) => {
     keyIds: Array.isArray(body.keyIds) ? body.keyIds : undefined,
     languages: Array.isArray(body.languages) ? body.languages : undefined,
     maxItems: typeof body.maxItems === "number" ? body.maxItems : undefined,
+    projectId: typeof body.projectId === "string" ? body.projectId : undefined,
   }).catch((err) =>
     logger.error(
       { runId, error: err instanceof Error ? err.message : String(err) },
@@ -249,10 +269,12 @@ app.post(["/webhook", "/webhooks"], async (req: Request, res: Response) => {
   }
 
   try {
+    const incomingProjectId: string | undefined = req.body?.project?.id;
+
     // Source language isn't in Lokalise's payload; fetch it from the project.
     let sourceLanguageIso: string;
     try {
-      sourceLanguageIso = await lokaliseClient().getBaseLanguageIso();
+      sourceLanguageIso = await lokaliseClient(incomingProjectId).getBaseLanguageIso();
     } catch (err) {
       logger.error(
         { eventId, error: err instanceof Error ? err.message : String(err) },
@@ -293,6 +315,7 @@ app.post(["/webhook", "/webhooks"], async (req: Request, res: Response) => {
       const target = event.bundle.translations?.[0]?.language_iso ?? "";
       const context: WebhookContext = {
         eventId: `${baseEventId}:${target}`,
+        projectId: incomingProjectId,
         sourceLanguage: "",
         targetLanguage: "",
         keyIds: [],

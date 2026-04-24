@@ -1,4 +1,4 @@
-import type { ClaudeResponse, TranslateOptions } from "../types/claude.js";
+import type { ClaudeResponse, ModelOption, TranslateOptions } from "../types/claude.js";
 import type { PromptMessages } from "../types/prompt.js";
 export declare class ClaudeClient {
     private logger?;
@@ -9,6 +9,15 @@ export declare class ClaudeClient {
         batch_id: string;
     }>;
     pollBatchResult(batchId: string, maxWaitMs?: number): Promise<ClaudeResponse[]>;
+    /** Always uses the Messages API (synchronous). Used by backfill concurrency loop. */
+    translateSync(prompts: PromptMessages, model?: ModelOption): Promise<ClaudeResponse>;
+    submitBackfillBatch(jobs: Array<{
+        id: string;
+        prompts: PromptMessages;
+        model: ModelOption;
+        estimatedStringCount: number;
+    }>): Promise<string>;
+    getBatchResultsIfReady(batchId: string): Promise<ClaudeResponse[] | null>;
     private handleBatchJob;
     private validatePrompts;
     private estimateTokens;

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "YOUR_LOKALISE_PROJECT_ID",
+    "name": "My App",
+    "webhookSecret": "YOUR_WEBHOOK_SECRET"
+  },
+  {
+    "id": "ANOTHER_PROJECT_ID",
+    "name": "Marketing Site",
+    "webhookSecret": "ANOTHER_WEBHOOK_SECRET"
+  }
+]

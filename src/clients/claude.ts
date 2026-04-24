@@ -7,6 +7,7 @@ import type {
   ClaudeResponse,
   ModelOption,
   TranslateOptions,
+  BackfillJob,
 } from "../types/claude.js";
 import type { PromptMessages } from "../types/prompt.js";
 
@@ -63,6 +64,43 @@ export class ClaudeClient {
   ): Promise<ClaudeResponse[]> {
     this.getLogger().debug({ batchId }, "Polling batch result");
     return this.batchClient.pollBatchCompletion(batchId, maxWaitMs);
+  }
+
+  /** Always uses the Messages API (synchronous). Used by backfill concurrency loop. */
+  async translateSync(
+    prompts: PromptMessages,
+    model: ModelOption = DEFAULT_MODEL
+  ): Promise<ClaudeResponse> {
+    this.validatePrompts(prompts);
+    const jobId = this.generateJobId();
+    const job: TranslationJob = {
+      job_id: jobId,
+      prompt_messages: prompts,
+      model,
+      estimated_tokens: this.estimateTokens(prompts),
+      is_batch: false,
+    };
+    return this.messagesClient.translate(job);
+  }
+
+  async submitBackfillBatch(
+    jobs: Array<{ id: string; prompts: PromptMessages; model: ModelOption; estimatedStringCount: number }>
+  ): Promise<string> {
+    this.getLogger().debug({ jobCount: jobs.length }, "Submitting backfill batch");
+
+    const translationJobs: TranslationJob[] = jobs.map(j => ({
+      job_id: j.id,
+      prompt_messages: j.prompts,
+      model: j.model,
+      estimated_tokens: j.estimatedStringCount * 60,
+      is_batch: true,
+    }));
+
+    return this.batchClient.submitBatch(translationJobs);
+  }
+
+  async getBatchResultsIfReady(batchId: string): Promise<ClaudeResponse[] | null> {
+    return this.batchClient.getBatchResultsIfReady(batchId);
   }
 
   private async handleBatchJob(

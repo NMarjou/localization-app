@@ -1,10 +1,10 @@
 declare const env: {
     ANTHROPIC_API_KEY: string;
     LOKALISE_API_KEY: string;
-    LOKALISE_PROJECT_ID: string;
-    WEBHOOK_SECRET: string;
     PORT: number;
     NODE_ENV: "development" | "production" | "test";
+    LOKALISE_PROJECT_ID?: string | undefined;
+    WEBHOOK_SECRET?: string | undefined;
 };
 declare const logger: import("pino").Logger<never, boolean>;
 export { env, logger };

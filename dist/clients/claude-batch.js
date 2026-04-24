@@ -92,6 +92,13 @@ export class ClaudeBatchClient {
             await this.sleep(pollInterval);
         }
     }
+    async getBatchResultsIfReady(batchId) {
+        const status = await this.getBatchStatus(batchId);
+        if (status.status === "succeeded" || status.status === "failed" || status.status === "expired") {
+            return this.parseBatchResults(batchId);
+        }
+        return null;
+    }
     formatBatchRequests(jobs) {
         return jobs.map((job) => {
             const modelId = MODEL_MAP[job.model];
@@ -171,8 +178,14 @@ export class ClaudeBatchClient {
     }
     stripCodeFences(text) {
         const trimmed = text.trim();
-        const fenced = trimmed.match(/^```(?:json)?\s*\n?([\s\S]*?)\n?```$/i);
-        return fenced ? fenced[1].trim() : trimmed;
+        if (!trimmed.startsWith("```"))
+            return trimmed;
+        const firstNewline = trimmed.indexOf("\n");
+        if (firstNewline === -1)
+            return trimmed;
+        const body = trimmed.slice(firstNewline + 1);
+        const lastFence = body.lastIndexOf("```");
+        return lastFence !== -1 ? body.slice(0, lastFence).trim() : body.trim();
     }
     sleep(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));

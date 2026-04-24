@@ -64,4 +64,12 @@ export interface TranslateOptions {
     maxWaitMs?: number;
     modelOverride?: ModelOption;
 }
+export interface BackfillJob {
+    /** Unique id encoding lang and chunk: e.g. "fr-FR:0", "fr-FR:1" */
+    id: string;
+    prompts: import("./prompt.js").PromptMessages;
+    model: ModelOption;
+    /** Estimated output tokens for this chunk */
+    estimatedStringCount: number;
+}
 //# sourceMappingURL=claude.d.ts.map

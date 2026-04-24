@@ -7,6 +7,7 @@ export declare class ClaudeBatchClient {
     submitBatch(jobs: TranslationJob[]): Promise<string>;
     getBatchStatus(batchId: string): Promise<BatchJob>;
     pollBatchCompletion(batchId: string, maxWaitMs?: number): Promise<ClaudeResponse[]>;
+    getBatchResultsIfReady(batchId: string): Promise<ClaudeResponse[] | null>;
     private formatBatchRequests;
     private parseBatchResults;
     private parseResponse;

@@ -148,6 +148,14 @@ export class ClaudeBatchClient {
     }
   }
 
+  async getBatchResultsIfReady(batchId: string): Promise<ClaudeResponse[] | null> {
+    const status = await this.getBatchStatus(batchId);
+    if (status.status === "succeeded" || status.status === "failed" || status.status === "expired") {
+      return this.parseBatchResults(batchId);
+    }
+    return null;
+  }
+
   private formatBatchRequests(
     jobs: TranslationJob[]
   ): Anthropic.Messages.BatchCreateParams.Request[] {
@@ -252,10 +260,12 @@ export class ClaudeBatchClient {
 
   private stripCodeFences(text: string): string {
     const trimmed = text.trim();
-    const fenced = trimmed.match(
-      /^```(?:json)?\s*\n?([\s\S]*?)\n?```$/i
-    );
-    return fenced ? fenced[1].trim() : trimmed;
+    if (!trimmed.startsWith("```")) return trimmed;
+    const firstNewline = trimmed.indexOf("\n");
+    if (firstNewline === -1) return trimmed;
+    const body = trimmed.slice(firstNewline + 1);
+    const lastFence = body.lastIndexOf("```");
+    return lastFence !== -1 ? body.slice(0, lastFence).trim() : body.trim();
   }
 
   private sleep(ms: number): Promise<void> {

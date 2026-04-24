@@ -40278,5 +40278,17 @@
   {
     "source": "| (vertical bar)",
     "target": "| (senkrechter Strich)"
+  },
+  {
+    "source": "Talent review",
+    "target": "Talentbewertung"
+  },
+  {
+    "source": "Grid reset",
+    "target": "Raster zurücksetzen"
+  },
+  {
+    "source": "The cell header cannot be empty.",
+    "target": "Die Zellenkopfzeile darf nicht leer sein."
   }
 ]

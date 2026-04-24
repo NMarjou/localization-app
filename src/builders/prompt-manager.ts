@@ -14,6 +14,11 @@ export class PromptManager {
   private logger = getLogger();
   private systemPromptBuilder = new SystemPromptBuilder();
   private userPromptBuilder = new UserPromptBuilder();
+  private projectId?: string;
+
+  constructor(projectId?: string) {
+    this.projectId = projectId;
+  }
 
   async buildMessages(
     request: TranslationRequest,
@@ -85,7 +90,7 @@ export class PromptManager {
 
   private async buildConfig(language: string): Promise<SystemPromptConfig> {
     const styleGuide = getStyleGuide(language);
-    const loader = fileLoader();
+    const loader = fileLoader(this.projectId);
     const glossary = await loader.loadGlossary(language);
     const translationMemory = await loader.loadTranslationMemory(language);
 
@@ -97,18 +102,19 @@ export class PromptManager {
   }
 
   clearCache(language?: string): void {
-    fileLoader().clearCache(language);
+    fileLoader(this.projectId).clearCache(language);
     this.logger.debug({ language }, "Cleared file loader cache");
   }
 }
 
-let _promptManager: PromptManager | undefined;
+const _promptManagers = new Map<string, PromptManager>();
 
-function getPromptManagerInstance(): PromptManager {
-  if (!_promptManager) {
-    _promptManager = new PromptManager();
+function getPromptManagerInstance(projectId?: string): PromptManager {
+  const key = projectId ?? "__default__";
+  if (!_promptManagers.has(key)) {
+    _promptManagers.set(key, new PromptManager(projectId));
   }
-  return _promptManager;
+  return _promptManagers.get(key)!;
 }
 
 export { getPromptManagerInstance as promptManager };

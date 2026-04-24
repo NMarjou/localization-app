@@ -40278,5 +40278,21 @@
   {
     "source": "| (vertical bar)",
     "target": "| (barre verticale)"
+  },
+  {
+    "source": "Talent review",
+    "target": "Bilan des talents"
+  },
+  {
+    "source": "Grid reset",
+    "target": "Réinitialiser la grille"
+  },
+  {
+    "source": "The cell header cannot be empty.",
+    "target": "L'en-tête de cellule ne peut pas être vide."
+  },
+  {
+    "source": "The local rule was successfully deleted.",
+    "target": "La règle locale a été supprimée avec succès."
   }
 ]

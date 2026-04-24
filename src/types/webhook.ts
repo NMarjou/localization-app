@@ -33,6 +33,8 @@ export interface LokaliseWebhookEvent {
 
 export interface WebhookContext {
   eventId: string;
+  /** Lokalise project ID — used to route to the correct client/TM/glossary. */
+  projectId?: string;
   sourceLanguage: string;
   targetLanguage: string;
   keyIds: number[];
@@ -47,6 +49,11 @@ export interface WebhookContext {
    * whether the "AI-translated" tag needs to be added after push.
    */
   keyIdToTags?: Record<string, string[]>;
+  /**
+   * Pre-fetched key data (e.g. from backfill's listAllKeys). When present,
+   * handleTranslationRequest skips individual getKeyWithAllTranslations calls.
+   */
+  prefetchedKeys?: import("../types/lokalise.js").LokaliseKey[];
   requestId?: string;
   batchId?: string;
   timestamp: number;
@@ -57,4 +64,11 @@ export interface PendingBatch {
   context: WebhookContext;
   createdAt: number;
   pollCount: number;
+}
+
+export interface BackfillChunkMeta {
+  targetLang: string;
+  keyIds: number[];
+  keyIdToTranslationId: Record<string, string>;
+  keyIdToTags: Record<string, string[]>;
 }

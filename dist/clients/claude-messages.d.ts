@@ -12,6 +12,7 @@ export declare class ClaudeMessagesClient {
     /**
      * Strip markdown code fences (```json ... ``` or ``` ... ```) that
      * Claude sometimes wraps JSON responses in, despite instructions.
+     * Uses string operations instead of regex to handle large responses reliably.
      */
     private stripCodeFences;
     private extractUsage;
