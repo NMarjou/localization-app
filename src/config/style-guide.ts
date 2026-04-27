@@ -61,10 +61,25 @@ export const localeSpecificRules: Record<string, string> = {
 
 };
 
-export function getStyleGuide(language?: string): string {
-  return defaultStyleGuide;
+/**
+ * Build the full style guide for a given language and optional project override.
+ *
+ * Composition order:
+ *   1. Project-level styleGuide (if set), otherwise defaultStyleGuide
+ *   2. Locale-specific rules appended after (always, if available)
+ */
+export function getStyleGuide(language?: string, projectStyleGuide?: string): string {
+  const base = projectStyleGuide ?? defaultStyleGuide;
+  if (!language) return base;
+
+  // Normalise "fr-FR" or "fr_FR" → "fr" for lookup
+  const langBase = language.split(/[-_]/)[0]!;
+  const localeRules = localeSpecificRules[langBase];
+
+  return localeRules ? `${base}\n\n${localeRules}` : base;
 }
 
 export function getLocaleRules(language: string): string | undefined {
-  return localeSpecificRules[language];
+  const langBase = language.split(/[-_]/)[0]!;
+  return localeSpecificRules[langBase];
 }

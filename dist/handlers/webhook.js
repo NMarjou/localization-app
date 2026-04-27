@@ -130,8 +130,11 @@ export class WebhookHandler {
             for (let i = 0; i < translationRequest.strings.length; i += CHUNK_SIZE) {
                 const chunk = translationRequest.strings.slice(i, i + CHUNK_SIZE);
                 const chunkRequest = { ...translationRequest, strings: chunk };
-                const promptMessages = await promptManager(context.projectId).buildMessages(chunkRequest);
-                const chunkResponse = await claudeClient.translate(promptMessages);
+                const pm = promptManager(context.projectId);
+                const promptMessages = await pm.buildMessages(chunkRequest);
+                const chunkResponse = await claudeClient.translate(promptMessages, {
+                    modelOverride: pm.getModel(),
+                });
                 if ("batch_id" in chunkResponse) {
                     // Batch API path — store and stop chunking (whole request is async).
                     context.batchId = chunkResponse.batch_id;

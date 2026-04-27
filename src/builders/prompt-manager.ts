@@ -1,6 +1,7 @@
 import { getLogger } from "../utils/logger.js";
 import { fileLoader } from "../utils/file-loader.js";
 import { getStyleGuide } from "../config/style-guide.js";
+import { getProject } from "../config/projects.js";
 import { SystemPromptBuilder } from "./system-prompt.js";
 import { UserPromptBuilder } from "./user-prompt.js";
 import { ValidationError } from "../utils/errors.js";
@@ -9,6 +10,7 @@ import type {
   SystemPromptConfig,
   PromptMessages,
 } from "../types/prompt.js";
+import type { ModelOption } from "../types/claude.js";
 
 export class PromptManager {
   private logger = getLogger();
@@ -89,7 +91,8 @@ export class PromptManager {
   }
 
   private async buildConfig(language: string): Promise<SystemPromptConfig> {
-    const styleGuide = getStyleGuide(language);
+    const project = this.projectId ? getProject(this.projectId) : undefined;
+    const styleGuide = getStyleGuide(language, project?.styleGuide);
     const loader = fileLoader(this.projectId);
     const glossary = await loader.loadGlossary(language);
     const translationMemory = await loader.loadTranslationMemory(language);
@@ -99,6 +102,15 @@ export class PromptManager {
       glossary,
       translationMemory,
     };
+  }
+
+  /**
+   * Returns the Claude model configured for this project.
+   * Falls back to haiku-4-5 if no override is set.
+   */
+  getModel(): ModelOption {
+    const project = this.projectId ? getProject(this.projectId) : undefined;
+    return (project?.model as ModelOption | undefined) ?? "haiku-4-5";
   }
 
   clearCache(language?: string): void {

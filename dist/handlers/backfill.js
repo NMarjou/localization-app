@@ -4,7 +4,7 @@ import { lokaliseClient } from "../clients/lokalise.js";
 import { claudeClient } from "../clients/claude.js";
 import { webhookHandler } from "./webhook.js";
 import { promptManager } from "../builders/prompt-manager.js";
-import { getAllProjects } from "../config/projects.js";
+import { getAllProjects, getProject } from "../config/projects.js";
 /**
  * Find keys whose en-US source has been reviewed but whose target
  * translations are either missing or older than the source, and push
@@ -24,11 +24,17 @@ const CONCURRENCY = 5;
  * Run backfill for all configured projects (or a specific one via opts.projectId).
  */
 export async function runBackfill(opts = {}) {
-    const projects = opts.projectId
+    const allProjects = opts.projectId
         ? getAllProjects().filter((p) => p.id === opts.projectId)
         : getAllProjects();
-    if (projects.length === 0) {
+    // Skip disabled projects silently.
+    const projects = allProjects.filter((p) => p.enabled !== false);
+    if (allProjects.length === 0) {
         throw new Error(opts.projectId ? `Project ${opts.projectId} not found` : "No projects configured");
+    }
+    if (projects.length === 0) {
+        getLogger().info({ projectId: opts.projectId }, "All matched projects are disabled — nothing to backfill");
+        return [];
     }
     return Promise.all(projects.map((p) => runProjectBackfill(p.id, opts)));
 }
@@ -56,11 +62,17 @@ async function runProjectBackfill(projectId, opts) {
         const client = lokaliseClient(projectId);
         const sourceLang = await client.getBaseLanguageIso();
         // Figure out the target-language universe (project languages minus source).
+        // Intersect with: project.languages allowlist → then opts.languages filter.
         const allProjectLanguages = await client.listProjectLanguages();
         const allTargets = allProjectLanguages.filter((l) => l !== sourceLang);
-        const targetLanguages = opts.languages?.length
-            ? opts.languages.filter((l) => allTargets.includes(l))
+        const projectConfig = getProject(projectId);
+        const projectAllowed = projectConfig?.languages;
+        const afterProjectFilter = projectAllowed
+            ? allTargets.filter((l) => projectAllowed.includes(l))
             : allTargets;
+        const targetLanguages = opts.languages?.length
+            ? opts.languages.filter((l) => afterProjectFilter.includes(l))
+            : afterProjectFilter;
         const filteredKeys = opts.keyIds?.length
             ? await Promise.all(opts.keyIds.map((id) => client.getKeyWithAllTranslations(String(id)).catch((err) => {
                 logger.warn({
@@ -138,14 +150,15 @@ async function runProjectBackfill(projectId, opts) {
                 })).filter((s) => s.value);
                 if (strings.length === 0)
                     continue;
-                const prompts = await promptManager(projectId).buildMessages({
+                const pm = promptManager(projectId);
+                const prompts = await pm.buildMessages({
                     target_language: targetLang,
                     strings,
                     context: {},
                 });
                 chunks.push({
                     prompts,
-                    model: 'haiku-4-5',
+                    model: pm.getModel(),
                     targetLang,
                     keyIds: chunkKeyIds,
                     keyIdToTranslationId,

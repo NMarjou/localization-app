@@ -1,12 +1,26 @@
 [
   {
     "id": "YOUR_LOKALISE_PROJECT_ID",
-    "name": "My App",
+    "name": "Main App",
     "webhookSecret": "YOUR_WEBHOOK_SECRET"
   },
   {
     "id": "ANOTHER_PROJECT_ID",
     "name": "Marketing Site",
-    "webhookSecret": "ANOTHER_WEBHOOK_SECRET"
+    "webhookSecret": "ANOTHER_WEBHOOK_SECRET",
+
+    "model": "sonnet-4-6",
+
+    "languages": ["fr", "de", "es"],
+
+    "styleGuide": "Brand Voice: Friendly and direct. No jargon. Use short sentences. Prefer active voice. Avoid exclamation marks except for errors and confirmations.",
+
+    "sourceLanguage": "en"
+  },
+  {
+    "id": "DISABLED_PROJECT_ID",
+    "name": "Legacy Portal (paused)",
+    "webhookSecret": "LEGACY_SECRET",
+    "enabled": false
   }
 ]

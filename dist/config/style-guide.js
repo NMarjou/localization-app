@@ -55,10 +55,24 @@ export const localeSpecificRules = {
 - Keep line length reasonable for readability
 - Use full-width punctuation`,
 };
-export function getStyleGuide(language) {
-    return defaultStyleGuide;
+/**
+ * Build the full style guide for a given language and optional project override.
+ *
+ * Composition order:
+ *   1. Project-level styleGuide (if set), otherwise defaultStyleGuide
+ *   2. Locale-specific rules appended after (always, if available)
+ */
+export function getStyleGuide(language, projectStyleGuide) {
+    const base = projectStyleGuide ?? defaultStyleGuide;
+    if (!language)
+        return base;
+    // Normalise "fr-FR" or "fr_FR" → "fr" for lookup
+    const langBase = language.split(/[-_]/)[0];
+    const localeRules = localeSpecificRules[langBase];
+    return localeRules ? `${base}\n\n${localeRules}` : base;
 }
 export function getLocaleRules(language) {
-    return localeSpecificRules[language];
+    const langBase = language.split(/[-_]/)[0];
+    return localeSpecificRules[langBase];
 }
 //# sourceMappingURL=style-guide.js.map

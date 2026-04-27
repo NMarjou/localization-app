@@ -86,9 +86,12 @@ async function adaptLokaliseEvent(raw, sourceLanguageIso) {
             },
         ];
     }
-    // Source edit: fan out to every non-source project language.
+    // Source edit: fan out to non-source project languages.
+    // Restrict to project.languages allowlist if configured.
     const allLanguages = await lokaliseClient(projectId).listProjectLanguages();
-    const targets = allLanguages.filter((l) => l !== sourceLanguageIso);
+    const projectConfig = getProject(projectId);
+    const allowedLanguages = projectConfig?.languages;
+    const targets = allLanguages.filter((l) => l !== sourceLanguageIso && (!allowedLanguages || allowedLanguages.includes(l)));
     return targets.map((target) => ({
         event: mappedEvent,
         project_id: projectId,
@@ -137,6 +140,10 @@ app.use((req, res, next) => {
             logger.warn({ path: req.path, projectId }, "Unknown project in webhook");
             return res.status(401).json({ error: "Unknown project" });
         }
+        if (!project.enabled) {
+            logger.info({ path: req.path, projectId }, "Webhook received for disabled project — ignoring");
+            return res.status(202).json({ ignored: true, reason: "project disabled" });
+        }
         if (!webhookHandler.validateSecret(received, project.webhookSecret)) {
             logger.warn({ path: req.path, projectId }, "Invalid webhook secret");
             return res.status(401).json({ error: "Invalid secret" });
@@ -166,6 +173,14 @@ app.get("/health", (req, res) => {
 app.get("/status", (req, res) => {
     const events = listEvents(100);
     const errorsLastHour = events.filter((e) => e.type === "error" && Date.now() - e.timestamp < 3600_000).length;
+    const allProjects = loadProjects();
+    const projects = allProjects.map((p) => ({
+        id: p.id,
+        name: p.name,
+        enabled: p.enabled,
+        model: p.model ?? "haiku-4-5",
+        languages: p.languages ?? null,
+    }));
     res.json({
         startedAt: getStartedAt(),
         uptimeMs: Date.now() - getStartedAt(),
@@ -173,6 +188,7 @@ app.get("/status", (req, res) => {
         eventCount: events.length,
         errorsLastHour,
         cron: process.env.BACKFILL_CRON?.trim() || "0 */4 * * *",
+        projects,
         events,
     });
 });
