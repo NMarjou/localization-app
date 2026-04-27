@@ -135,16 +135,35 @@ const app = express();
 // Middleware
 app.use(express.json());
 
-// Lokalise webhook paths (Lokalise UI uses /webhooks by default; we accept both).
-const WEBHOOK_PATHS = new Set(["/webhook", "/webhooks"]);
+// Lokalise webhook paths.
+//   /webhook            — legacy single-project endpoint (routes by body project.id)
+//   /webhooks           — same, alternate spelling
+//   /webhook/:projectId — per-project endpoint (preferred for multi-project setups)
+//   /webhooks/:projectId
+//
+// The :projectId variant is authoritative: each project gets its own URL
+// configured in Lokalise so the webhook secret is checked against that
+// specific project. If the body also carries a project.id, it must match.
+const WEBHOOK_PATH_RE = /^\/webhooks?(?:\/([^/]+))?\/?$/;
+
+function parseWebhookPath(path: string): {
+  isWebhook: boolean;
+  projectIdFromPath?: string;
+} {
+  const m = WEBHOOK_PATH_RE.exec(path);
+  if (!m) return { isWebhook: false };
+  return { isWebhook: true, projectIdFromPath: m[1] };
+}
 
 // Secret-header validation middleware.
 // Lokalise sends the configured secret verbatim in one of:
 //   X-Secret | X-Api-Key | a custom header (configured in Lokalise UI)
 // We validate against the per-project secret from projects.json.
 app.use((req: Request, res: Response, next) => {
+  const { isWebhook, projectIdFromPath } = parseWebhookPath(req.path);
+
   // Only enforce on POST; GET is a health probe from Lokalise's URL validator.
-  if (req.method !== "POST" || !WEBHOOK_PATHS.has(req.path)) {
+  if (req.method !== "POST" || !isWebhook) {
     return next();
   }
 
@@ -161,8 +180,23 @@ app.use((req: Request, res: Response, next) => {
     return res.status(401).json({ error: "Missing secret header" });
   }
 
-  // Look up the project from the payload and validate against its secret.
-  const projectId = req.body?.project?.id;
+  const bodyProjectId: string | undefined = req.body?.project?.id
+    ? String(req.body.project.id)
+    : undefined;
+
+  // If both URL and body carry a project id, they must agree. Catches
+  // misconfigured webhooks pointing the wrong project at the wrong URL.
+  if (projectIdFromPath && bodyProjectId && projectIdFromPath !== bodyProjectId) {
+    logger.warn(
+      { path: req.path, projectIdFromPath, bodyProjectId },
+      "Webhook URL projectId does not match payload project.id"
+    );
+    return res
+      .status(400)
+      .json({ error: "URL projectId does not match payload project.id" });
+  }
+
+  const projectId = projectIdFromPath ?? bodyProjectId;
   if (projectId) {
     const project = getProject(projectId);
     if (!project) {
@@ -271,12 +305,21 @@ app.post("/trigger/backfill", (req: Request, res: Response) => {
 
 // Respond 200 to any HEAD/GET probe on the webhook path so Lokalise URL
 // validation passes regardless of which verb it probes with.
-app.get(["/webhook", "/webhooks"], (_req: Request, res: Response) => {
-  res.status(200).json({ status: "ok" });
-});
+app.get(
+  ["/webhook", "/webhooks", "/webhook/:projectId", "/webhooks/:projectId"],
+  (_req: Request, res: Response) => {
+    res.status(200).json({ status: "ok" });
+  }
+);
 
-// Webhook endpoint (accepts both /webhook and /webhooks).
-app.post(["/webhook", "/webhooks"], async (req: Request, res: Response) => {
+// Webhook endpoint. Supports four URL shapes:
+//   POST /webhook
+//   POST /webhooks
+//   POST /webhook/:projectId    ← preferred for multi-project setups
+//   POST /webhooks/:projectId
+app.post(
+  ["/webhook", "/webhooks", "/webhook/:projectId", "/webhooks/:projectId"],
+  async (req: Request, res: Response) => {
   const eventId = req.headers["x-lokalise-event-id"] as string;
 
   // Lokalise sends a validation ping (X-Event: ping) when you save or test
@@ -288,7 +331,11 @@ app.post(["/webhook", "/webhooks"], async (req: Request, res: Response) => {
   }
 
   try {
-    const incomingProjectId: string | undefined = req.body?.project?.id;
+    // Prefer the URL param (per-project endpoint) over the body — the
+    // middleware has already verified they agree if both are set.
+    const incomingProjectId: string | undefined =
+      (req.params?.projectId as string | undefined) ??
+      (req.body?.project?.id ? String(req.body.project.id) : undefined);
 
     // Source language isn't in Lokalise's payload; fetch it from the project.
     let sourceLanguageIso: string;

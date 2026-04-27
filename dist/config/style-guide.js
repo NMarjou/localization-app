@@ -56,6 +56,17 @@ export const localeSpecificRules = {
 - Use full-width punctuation`,
 };
 /**
+ * Normalise a language code down to its base ISO 639-1 form for locale-rule
+ * lookup. Handles both region separators and Lokalise's custom-prefix
+ * codes (e.g. "translations.nl-NL" → "nl").
+ */
+function languageBase(language) {
+    const afterLastDot = language.includes(".")
+        ? language.slice(language.lastIndexOf(".") + 1)
+        : language;
+    return afterLastDot.split(/[-_]/)[0];
+}
+/**
  * Build the full style guide for a given language and optional project override.
  *
  * Composition order:
@@ -66,13 +77,10 @@ export function getStyleGuide(language, projectStyleGuide) {
     const base = projectStyleGuide ?? defaultStyleGuide;
     if (!language)
         return base;
-    // Normalise "fr-FR" or "fr_FR" → "fr" for lookup
-    const langBase = language.split(/[-_]/)[0];
-    const localeRules = localeSpecificRules[langBase];
+    const localeRules = localeSpecificRules[languageBase(language)];
     return localeRules ? `${base}\n\n${localeRules}` : base;
 }
 export function getLocaleRules(language) {
-    const langBase = language.split(/[-_]/)[0];
-    return localeSpecificRules[langBase];
+    return localeSpecificRules[languageBase(language)];
 }
 //# sourceMappingURL=style-guide.js.map

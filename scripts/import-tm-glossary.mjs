@@ -26,7 +26,27 @@ const LANGUAGE_MAP = {
 const BASE_PATH = path.resolve(path.join(__dirname, ".."));
 const TM_DIR = path.join(BASE_PATH, "TMs");
 const GLOSSARIES_DIR = path.join(BASE_PATH, "Glossaries");
-const LOCALES_DIR = path.join(BASE_PATH, "locales");
+
+// Resolve --project arg. Writes go to locales/{projectId}/{lang}/* when set,
+// otherwise fall back to the shared template at locales/_template/{lang}/*.
+// The template is the seed copied to a new project's namespace via
+// scripts/seed-project-locales.mjs and isn't read at runtime.
+const argv = process.argv.slice(2);
+let projectId;
+for (let i = 0; i < argv.length; i++) {
+  if (argv[i] === "--project" && argv[i + 1]) {
+    projectId = argv[i + 1];
+    break;
+  }
+  const m = argv[i].match(/^--project=(.+)$/);
+  if (m) {
+    projectId = m[1];
+    break;
+  }
+}
+const LOCALES_DIR = projectId
+  ? path.join(BASE_PATH, "locales", projectId)
+  : path.join(BASE_PATH, "locales", "_template");
 
 async function parseTMX(filePath, targetLang) {
   const xmlContent = fs.readFileSync(filePath, "utf-8");
@@ -94,6 +114,11 @@ function parseCSV(filePath, targetLang) {
 
 async function importAll() {
   console.log("🔄 Importing translation memories and glossaries...\n");
+  console.log(
+    projectId
+      ? `Target: locales/${projectId}/ (project namespace)\n`
+      : `Target: locales/_template/ (shared seed; no --project specified)\n`
+  );
 
   const tmxFiles = await glob(path.join(TM_DIR, "*.tmx"));
   const languagePairs = new Set();

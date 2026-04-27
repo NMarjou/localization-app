@@ -10,8 +10,16 @@ export declare class FileLoader {
     constructor(projectId?: string);
     /**
      * Returns candidate base directories to search for locale files.
-     * Tries project-namespaced paths first (locales/{projectId}/{lang}),
-     * then falls back to legacy flat structure (locales/{lang}).
+     *
+     * When a projectId is set, ONLY the project-namespaced path is searched
+     * (locales/{projectId}/{lang}). A misconfigured projectId fails loud rather
+     * than silently leaking template data.
+     *
+     * When no projectId is set (legacy single-project mode without
+     * projects.json), the flat locales/{lang} layout is used. The
+     * locales/_template/{lang} folder is the seed copied to a new project's
+     * namespace via scripts/seed-project-locales.mjs and is never read at
+     * runtime.
      */
     private baseDirs;
     loadGlossary(language: string): Promise<Record<string, string>>;

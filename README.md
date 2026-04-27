@@ -14,13 +14,43 @@ Create a `.env` file in the project root:
 ```bash
 ANTHROPIC_API_KEY=sk-ant-...          # Your Claude API key
 LOKALISE_API_KEY=...                  # Lokalise API v2 key
-LOKALISE_PROJECT_ID=123456            # Your Lokalise project ID
-WEBHOOK_SECRET=your-secret-key        # HMAC secret for webhook validation
 PORT=3000                             # Server port (optional, default: 3000)
 NODE_ENV=development                  # development | production (optional)
 ```
 
-### 3. Start the Server
+### 3. Configure Projects
+Copy `projects.example.json` to `projects.json` and add one entry per
+Lokalise project. Each project gets its own webhook secret, optional
+model/language overrides, and its own TM + glossary folder.
+
+```json
+[
+  {
+    "id": "123456",
+    "name": "Main App",
+    "webhookSecret": "shared-secret-app"
+  },
+  {
+    "id": "789012",
+    "name": "Marketing Site",
+    "webhookSecret": "shared-secret-marketing",
+    "model": "sonnet-4-6",
+    "languages": ["fr", "de", "es"]
+  }
+]
+```
+
+Then seed each project's locale folder from the shared baseline:
+```bash
+node scripts/seed-project-locales.mjs 123456
+node scripts/seed-project-locales.mjs 789012
+```
+
+This copies `locales/_template/{lang}/*` into `locales/{projectId}/{lang}/*`
+so each project starts with the same TM + glossary baseline and can
+diverge from there.
+
+### 4. Start the Server
 ```bash
 npm start
 ```
@@ -33,7 +63,7 @@ INFO: Starting translation service
 INFO: Translation service started
 ```
 
-### 4. Verify Health
+### 5. Verify Health
 ```bash
 curl http://localhost:3000/health
 ```
@@ -49,19 +79,35 @@ Expected response:
 
 ## Webhook Configuration (Lokalise)
 
-### 1. Get Webhook Secret
-Use the value you set for `WEBHOOK_SECRET` in your `.env`
+Each Lokalise project gets its own webhook URL and its own secret. Configure
+one webhook per project, pointed at its project-specific path.
 
-### 2. Configure in Lokalise
-- Go to **Project Settings** → **Webhooks**
-- Create new webhook:
-  - **Event**: `translation.updated` (and/or `translation.approved`)
-  - **URL**: `https://your-domain.com/webhook`
-  - **Secret**: Same as `WEBHOOK_SECRET` env var
+### For each project:
+- Go to **Project Settings** → **Webhooks** (in Lokalise)
+- Create a new webhook:
+  - **URL**: `https://your-domain.com/webhook/{projectId}` — replace
+    `{projectId}` with the Lokalise project ID for that project
+  - **Secret**: The `webhookSecret` for that project from `projects.json`
+    (sent verbatim in the `X-Secret` header)
+  - **Events**: at minimum `project.translation.proofread` for re-translates
+    and `project.key.added` / `project.translation.unapproved` if relevant
   - **Active**: ✓ enabled
 
-### 3. Test Webhook
-Lokalise will send a test POST request. Server should respond with `202 Accepted`.
+### URL shapes accepted
+| URL | Use |
+|-----|-----|
+| `POST /webhook/:projectId` | Recommended. Per-project webhooks. |
+| `POST /webhooks/:projectId` | Same; alternate spelling. |
+| `POST /webhook` | Legacy. Routes by `project.id` in the body. |
+| `POST /webhooks` | Same; alternate spelling. |
+
+When the URL includes a `:projectId`, that ID is authoritative. The secret
+is checked against that project's secret, and if the body also carries a
+`project.id` it must match the URL or the request is rejected with 400.
+
+### Test Webhook
+After saving in Lokalise, hit "Test" — the server should respond with
+`202 Accepted` (or `200 OK` for the validation ping).
 
 ## How It Works
 
@@ -119,10 +165,12 @@ Response: `{status: "ok", pendingBatches: 0, timestamp: "ISO-8601"}`
 
 ### Webhook
 ```
-POST /webhook
+POST /webhook/:projectId   (preferred)
+POST /webhook              (legacy — routes by body project.id)
+
 Headers:
   Content-Type: application/json
-  X-Lokalise-Signature: <HMAC-SHA256>
+  X-Secret: <project webhookSecret>
   X-Lokalise-Event-Id: <event-id>
 
 Body: Lokalise webhook payload
@@ -136,33 +184,53 @@ Response: `202 Accepted` (always, even on errors)
 |----------|----------|---------|-------------|
 | `ANTHROPIC_API_KEY` | ✓ | - | Claude API key |
 | `LOKALISE_API_KEY` | ✓ | - | Lokalise API v2 key |
-| `LOKALISE_PROJECT_ID` | ✓ | - | Lokalise project ID |
-| `WEBHOOK_SECRET` | ✓ | - | HMAC validation secret |
+| `LOKALISE_PROJECT_ID` | | - | Legacy single-project fallback (used only if `projects.json` is absent) |
+| `WEBHOOK_SECRET` | | - | Legacy single-project fallback secret (used only if `projects.json` is absent) |
+| `WEBHOOK_HEADER_NAME` | | - | Custom header name to read the project secret from (e.g. `x-lokalise-secret`) |
 | `PORT` | | `3000` | Server port |
 | `NODE_ENV` | | `development` | `development` or `production` |
 
+Per-project settings (project ID, webhook secret, model, languages, style
+guide) live in `projects.json` — see "Configure Projects" above.
+
 ## Translation Memory & Glossary
 
-Translation memory (TM) and glossaries are stored as git-tracked JSON files:
+Each project gets its own TM + glossary set, stored as git-tracked JSON
+files under `locales/{projectId}/`:
 
 ```
 locales/
-├── en/
-│   ├── glossary.json       # Brand terms and approved translations
-│   └── tm.json             # Key-value translation pairs
-├── fr/
-│   ├── glossary.json
-│   └── tm.json
-└── [other languages]
+├── _template/                    # Shared baseline. Seed for new projects.
+│   ├── en/
+│   │   ├── glossary.json
+│   │   └── tm.json
+│   └── fr/ ...
+├── 123456/                       # Project ID 123456
+│   ├── en/
+│   │   ├── glossary.json
+│   │   └── tm.json
+│   └── fr/ ...
+└── 789012/                       # Project ID 789012
+    └── ...
 ```
 
-### Building TM from Lokalise
-To extract approved translations and build initial TM:
+The `_template/` folder is **never read at runtime** — it exists only as
+a seed copied into a new project's namespace via:
 ```bash
-npm run build:tm
+node scripts/seed-project-locales.mjs <projectId>
+# or, to overwrite existing files:
+node scripts/seed-project-locales.mjs <projectId> --force
 ```
 
-This populates `locales/{language}/tm.json` and `glossary.json` from Lokalise.
+### Importing TM & Glossary from Lokalise exports
+Drop TMX files in `TMs/` and CSV glossaries in `Glossaries/`, then run:
+```bash
+# Write into a project's namespace:
+node scripts/import-tm-glossary.mjs --project 123456
+
+# Or write into the shared template (default):
+node scripts/import-tm-glossary.mjs
+```
 
 ## Monitoring
 

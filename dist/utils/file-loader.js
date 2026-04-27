@@ -4,13 +4,25 @@ import { join, dirname } from "path";
 import { getLogger } from "./logger.js";
 /**
  * Try the full locale code first (e.g. "fr_FR"), then fall back to the
- * base language ("fr"). Handles both "fr_FR" and "fr-FR" separators.
+ * base language ("fr"). Handles:
+ *   - region separators "-" and "_": "fr-FR" / "fr_FR" → also "fr"
+ *   - custom-prefix codes with dots (Lokalise convention):
+ *       "translations.nl"     → also "nl"
+ *       "translations.nl-NL"  → also "nl-NL", "nl"
  */
 function candidateDirs(language) {
     const candidates = new Set();
     candidates.add(language);
-    const base = language.split(/[-_]/)[0];
-    if (base && base !== language)
+    // Strip a custom prefix delimited by "." (Lokalise lets users define
+    // arbitrary language codes like "translations.nl").
+    const afterLastDot = language.includes(".")
+        ? language.slice(language.lastIndexOf(".") + 1)
+        : language;
+    if (afterLastDot && afterLastDot !== language)
+        candidates.add(afterLastDot);
+    // Strip region from the (de-prefixed) code.
+    const base = afterLastDot.split(/[-_]/)[0];
+    if (base && base !== afterLastDot)
         candidates.add(base);
     return [...candidates];
 }
@@ -24,8 +36,16 @@ export class FileLoader {
     }
     /**
      * Returns candidate base directories to search for locale files.
-     * Tries project-namespaced paths first (locales/{projectId}/{lang}),
-     * then falls back to legacy flat structure (locales/{lang}).
+     *
+     * When a projectId is set, ONLY the project-namespaced path is searched
+     * (locales/{projectId}/{lang}). A misconfigured projectId fails loud rather
+     * than silently leaking template data.
+     *
+     * When no projectId is set (legacy single-project mode without
+     * projects.json), the flat locales/{lang} layout is used. The
+     * locales/_template/{lang} folder is the seed copied to a new project's
+     * namespace via scripts/seed-project-locales.mjs and is never read at
+     * runtime.
      */
     baseDirs(language) {
         const dirs = [];
@@ -33,7 +53,9 @@ export class FileLoader {
             if (this.projectId) {
                 dirs.push(join(process.cwd(), "locales", this.projectId, lang));
             }
-            dirs.push(join(process.cwd(), "locales", lang));
+            else {
+                dirs.push(join(process.cwd(), "locales", lang));
+            }
         }
         return dirs;
     }
@@ -116,7 +138,8 @@ export class FileLoader {
                 break;
             }
         }
-        // No file yet — create it under project-namespaced path (or legacy if no projectId).
+        // No file yet — create it under the project-namespaced path. Legacy
+        // (no projectId) installs write to the flat locales/{lang} layout.
         if (!filePath) {
             const base = this.projectId
                 ? join(process.cwd(), "locales", this.projectId, language)
