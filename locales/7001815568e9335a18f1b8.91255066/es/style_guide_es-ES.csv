@@ -1,0 +1,28 @@
+Category,Guideline
+Language,Spanish (Spain / Castilian)
+Reference language,en-US (American English)
+,
+--- VOICE & TONE ---,
+Formality / Register,Neutral/Imperative. No explicit subject pronoun in most UI strings. Vosotros form must NOT be used (es-ES Castilian). Usted appears only in explicitly formal full sentences.
+Tone,"Professional, action-oriented, and neutral. Avoids editorializing on pay gap findings."
+Gender inclusivity,Use gender-neutral constructions where natural. Avoid defaulting to masculine plural. Do not apply '@' or 'e' inclusive forms unless explicitly requested.
+,
+--- TYPOGRAPHY & FORMATTING ---,
+Capitalization,Sentence case throughout. Spanish does not capitalize after a colon unless a new independent clause follows. Never use title case.
+Quotation marks,Spanish guillemets without spaces: «example». Do not use straight double quotes.
+Punctuation,Opening question/exclamation marks required: ¿...? ¡...! Standard Spanish punctuation otherwise. Percent: 15% (no space).
+Number formatting,"{variable} placeholders preserved unchanged. Decimal separator: comma (,). Thousands: period (.). Date: DD/MM/YYYY."
+,
+--- LANGUAGE PATTERNS ---,
+Compound words,"Noun-adjective order: Brecha salarial, Equidad retributiva, Grupo de comparación. Spanish tends toward longer phrase structures."
+English loanwords,"Kept in English: PayAnalytics, KPI, p-value, API, CSV, feedback. Benchmark: use 'estudio comparativo' or 'referencia' in flowing text; 'benchmark' acceptable in short UI labels."
+Verbs in buttons,"Verb first in imperative: Añadir filtro, Exportar lista, Comparar. Subject pronoun omitted."
+,
+--- UI STRING PATTERNS ---,
+UI patterns,"Actions: Añadir [noun], Eliminar [noun], Exportar [noun]. Confirmations: ¿Está seguro/a de que desea...? Success: ...correctamente guardado/a."
+,
+--- KEY TERMINOLOGY ---,
+Terminology mapping,Pay gap=Brecha salarial; Adjusted pay gap=Brecha salarial ajustada; Unadjusted pay gap=Brecha salarial no ajustada; Gender pay gap=Brecha salarial de género; Pay band=Banda salarial; Salary range=Rango salarial; Compensation=Remuneración; Raise=Aumento; Benchmark=Estudio comparativo; Pay equity=Igualdad salarial; Equal pay=Igualdad salarial; Job evaluation=Valoración de puestos de trabajo; Workforce analytics=Análisis del personal; Headcount=Número de empleados; Dataset=Conjunto de datos; Comparison group=Grupo de comparación; Employee group=Grupo de empleados; Maternity leave=Baja por maternidad; Bonus=Bonificación; Compa-ratio=Compa-ratio (kept)
+,
+--- TEXT EXPANSION ---,
+Expansion ratio,+29% average length vs. English. Avoid redundant constructions; prefer concise forms.

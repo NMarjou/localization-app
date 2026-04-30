@@ -16,9 +16,36 @@ export class SystemPromptBuilder {
 
     sections.push(this.formatSection("Brand Voice & Style Guide", config.styleGuide));
 
-    sections.push(this.formatGlossarySection(language, config.glossary));
+    if (config.appContext && config.appContext.trim()) {
+      sections.push(this.formatSection("Application Context", config.appContext.trim()));
+    }
 
-    sections.push(this.formatTranslationMemorySection(config.translationMemory));
+    if (
+      config.projectLanguageStyleGuide &&
+      config.projectLanguageStyleGuide.trim()
+    ) {
+      sections.push(
+        this.formatSection(
+          `Project Style Guide for ${language}`,
+          config.projectLanguageStyleGuide.trim()
+        )
+      );
+    }
+
+    sections.push(
+      this.formatGlossarySection(
+        language,
+        config.glossary,
+        config.glossaryContextSize ?? 100
+      )
+    );
+
+    sections.push(
+      this.formatTranslationMemorySection(
+        config.translationMemory,
+        config.tmContextSize ?? 100
+      )
+    );
 
     const localeRules = config.localeRules || getLocaleRules(language);
     if (localeRules) {
@@ -43,34 +70,43 @@ export class SystemPromptBuilder {
 
   private formatGlossarySection(
     language: string,
-    glossary: Record<string, string>
+    glossary: Record<string, string>,
+    cap: number
   ): string {
-    if (Object.keys(glossary).length === 0) {
+    const entries = Object.entries(glossary);
+    if (entries.length === 0) {
       return `Project Glossary (${language}):\n(No glossary terms defined)`;
     }
 
-    const terms = Object.entries(glossary)
+    const top = entries.slice(0, cap);
+    const terms = top
       .map(([source, target]) => `- ${source} → ${target}`)
       .join("\n");
 
-    return `Project Glossary (${language}):\n${terms}`;
+    const note =
+      entries.length > cap
+        ? `\n\n(Showing top ${cap} of ${entries.length} glossary terms)`
+        : "";
+
+    return `Project Glossary (${language}):\n${terms}${note}`;
   }
 
   private formatTranslationMemorySection(
-    tm: Array<{ source: string; target: string }>
+    tm: Array<{ source: string; target: string }>,
+    cap: number
   ): string {
     if (tm.length === 0) {
       return "Translation Memory:\n(No approved translations available)";
     }
 
-    const topPairs = tm.slice(0, 20);
+    const topPairs = tm.slice(0, cap);
     const pairs = topPairs
       .map(({ source, target }) => `- "${source}" → "${target}"`)
       .join("\n");
 
     const note =
-      tm.length > 20
-        ? `\n\n(Showing top 20 of ${tm.length} translation memory entries)`
+      tm.length > cap
+        ? `\n\n(Showing top ${cap} of ${tm.length} translation memory entries)`
         : "";
 
     return `Translation Memory:\n${pairs}${note}`;
@@ -104,6 +140,8 @@ Rules:
 4. Consider the string type (button, tooltip, error, etc.) for appropriate tone
 5. Maintain the original formatting and punctuation
 6. Flag any strings with cultural references or ambiguity that require human review
-7. Return translations keyed exactly by the provided key_id`;
+7. Return translations keyed exactly by the provided key_id
+8. Address the user directly, in a formal register, in every language. Use the formal second-person pronoun and verb forms — for example "vous" in French, "Sie" in German, "usted" in Spanish, "Lei" in Italian, "u" in Dutch, "siz" in Turkish, "Anda" in Indonesian, "você" / "o(a) senhor(a)" in Portuguese, formal "敬語" forms in Japanese, "คุณ" + polite suffixes in Thai. Never use the casual second-person form
+9. Be as consistent as possible across translations: identical source terms should produce identical target translations every time, both within this batch and against the translation memory above. If a term has multiple plausible translations, pick one and stay with it`;
   }
 }

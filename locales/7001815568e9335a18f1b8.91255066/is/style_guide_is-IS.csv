@@ -1,0 +1,28 @@
+Category,Guideline
+Language,Icelandic (Iceland)
+Reference language,en-US (American English)
+,
+--- VOICE & TONE ---,
+Formality / Register,Neutral. Icelandic does not distinguish formal/informal second-person pronouns the way other European languages do. Address users directly and naturally.
+Tone,Professional and concise. Icelandic is a compact language — do not pad translations to match English length.
+Gender inclusivity,Icelandic has grammatical gender. Use natural Icelandic gender agreement; avoid awkward inclusive constructions.
+,
+--- TYPOGRAPHY & FORMATTING ---,
+Capitalization,Sentence case throughout. Only proper nouns and first word of sentence/label capitalized.
+Quotation marks,"Straight double quotes (""example"") as seen consistently in TM. Guillemets not used."
+Punctuation,"Standard Icelandic punctuation. Percent: 15% (no space). Decimal separator: comma (,). Thousands: period (.). Date: DD.MM.YYYY."
+Number formatting,"{variable} placeholders preserved unchanged. Coverage is 80% — for untranslated strings, retain the English source."
+,
+--- LANGUAGE PATTERNS ---,
+Compound words,"Icelandic uses compounds and strong declension: Launabil, Gagnasett, Starfsmat, Samanburðarhópur. Nouns decline in 4 cases — apply correct case endings."
+English loanwords,"Icelandic strongly resists loanwords. Prefer native compounds: Markaðslaun for benchmark, Gagnasett for dataset. PayAnalytics, KPI, API, CSV, p-value kept as-is."
+Verbs in buttons,"Concise imperative or infinitive forms: Bæta við, Flytja út, Bera saman. Subject omitted."
+,
+--- UI STRING PATTERNS ---,
+UI patterns,"Actions: Bæta við [noun], Eyða [noun], Flytja út [noun]. Confirmations: Ertu viss um að þú viljir...?"
+,
+--- KEY TERMINOLOGY ---,
+Terminology mapping,Pay gap=Launabil; Adjusted pay gap=Leiðrétt launabil; Unadjusted pay gap=Óleiðrétt launabil; Gender pay gap=Launabil (kynjabundið); Pay band=Launaspönn; Salary range=Launabili; Compensation=Laun; Salary=Laun; Raise=Hækkun; Benchmark=Markaðslaun; Pay equity=Jafnlaunagreining; Equal pay=Jafnlaunagreining; Job evaluation=Starfsmat; Workforce analytics=Jafnréttisvísar; Headcount=Fjöldi; Dataset=Gagnasett; Comparison group=Samanburðarhópur; Employee group=Flokkur; Maternity leave=Fæðingarorlof; Bonus=Bónusgreiðsla; Compa-ratio=Compa-ratio (kept)
+,
+--- TEXT EXPANSION ---,
+Expansion ratio,+4% average length vs. English. Very compact — do not add words to fill space.

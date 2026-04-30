@@ -32,33 +32,64 @@ Output Requirements:
 
 export const localeSpecificRules: Record<string, string> = {
   fr: `French-Specific Rules:
-- Use formal "vous" for professional contexts, "tu" for casual/friendly content
-- Ensure gender agreement with nouns
+- Always use the formal "vous" form (never "tu") with formal verb conjugations
+- Ensure gender agreement with nouns and adjectives
 - Avoid anglicisms; prefer French equivalents
-- Use proper French spacing (space before punctuation like ! ? :)
+- Use proper French spacing (non-breaking space before ! ? : ; «»)
 - Numbers: use space as thousand separator (e.g., 1 000 instead of 1,000)`,
 
   de: `German-Specific Rules:
+- Always use the formal "Sie" form (never "du") with capital "S"
 - Capitalize all nouns
-- Use "Sie" for formal contexts
-- Ensure gender agreement (der/die/das)
+- Ensure gender agreement (der/die/das) and case agreement
 - Avoid unnecessary anglicisms
-- Use German formatting for numbers and dates`,
+- Use German formatting for numbers and dates (1.000,00 / DD.MM.YYYY)`,
 
   es: `Spanish-Specific Rules:
-- Use "usted" for formal, "tú" for casual
+- Always use the formal "usted" form with third-person verb conjugations (never "tú")
 - Ensure gender agreement with nouns and adjectives
 - Use inverted punctuation (¿ ¡) at start of sentences
-- Avoid regional variations when possible
-- Use Spanish formatting for numbers (comma as decimal, space as thousand separator)`,
+- Prefer neutral Spanish; avoid regional variations
+- Numbers: comma as decimal, period as thousand separator (e.g., 1.000,00)`,
+
+  it: `Italian-Specific Rules:
+- Always use the formal "Lei" form ("dare del Lei") with third-person feminine verbs (never "tu")
+- Capitalize Lei, La, Le, Suo when used as the formal pronoun
+- Ensure gender and number agreement
+- Numbers: comma as decimal, period as thousand separator`,
+
+  pt: `Portuguese-Specific Rules:
+- Always use formal address: "você" (or "o senhor / a senhora" when more deferential is appropriate)
+- Never use the informal "tu" form
+- Prefer European Portuguese spelling and orthography (Acordo Ortográfico)
+- Ensure gender and number agreement`,
+
+  nl: `Dutch-Specific Rules:
+- Always use the formal "u" form (never "je" or "jij")
+- Capitalize "U" when used as a sign of respect in formal correspondence
+- Use Dutch number formatting (1.000,00)`,
 
   ja: `Japanese-Specific Rules:
-- Use polite form (～ます) for UI text
-- Use formal register (敬語) for customer-facing content
-- Avoid gendered language
+- Use formal register (敬語 / です・ます調) for all UI text
+- Default to polite verb endings (～ます, ～です)
+- Avoid gendered language and casual sentence-final particles
 - Keep line length reasonable for readability
 - Use full-width punctuation`,
 
+  tr: `Turkish-Specific Rules:
+- Always use the formal plural "siz" form with second-person plural verb endings (never the singular "sen")
+- Apply vowel harmony correctly
+- Use Turkish-specific characters (ğ, ı, İ, ö, ş, ü, ç) — never substitute ASCII equivalents`,
+
+  id: `Indonesian-Specific Rules:
+- Always address the user as "Anda" (capitalized, formal). Never use "kamu" or "lo"
+- Prefer standard Bahasa Indonesia spelling (PUEBI)
+- Avoid Jakartan slang or informal abbreviations`,
+
+  th: `Thai-Specific Rules:
+- Address the user with the polite pronoun "คุณ" plus polite sentence-ending particles (ครับ for general / formal contexts)
+- Avoid casual or pronoun-dropping forms
+- Maintain proper Thai word spacing (Thai uses spaces only between sentences/clauses, not between words)`,
 };
 
 /**

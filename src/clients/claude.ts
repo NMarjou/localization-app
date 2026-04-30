@@ -11,7 +11,21 @@ import type {
 } from "../types/claude.js";
 import type { PromptMessages } from "../types/prompt.js";
 
-const TOKEN_LIMIT_FOR_BATCH = 10000;
+/**
+ * Estimated-token threshold above which a translate() call is routed to the
+ * Batch API instead of the Messages API.
+ *
+ * Originally set to 10K (a guess), but in practice that pushed legitimate
+ * webhook chunks (e.g. languages with large glossaries) onto Batch — which
+ * adds minutes-to-hours of latency, not acceptable for live edits.
+ *
+ * Raised to 150K so virtually all real-time webhook traffic stays on the
+ * Messages API. Backfill explicitly opts into Batch via submitBackfillBatch;
+ * it doesn't rely on this threshold.
+ *
+ * Models support 200K context; this leaves headroom.
+ */
+const TOKEN_LIMIT_FOR_BATCH = 150000;
 const DEFAULT_MODEL: ModelOption = "haiku-4-5";
 
 export class ClaudeClient {
@@ -49,6 +63,8 @@ export class ClaudeClient {
       model,
       estimated_tokens: estimatedTokens,
       is_batch: isBatch,
+      projectId: options?.projectId,
+      targetLanguage: options?.targetLanguage,
     };
 
     if (isBatch) {
@@ -69,7 +85,8 @@ export class ClaudeClient {
   /** Always uses the Messages API (synchronous). Used by backfill concurrency loop. */
   async translateSync(
     prompts: PromptMessages,
-    model: ModelOption = DEFAULT_MODEL
+    model: ModelOption = DEFAULT_MODEL,
+    attribution?: { projectId?: string; targetLanguage?: string }
   ): Promise<ClaudeResponse> {
     this.validatePrompts(prompts);
     const jobId = this.generateJobId();
@@ -79,12 +96,21 @@ export class ClaudeClient {
       model,
       estimated_tokens: this.estimateTokens(prompts),
       is_batch: false,
+      projectId: attribution?.projectId,
+      targetLanguage: attribution?.targetLanguage,
     };
     return this.messagesClient.translate(job);
   }
 
   async submitBackfillBatch(
-    jobs: Array<{ id: string; prompts: PromptMessages; model: ModelOption; estimatedStringCount: number }>
+    jobs: Array<{
+      id: string;
+      prompts: PromptMessages;
+      model: ModelOption;
+      estimatedStringCount: number;
+      projectId?: string;
+      targetLanguage?: string;
+    }>
   ): Promise<string> {
     this.getLogger().debug({ jobCount: jobs.length }, "Submitting backfill batch");
 
@@ -94,6 +120,8 @@ export class ClaudeClient {
       model: j.model,
       estimated_tokens: j.estimatedStringCount * 60,
       is_batch: true,
+      projectId: j.projectId,
+      targetLanguage: j.targetLanguage,
     }));
 
     return this.batchClient.submitBatch(translationJobs);

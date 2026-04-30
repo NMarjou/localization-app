@@ -1,0 +1,25 @@
+﻿Category,Guideline
+Language,Spanish (Spain)
+Reference language,en-US (American English)
+,
+--- VOICE & TONE ---,
+Formality / Register,Mixed formality. Predominantly formal usted form but occasional informal tu. The formal register should be preferred for consistency.
+Tone,Professional and courteous. Por favor used in prompts.
+Gender inclusivity,"Gender-inclusive notation with slash: colaborador/a, colaboradores/as, un/a colaborador/a. The term colaborador/a is the primary term for worker/employee."
+,
+--- TYPOGRAPHY & FORMATTING ---,
+Capitalization,Spanish capitalization: only first word and proper nouns capitalized in titles.
+Quotation marks,Standard double quotes for feature names.
+Punctuation,Inverted question marks for questions. Colons for labels.
+Number formatting,{{variable}} placeholders preserved. MB for megabytes.
+,
+--- LANGUAGE PATTERNS ---,
+Compound words,"Descriptive multi-word constructions: Configuracion del widget de plantilla, Bibliotecas de comportamientos."
+English loanwords,"Kept: Widget, Analytics Hub, Data Modeler, Feedback, Chat, SFTP, API, CSV. Check-in translated as Consulta. PII becomes IPI (Informacion Personal Identificable)."
+Verbs in buttons,"Infinitive for buttons: Publicar, Cancelar, Actualizar. Note inconsistency between Habilitar and Activar for Enable - should be standardized."
+,
+--- UI STRING PATTERNS ---,
+UI patterns,Enable: Habilitar la funcion X or Activar widget de X. Confirmations: Esta seguro de que desea...? Success: se publicaron correctamente.
+,
+--- KEY TERMINOLOGY ---,
+Terminology mapping,Check-in=Consulta; Review=Evaluacion; Goal=Objetivo; Worker=Colaborador/a or Trabajador; Manager=Responsable; Compensation=Compensacion; Behavior=Comportamiento; PII=IPI; Career Development=Desarrollo profesional; Settings=Configuracion

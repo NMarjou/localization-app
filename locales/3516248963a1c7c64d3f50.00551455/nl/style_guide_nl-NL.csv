@@ -1,0 +1,25 @@
+﻿Category,Guideline
+Language,Dutch (Netherlands)
+Reference language,en-US (American English)
+,
+--- VOICE & TONE ---,
+Formality / Register,Mixed: informal je/jij in many contexts alongside formal u/uw in others. The informal register is more frequent but should ideally be standardized.
+Tone,Professional but accessible.
+Gender inclusivity,Standard Dutch. Medewerkers (gender-neutral) and werknemers used interchangeably for workers.
+,
+--- TYPOGRAPHY & FORMATTING ---,
+Capitalization,Dutch rules: first word and proper nouns.
+Quotation marks,Standard double quotes. Some inconsistency in widget name placement (before/after widget).
+Punctuation,Standard Dutch. Colons for labels.
+Number formatting,{{variable}} placeholders preserved. MB for megabytes.
+,
+--- LANGUAGE PATTERNS ---,
+Compound words,"Dutch compounds as single words or hyphenated: Gedragsbibliotheken, Widget-instellingen, Startpagina-widgets, Veldgedrag. Hyphen where clarity requires it."
+English loanwords,"Many retained: Check-in(s), Widget, Analytics Hub, Feedback, Chat, Benchmarking, Data Modeler, PII, API, CSV, SFTP, Proxy. Adapted: Uploaden, Gedeactiveerd."
+Verbs in buttons,"Infinitive for buttons: Publiceren, Annuleren, Vernieuwen. Imperative for instructions: Selecteer..., Definieer..."
+,
+--- UI STRING PATTERNS ---,
+UI patterns,Enable: Schakel de functie X in or Schakel de widget X in (separable verb). Confirmations: Weet je zeker dat je ... wilt ...? Success: ...is succesvol... Empty states: Nog geen...
+,
+--- KEY TERMINOLOGY ---,
+Terminology mapping,Check-in=Check-in; Review=Beoordeling; Goal=Doel; Worker=Medewerker/Werknemer; Manager=Manager; Compensation=Vergoeding/Compensatie (inconsistent); Behavior=Gedraging; Career Development=Carriereontwikkeling/Loopbaanontwikkeling (both used); Settings=Instellingen; Library=Bibliotheek

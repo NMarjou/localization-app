@@ -1,0 +1,2528 @@
+{
+  "source": "en",
+  "terms": [
+    {
+      "en": "Above max compensation analysis",
+      "fr": "Analyse de rémunération au dessus du max.",
+      "de": "Analyse über max. Gehalt",
+      "es": "Análisis de remuneración por encima del máx.",
+      "it": "Analisi retribuzione al di sopra del massimo",
+      "is": "Hámarks-launagreining",
+      "sv": "Analys av löner över högsta"
+    },
+    {
+      "en": "Additional compensation settings",
+      "fr": "Paramètres de rémunération supplémentaires",
+      "de": "Zusätzliche Vergütungseinstellungen",
+      "es": "Ajustes adicionales de la remuneración",
+      "it": "Impostazioni di retribuzione aggiuntive.",
+      "is": "Viðbótarstillingar fyrir laun",
+      "sv": "Ytterligare löneinställningar"
+    },
+    {
+      "en": "Adjust for other compensation",
+      "fr": "Ajuster pour d'autres rémunérations",
+      "de": "Anpassung für sonstige Vergütungen",
+      "es": "Ajustar para otras remuneraciones",
+      "it": "Rettifica per altre retribuzioni",
+      "is": "Aðlaga að öðrum launum",
+      "sv": "Justera för övrig ersättning"
+    },
+    {
+      "en": "Adjusted gender pay gap",
+      "fr": "Écart de rémunération ajusté entre les femmes et les hommes",
+      "de": "Bereinigte Lohnlücke",
+      "es": "Brecha salarial de género ajustada",
+      "it": "Differenza retributiva di genere rettificata",
+      "is": "Leiðrétt launabil kynja",
+      "sv": "Justerad löneskillnad mellan könen"
+    },
+    {
+      "en": "Adjusted pay gap",
+      "fr": "Écart salarial ajusté",
+      "de": "Bereinigte Lohnlücke",
+      "es": "Brecha salarial ajustada",
+      "it": "Divario retributivo rettificato",
+      "is": "Leiðrétt launabil",
+      "sv": "Justerat lönegap"
+    },
+    {
+      "en": "Adjusted pay gap after raises",
+      "fr": "Écart salarial ajusté après les augmentations",
+      "de": "Angepasstes Lohngefälle nach Gehaltserhöhungen",
+      "es": "Brecha salarial ajustada tras los aumentos",
+      "it": "Differenza retributiva rettificata dopo gli aumenti",
+      "is": "Leiðrétt launabil eftir hækkanir",
+      "sv": "Justerad löneskillnad efter höjningar"
+    },
+    {
+      "en": "Adjusted pay gap before raises",
+      "fr": "Écart salarial ajusté avant les augmentations",
+      "de": "Bereinigtes Lohngefälle vor Gehaltserhöhungen",
+      "es": "Brecha salarial ajustada antes de los aumentos",
+      "it": "Divario retributivo rettificato prima degli aumenti",
+      "is": "Leiðrétt launabil fyrir hækkanir",
+      "sv": "Justerad löneskillnad före höjningar"
+    },
+    {
+      "en": "Adjusted pay gap within group",
+      "fr": "Écart salarial ajusté au sein du groupe",
+      "de": "Korrigierter Lohnunterschied innerhalb der Gruppe",
+      "es": "Brecha salarial ajustada dentro del grupo",
+      "it": "Divario retributivo rettificato all'interno del gruppo",
+      "is": "Leiðrétt launabil innan hóps",
+      "sv": "Justerat lönegap inom gruppen"
+    },
+    {
+      "en": "All appointment percentages",
+      "fr": "Tous les pourcentages de nomination",
+      "de": "Alle Ernennungsprozentsätze",
+      "es": "Todos los porcentajes de nombramiento",
+      "it": "Tutte le percentuali di nomina",
+      "is": "Óháð starfshlutfalli",
+      "sv": "Alla procentsatser av utnämningar"
+    },
+    {
+      "en": "Analyses (for adjusted pay gap comparison)",
+      "fr": "Analyses (pour la comparaison de l'écart salarial ajusté)",
+      "de": "Analysen (Vergleich der bereinigten Lohnlücken)",
+      "es": "Análisis (para la comparación de la brecha salarial ajustada)",
+      "it": "Analisi (per il confronto del divario retributivo rettificato)",
+      "is": "Greiningar (fyrir samanburð á leiðréttu launabili)",
+      "sv": "Analyser (för justerad löneklyfta)"
+    },
+    {
+      "en": "Analysis configuration",
+      "fr": "Configuration de l'analyse",
+      "de": "Konfiguration der Analyse",
+      "es": "Configuración de análisis",
+      "it": "Configurazione dell'analisi",
+      "is": "Stillingar fyrir greiningu",
+      "sv": "Analyskonfiguration"
+    },
+    {
+      "en": "Analysis configuration not found",
+      "fr": "Configuration d'analyse introuvable",
+      "de": "Die Analysekonfiguration wurde nicht gefunden",
+      "es": "No se encontró la configuración de análisis",
+      "it": "Configurazione di analisi non trovata",
+      "sv": "Analyskonfiguration hittades inte"
+    },
+    {
+      "en": "Annual remuneration ratio",
+      "fr": "Taux de rémunération annuel",
+      "de": "Jährliches Vergütungsverhältnis",
+      "es": "Coeficiente de remuneración anual",
+      "it": "Rapporto di remunerazione annuo",
+      "sv": "Årlig ersättningsgrad"
+    },
+    {
+      "en": "Annual total compensation",
+      "fr": "Rémunération totale annuelle",
+      "de": "Jährliche Gesamtvergütung",
+      "es": "Compensación total anual",
+      "it": "Compensazione totale annua",
+      "sv": "Årlig total ersättning"
+    },
+    {
+      "en": "Assign factors to employees",
+      "fr": "Assigner des facteurs aux employés",
+      "de": "Weisen Sie den Beschäftigten Faktoren zu",
+      "es": "Asignar factores a empleados",
+      "it": "Assegna fattori ai dipendenti",
+      "is": "Tengja matsþætti við starfsfólk",
+      "sv": "Tilldela anställda faktorer"
+    },
+    {
+      "en": "Assign factors to jobs",
+      "fr": "Assigner des facteurs aux emplois",
+      "de": "Weisen Sie Tätigkeiten Faktoren zu",
+      "es": "Asignar factores a puestos de trabajo",
+      "it": "Assegna fattori ai lavori",
+      "is": "Tengja matsþætti við störf",
+      "sv": "Tilldela faktorer till jobb"
+    },
+    {
+      "en": "Attrition",
+      "fr": "Départs",
+      "de": "Arbeitskräfteabgang",
+      "es": "Bajas",
+      "it": "Abbandono",
+      "is": "Starfslok",
+      "sv": "Avgångar"
+    },
+    {
+      "en": "Automatically scale",
+      "fr": "Échelle automatique",
+      "de": "Automatisch skalieren",
+      "es": "Escalar automáticamente",
+      "it": "Applica automaticamente la ponderazione",
+      "is": "Sjálfvirk skölun",
+      "sv": "Skala automatiskt"
+    },
+    {
+      "en": "Average",
+      "fr": "Moyenne",
+      "de": "Durchschnittlich",
+      "es": "Promedio",
+      "it": "Media",
+      "is": "Meðaltal",
+      "sv": "Genomsnittlig"
+    },
+    {
+      "en": "Average compensation",
+      "fr": "Rémunération moyenne",
+      "de": "Durchschnittsgehalt",
+      "es": "Remuneración media",
+      "it": "Retribuzione media",
+      "is": "Meðallaun",
+      "sv": "Genomsnittlig kompensation"
+    },
+    {
+      "en": "Average compensation for women",
+      "fr": "Rémunération moyenne des femmes",
+      "de": "Durchschnittsgehalt für Frauen",
+      "es": "Remuneración media de las mujeres",
+      "it": "Retribuzione media delle donne",
+      "is": "Meðallaun kvenna",
+      "sv": "Genomsnittlig lön för kvinnor"
+    },
+    {
+      "en": "Average hourly salary pay gap",
+      "fr": "Écart salarial horaire moyen",
+      "de": "Durchschnittliches Lohngefälle pro Stunde",
+      "es": "Brecha salarial promedio por hora",
+      "it": "Differenza salariale oraria media",
+      "sv": "Genomsnittlig timlöneskillnad"
+    },
+    {
+      "en": "Average hourly total compensation pay gap",
+      "fr": "Écart salarial total horaire moyen",
+      "de": "Durchschnittliche Gehaltsdifferenz bei der Gesamtvergütung pro Stunde",
+      "es": "Brecha salarial promedio por hora de compensación total",
+      "it": "Divario retributivo totale medio orario",
+      "sv": "Genomsnittlig total löneskillnad per timme"
+    },
+    {
+      "en": "Average pay gap",
+      "fr": "Écart salarial moyen",
+      "de": "Durchschnittliches Lohngefälle",
+      "es": "Brecha salarial promedio",
+      "it": "Divario retributivo medio",
+      "is": "Meðallaunabil",
+      "sv": "Genomsnittligt lönegap"
+    },
+    {
+      "en": "Average raises",
+      "fr": "Augmentations moyennes",
+      "de": "Durchschnittliche Lohnerhöhungen",
+      "es": "Aumentos promedio",
+      "it": "Aumenti medi",
+      "is": "Meðal launahækkanir",
+      "sv": "Genomsnittliga löneökningar"
+    },
+    {
+      "en": "Average salary by category",
+      "fr": "Salaire moyen par catégorie",
+      "de": "Durchschnittsgehalt nach Kategorie",
+      "es": "Salario medio por categoría",
+      "it": "Stipendio medio per categoria",
+      "is": "Meðallaun eftir flokkum",
+      "sv": "Genomsnittslön per kategori"
+    },
+    {
+      "en": "Average salary pay gap",
+      "fr": "Écart salarial moyen",
+      "de": "Durchschnittliches Gehaltsgefälle",
+      "es": "Brecha salarial promedio",
+      "it": "Differenza salariale media",
+      "sv": "Genomsnittlig löneskillnad"
+    },
+    {
+      "en": "Average total compensation pay gap",
+      "fr": "Écart salarial total moyen",
+      "de": "Durchschnittliches Lohngefälle bei der Gesamtvergütung",
+      "es": "Brecha salarial promedio de compensación total",
+      "it": "Divario retributivo totale medio",
+      "sv": "Genomsnittlig total löneskillnad"
+    },
+    {
+      "en": "Average wage",
+      "fr": "Salaire moyen",
+      "de": "Durchschnittlicher Lohn",
+      "es": "Salario medio",
+      "it": "Salario medio",
+      "is": "Meðallaun",
+      "sv": "Genomsnittslön"
+    },
+    {
+      "en": "Base compensation",
+      "fr": "Rémunération de base",
+      "de": "Grundgehalt",
+      "es": "Remuneración base",
+      "it": "Retribuzione base",
+      "is": "Grunnlaun",
+      "sv": "Grundlön"
+    },
+    {
+      "en": "Base salary",
+      "fr": "Rémunération de base",
+      "de": "Grundgehalt",
+      "es": "Remuneración base",
+      "it": "Stipendio base",
+      "is": "Grunnlaun",
+      "sv": "Grundlön"
+    },
+    {
+      "en": "Below min compensation analysis",
+      "fr": "Analyse de rémunération en dessous du min.",
+      "de": "Analyse unter min. Gehalt",
+      "es": "Análisis de remuneración por debajo del mín.",
+      "it": "Analisi retribuzione al di sotto del minimo",
+      "is": "Lágmarks-launagreining",
+      "sv": "Analys av löner under lägsta"
+    },
+    {
+      "en": "Benchmarking table",
+      "fr": "Table du benchmark",
+      "de": "Benchmarking-Tabelle",
+      "es": "Tabla de estudio comparativo",
+      "it": "Tabella di benchmark",
+      "is": "Markaðslaunatafla",
+      "sv": "Riktmärkningstabell"
+    },
+    {
+      "en": "Benefits in kind",
+      "fr": "Avantages en nature",
+      "de": "Sachbezüge",
+      "es": "Prestaciones en especie",
+      "it": "Prestazioni in natura",
+      "is": "Fríðindi",
+      "sv": "Naturaförmåner"
+    },
+    {
+      "en": "Bonus",
+      "fr": "Prime",
+      "es": "Bonificación",
+      "is": "Bónusgreiðsla"
+    },
+    {
+      "en": "Bonus recipients",
+      "fr": "Bénéficiaires de primes",
+      "de": "Empfänger von Boni",
+      "es": "Receptores de bonificación",
+      "it": "Beneficiari di bonus",
+      "is": "Viðtakendur bónusgreiðslna",
+      "sv": "Bonusmottagare"
+    },
+    {
+      "en": "Bonus remuneration",
+      "fr": "Prime de rémunération",
+      "de": "Bonuszahlungen",
+      "es": "Bonificación",
+      "it": "Retribuzione bonus",
+      "is": "Bónusgreiðsla",
+      "sv": "Bonusersättning"
+    },
+    {
+      "en": "Bonuses and benefits in kind",
+      "fr": "Bonus et avantages en nature",
+      "de": "Boni und Sachleistungen",
+      "es": "Bonificaciones y prestaciones en especie",
+      "it": "Bonus e benefici in natura",
+      "is": "Bónusgreiðslur og fríðindi",
+      "sv": "Bonusar och naturaförmåner."
+    },
+    {
+      "en": "Both before and after raises",
+      "fr": "Avant et après les augmentations",
+      "de": "Sowohl vor als auch nach den Gehaltserhöhungen",
+      "es": "Tanto antes como después de los aumentos",
+      "it": "Sia prima che dopo i rilanci",
+      "sv": "Både före och efter höjningar"
+    },
+    {
+      "en": "Bottom 10% representation",
+      "fr": "Représentation du 10% inférieur",
+      "de": "Repräsentation der untersten 10 %",
+      "es": "Representación en el 10% inferior",
+      "it": "Rappresentanza del 10% inferiore",
+      "is": "Fjöldi í neðstu 10%",
+      "sv": "De 10 procenten med lägst andel representerade"
+    },
+    {
+      "en": "Bottom quartile",
+      "fr": "Quartile inférieur",
+      "de": "Unteres Quartil",
+      "es": "Cuartil inferior",
+      "it": "Quartile inferiore",
+      "is": "Neðsti fjórðungur",
+      "sv": "Lägsta kvartilen"
+    },
+    {
+      "en": "Breakdown by bracket",
+      "fr": "Répartition par fourchette",
+      "de": "Aufschlüsselung nach Gruppe",
+      "es": "Desglose por tramo",
+      "it": "Ripartizione per fascia",
+      "is": "Sundurliðun eftir bilum",
+      "sv": "Fördelning efter grupp"
+    },
+    {
+      "en": "Breakdown by gender",
+      "fr": "Répartition par sexe",
+      "de": "Aufschlüsselung nach Geschlecht",
+      "es": "Desglose por género",
+      "it": "Ripartizione per genere",
+      "sv": "Uppdelning efter kön"
+    },
+    {
+      "en": "Breakdown by headcount",
+      "fr": "Répartition par effectif",
+      "de": "Aufschlüsselung nach Personalbestand",
+      "es": "Desglose por recuento",
+      "it": "Ripartizione per effettivi",
+      "is": "Sundurliðun eftir fjölda",
+      "sv": "Fördelning efter antal personer"
+    },
+    {
+      "en": "Breakdown by quartiles",
+      "fr": "Répartition par quartiles",
+      "de": "Aufschlüsselung nach Quartilen",
+      "es": "Desglose en cuartiles",
+      "it": "Ripartizione per quartili",
+      "is": "Sundurliðun eftir fjórðungum",
+      "sv": "Fördelning efter kvartiler"
+    },
+    {
+      "en": "Budget",
+      "es": "Presupuesto",
+      "is": "Fjármagn"
+    },
+    {
+      "en": "Categorization",
+      "fr": "Catégorisation",
+      "de": "Kategorisierung",
+      "es": "Categorización",
+      "it": "Categorizzazione",
+      "is": "Flokkun",
+      "sv": "Kategorisering"
+    },
+    {
+      "en": "Clear similarity score",
+      "fr": "Effacer le score de similarité",
+      "de": "Ähnlichkeitsscore zurücksetzen",
+      "es": "Borrar la puntuación de similitud",
+      "it": "Azzera punteggio di somiglianza",
+      "is": "Slökkva á samanburðarreikningi",
+      "sv": "Rensa likhetspoäng"
+    },
+    {
+      "en": "Comment available on all datasets",
+      "fr": "Commentaire disponible sur tous les Jeux de données",
+      "de": "Kommentar ist auf allen Datensätze verfügbar",
+      "es": "Comentario disponible en todos los conjuntos de datos",
+      "it": "Commento disponibile in tutti i set di dati",
+      "is": "Athugasemd sýnileg á öllum gagnasettum",
+      "sv": "Kommentar tillgänglig i alla datamängder"
+    },
+    {
+      "en": "Common factors",
+      "fr": "Facteurs fréquents",
+      "de": "Gebräuchliche Faktoren",
+      "es": "Factores habituales",
+      "it": "Fattori comuni",
+      "is": "Algengir flokkar",
+      "sv": "Vanliga faktorer"
+    },
+    {
+      "en": "Common sub-factors",
+      "fr": "Sous-faccteurs fréquents",
+      "de": "Gebäuchliche Unterfaktoren",
+      "es": "Subfactores habituales",
+      "it": "Sotto-fattori comuni",
+      "is": "Algengir matsþættir",
+      "sv": "Vanliga delfaktorer"
+    },
+    {
+      "en": "Comparable jobs",
+      "fr": "Emplois comparables"
+    },
+    {
+      "en": "Compare",
+      "fr": "Comparer",
+      "de": "Vergleichen",
+      "es": "Comparar",
+      "it": "Confronta",
+      "is": "Bera saman",
+      "sv": "Jämför"
+    },
+    {
+      "en": "Comparison",
+      "fr": "Comparaison",
+      "de": "Vergleich",
+      "es": "Comparación",
+      "it": "Confronto",
+      "sv": "Jämförelse"
+    },
+    {
+      "en": "Comparison by category",
+      "fr": "Comparaison par catégorie",
+      "de": "Vergleich nach Kategorie",
+      "es": "Comparación por categoría",
+      "it": "Confronto per categoria",
+      "is": "Samanburður eftir flokkum",
+      "sv": "Jämförelse efter kategori"
+    },
+    {
+      "en": "Comparison compensation",
+      "fr": "Rémunération de comparaison",
+      "de": "Vergleichsvergütung",
+      "es": "Remuneración de comparación",
+      "it": "Confronto retribuzione",
+      "is": "Samanburðarlaun",
+      "sv": "Jämförelse av ersättning"
+    },
+    {
+      "en": "Comparison configuration",
+      "fr": "Configuration de la comparaison",
+      "de": "Vergleichskonfiguration",
+      "es": "Configuración de la comparación",
+      "it": "Configurazione confronto",
+      "is": "Stilling samanburðar",
+      "sv": "Inställningar för jämförelser"
+    },
+    {
+      "en": "Comparison dataset",
+      "fr": "Jeu de données de comparaison",
+      "de": "Vergleichsdatensatz",
+      "es": "Conjunto de datos de comparación",
+      "it": "Set di dati di confronto",
+      "is": "Samanburðargagnasett",
+      "sv": "Jämförande datamängd"
+    },
+    {
+      "en": "Comparison dataset required",
+      "fr": "Jeu de données de comparaison requis",
+      "de": "Vergleichsdatensatz erforderlich",
+      "es": "Se necesita un conjunto de datos de comparación",
+      "it": "Set di dati di confronto richiesto",
+      "is": "Samanburðargagnasett þarf að vera valið",
+      "sv": "Jämförande datamängd som krävs"
+    },
+    {
+      "en": "Comparison details",
+      "fr": "Détails de la comparaison",
+      "de": "Details zum Vergleich",
+      "es": "Detalles de la comparación",
+      "it": "Dettagli confronto",
+      "is": "Nánar um samanburðinn",
+      "sv": "Detaljer om jämförelsen"
+    },
+    {
+      "en": "Comparison filter",
+      "fr": "Filtre de comparaison",
+      "de": "Vergleichsfilter",
+      "es": "Filtro de comparación",
+      "it": "Filtro confronto",
+      "is": "Samanburðarsía",
+      "sv": "Jämförelsefilter"
+    },
+    {
+      "en": "Comparison group",
+      "fr": "Groupe de comparaison",
+      "de": "Vergleichsgruppe",
+      "es": "Grupo de comparación",
+      "it": "Gruppo di confronto",
+      "is": "Samanburðarhópur",
+      "sv": "Jämförelsegrupp"
+    },
+    {
+      "en": "Comparison group definition",
+      "fr": "Définition du groupe de comparaison",
+      "de": "Definition der Vergleichsgruppe",
+      "es": "Definición del grupo de comparación",
+      "it": "Definizione del gruppo di confronto",
+      "is": "Skilgreining samanburðarhóps",
+      "sv": "Definition av jämförelsegrupp"
+    },
+    {
+      "en": "Comparison group name",
+      "fr": "Nom du groupe de comparaison",
+      "de": "Vergleichsgruppenname",
+      "es": "Nombre del grupo de comparación",
+      "it": "Nome gruppo di confronto",
+      "is": "Nafn samanburðarhóps",
+      "sv": "Namn på jämförelsegrupp"
+    },
+    {
+      "en": "Comparison group statistics",
+      "fr": "Statistiques des groupes de comparaison",
+      "de": "Vergleichsgruppen-Statistik",
+      "es": "Estadísticas del grupo de comparación",
+      "it": "Statistiche del gruppo di confronto",
+      "is": "Tölfræði samanburðarhóps",
+      "sv": "Statistik för jämförelsegrupp"
+    },
+    {
+      "en": "Comparison job classes",
+      "fr": "Classes d'emploi de comparaison",
+      "de": "Vergleichsjobklassen",
+      "es": "Tipos de puestos de trabajo de comparación",
+      "it": "Confronto categorie di impiego",
+      "is": "Starfaflokkar til samanburðar",
+      "sv": "Jämförande yrkeskategorier"
+    },
+    {
+      "en": "Comparison method to use",
+      "fr": "Méthode de comparaison à utiliser",
+      "de": "Zu verwendende Vergleichsmethode",
+      "es": "Método de comparación a utilizar",
+      "it": "Metodo di confronto da utilizzare",
+      "is": "Samanburðaraðferð til að beita",
+      "sv": "Jämförelsemetod att använda"
+    },
+    {
+      "en": "Comparison overview",
+      "fr": "Aperçu de la comparaison",
+      "de": "Vergleichsübersicht",
+      "es": "Vista general de la comparación",
+      "it": "Panoramica confronto",
+      "is": "Yfirlit samanburðar",
+      "sv": "Jämförelseöversikt"
+    },
+    {
+      "en": "Comparison summary",
+      "fr": "Résumé de la comparaison",
+      "de": "Vergleichszusammenfassung",
+      "es": "Resumen de la comparación",
+      "it": "Riepilogo confronto",
+      "is": "Samantekt samanburðar",
+      "sv": "Jämförelsesammanfattning"
+    },
+    {
+      "en": "Comparison value point range",
+      "fr": "Plage de points de valeur de comparaison",
+      "de": "Wertepunktbereich vergleichen",
+      "es": "Rango de puntos de valor de comparación",
+      "it": "Intervallo di punti di valore di confronto",
+      "is": "Samanburðar stigaspönn",
+      "sv": "Jämförelsevärde punktintervall"
+    },
+    {
+      "en": "Comparison value points",
+      "fr": "Points de valeur de comparaison",
+      "de": "Vergleichswertpunkte",
+      "es": "Puntos de valor de comparación",
+      "it": "Punti di valore a confronto",
+      "is": "Samanburðarstig",
+      "sv": "Jämförelse värdepunkter"
+    },
+    {
+      "en": "Compensation",
+      "fr": "Rémunération",
+      "de": "Gehalt",
+      "es": "Remuneración",
+      "it": "Retribuzione",
+      "is": "Launaþáttur",
+      "sv": "Lön"
+    },
+    {
+      "en": "Compensation after increase",
+      "fr": "Rémunération après augmentations",
+      "de": "Vergütung nach Gehaltserhöhung",
+      "es": "Remuneración después del aumento",
+      "it": "Retribuzione dopo aumento",
+      "is": "Laun eftir hækkun",
+      "sv": "Lön efter höjning"
+    },
+    {
+      "en": "Compensation assistant",
+      "fr": "Assistant de rémunération",
+      "de": "Gehaltsassistent",
+      "es": "Asistente de remuneración",
+      "it": "Assistente retribuzioni",
+      "is": "Launaráðgjafi",
+      "sv": "Löneassistent"
+    },
+    {
+      "en": "Compensation benchmarking",
+      "fr": "Benchmarks de rémunération",
+      "de": "Gehaltsvergleiche",
+      "es": "Estudios salariales de mercado",
+      "it": "Benchmark retributivo",
+      "is": "Markaðslaun",
+      "sv": "Riktmärkning av löner"
+    },
+    {
+      "en": "Compensation ceiling",
+      "fr": "Rémunération maximale",
+      "de": "Vergütungsobergrenze",
+      "es": "Remuneración máxima",
+      "it": "Massimale retributivo",
+      "is": "Launaþak",
+      "sv": "Lönetak"
+    },
+    {
+      "en": "Compensation component aggregates",
+      "fr": "Agrégats des éléments de la rémunération",
+      "de": "Aggregate der Vergütungskomponente",
+      "es": "Agregados del componente de la remuneración",
+      "it": "Aggregati di componenti di retribuzione",
+      "is": "Samtölur launaþátta",
+      "sv": "Sammanlagda lönekomponenter"
+    },
+    {
+      "en": "Compensation data configuration",
+      "fr": "Configuration des données de rémunération",
+      "de": "Konfiguration der Vergütungsdaten",
+      "es": "Configuración de datos de compensación",
+      "it": "Configurazione dei dati retributivi",
+      "is": "Stilling launagagna",
+      "sv": "Konfiguration av ersättningsdata"
+    },
+    {
+      "en": "Compensation drivers",
+      "fr": "Indemnisation des facteurs",
+      "de": "Die Gründe für die Vergütung",
+      "es": "Conductores de compensación",
+      "it": "Autisti di compensazione",
+      "is": "Áhrifaþættir launa",
+      "sv": "Ersättningsförare"
+    },
+    {
+      "en": "Compensation floor",
+      "fr": "Rémunération minimale",
+      "de": "Vergütungsuntergrenze",
+      "es": "Remuneración mínima",
+      "it": "Minimo retributivo",
+      "is": "Launagólf",
+      "sv": "Lönegolv"
+    },
+    {
+      "en": "Compensation mapping",
+      "fr": "Mappage de la rémunération",
+      "de": "Gehaltszuordnung",
+      "es": "Mapeo de la remuneración",
+      "it": "Mappatura della retribuzione",
+      "is": "Launakortlagning",
+      "sv": "Kartläggning av löner"
+    },
+    {
+      "en": "Compensation range",
+      "fr": "Plage de rémunération",
+      "de": "Vergütungsbereich",
+      "es": "Rango de remuneración",
+      "it": "Intervallo di retribuzione",
+      "is": "Launaspönn",
+      "sv": "Lönespann"
+    },
+    {
+      "en": "Compensation statistics (Choose at least one)",
+      "fr": "Statistiques de rémunération (choisissez-en au moins une)",
+      "de": "Vergütungsstatistiken (mindestens eine auswählen)",
+      "es": "Estadísticas de remuneración (elija como mínimo una)",
+      "it": "Statistiche retributive (selezionane almeno una)",
+      "is": "Samtölur launa (veljið a.m.k. eina)",
+      "sv": "Lönestatistik (välj minst en)"
+    },
+    {
+      "en": "Component used in aggregate",
+      "fr": "Élément de rémunération utilisé dans l'agrégat",
+      "de": "Im Aggregat verwendete Komponente",
+      "es": "Componente usado en el agregado",
+      "it": "Componente utilizzato in aggregato",
+      "is": "Launaþáttur notaður í samtölu",
+      "sv": "Komponent som används i det aggregerade systemet"
+    },
+    {
+      "en": "Configure reference dataset before continuing",
+      "fr": "Configurez Le Jeu de données de référence avant de continuer",
+      "de": "Bitte Referenzdatensatz konfigurieren, bevor Sie fortfahren",
+      "es": "Configurar el conjunto de datos de referencia antes de continuar",
+      "it": "Configura il set di dati di riferimento prima di continuare",
+      "is": "Stillið viðmiðunargagnasett áður en haldið er áfram",
+      "sv": "Konfigurera referensdatamängden innan du fortsätter"
+    },
+    {
+      "en": "Cost of compensation",
+      "fr": "Coût de l'indemnisation",
+      "de": "Kosten der Entschädigung",
+      "es": "Coste de la compensación",
+      "it": "Costo del risarcimento",
+      "sv": "Kostnad för ersättning"
+    },
+    {
+      "en": "Cost of compensation display",
+      "fr": "Affichage du coût de la rémunération",
+      "de": "Anzeige der Vergütungskosten",
+      "es": "Visualización del coste de la compensación",
+      "it": "Visualizzazione del costo della compensazione",
+      "sv": "Kostnad för kompensationsvisning"
+    },
+    {
+      "en": "Cost of raises",
+      "fr": "Coût des augmentations",
+      "de": "Kosten von Gehaltserhöhungen",
+      "es": "Coste de los aumentos",
+      "it": "Costo degli aumenti",
+      "sv": "Kostnad för höjningar"
+    },
+    {
+      "en": "Currency",
+      "fr": "Devise",
+      "de": "Währung",
+      "es": "Divisa",
+      "it": "Valuta",
+      "is": "Gjaldmiðill",
+      "sv": "Valuta"
+    },
+    {
+      "en": "Currency code",
+      "fr": "Code de devise",
+      "de": "Währungscode",
+      "es": "Código de divisa",
+      "it": "Codice valuta",
+      "is": "Auðkenni fyrir gengisskráningu",
+      "sv": "Valutakod"
+    },
+    {
+      "en": "Currency exchange table",
+      "fr": "Table des taux de change",
+      "de": "Wechselkurstabelle",
+      "es": "Tabla de cambio de divisa",
+      "it": "Tabella tassi di cambio valuta",
+      "is": "Tafla með gengi gjaldmiðla",
+      "sv": "Tabell med valutakurser"
+    },
+    {
+      "en": "Custom brackets",
+      "fr": "Fourchettes personnalisées",
+      "de": "Benutzerdefinierte Klammern",
+      "es": "Personalizar los tramos",
+      "it": "Fasce personalizzate",
+      "is": "Sérsniðin talnabil",
+      "sv": "Egna nivåer"
+    },
+    {
+      "en": "Custom factor",
+      "fr": "Facteur personnalisé",
+      "de": "Individuell definierter Faktor",
+      "es": "Factor personalizado",
+      "it": "Fattore personalizzato",
+      "is": "Sérsniðnir flokkar",
+      "sv": "Anpassad faktor"
+    },
+    {
+      "en": "Custom sub-factor",
+      "fr": "Facteur personnalisé",
+      "de": "Individuell definierter Faktor",
+      "es": "Factor personalizado",
+      "it": "Sotto-fattore personalizzato",
+      "is": "Sérsniðnir matsþættir",
+      "sv": "Anpassad delfaktor"
+    },
+    {
+      "en": "Dataset and benchmarking data filter",
+      "fr": "Filtre du Jeu de données et des données des analyses comparatives de rémunération",
+      "de": "Datensatz und Benchmarking-Datenfilter",
+      "es": "Filtro del conjunto de datos y de los datos de estudio de mercado",
+      "it": "Filtro per i set di dati e i dati di benchmark",
+      "is": "Sía á gagnasett og markaðslaun",
+      "sv": "Filter för datamängd och riktmärkningsdata"
+    },
+    {
+      "en": "Dataset configuration",
+      "fr": "Configuration du Jeu de données",
+      "de": "Datensatzkonfiguration",
+      "es": "Configuración del conjunto de datos",
+      "it": "Configurazione del set di dati",
+      "is": "Uppsetning gagnasetts",
+      "sv": "Konfiguration av datamängd"
+    },
+    {
+      "en": "Dataset preview",
+      "fr": "Aperçu du Jeu de données",
+      "de": "Datensatz-Vorschau",
+      "es": "Vista previa del conjunto de datos",
+      "it": "Anteprima del seti di dati",
+      "is": "Gagnayfirlit",
+      "sv": "Förhandsgranskning av datamängd"
+    },
+    {
+      "en": "Demographic group headcount",
+      "fr": "Effectif par groupe démographique",
+      "de": "Mitarbeiterzahl in demografischen Gruppen",
+      "es": "Número de miembros del grupo demográfico",
+      "it": "Numero di dipendenti del gruppo demografico",
+      "sv": "Anställda i demografiska grupper"
+    },
+    {
+      "en": "Detailed comparison",
+      "fr": "Comparaison détaillée",
+      "de": "Detaillierter Vergleich",
+      "es": "Comparación detallada",
+      "it": "Confronto dettagliato",
+      "is": "Ítarlegur samanburður",
+      "sv": "Detaljerad jämförelse"
+    },
+    {
+      "en": "Difference demographic indicator",
+      "fr": "Indicateur démographique de différence",
+      "de": "Unterschied demografischer Indikator",
+      "es": "Indicador demográfico de diferencia",
+      "it": "Differenza indicatore demografico",
+      "sv": "Skillnad demografisk indikator"
+    },
+    {
+      "en": "Difference in average by gender",
+      "fr": "Différence moyenne par sexe",
+      "de": "Unterschied im Durchschnitt nach Geschlecht",
+      "es": "Diferencia en el promedio por género",
+      "it": "Differenza di media per genere",
+      "is": "Munur á meðaltali eftir kyni",
+      "sv": "Skillnad i genomsnitt efter kön"
+    },
+    {
+      "en": "Differentiate between demographic groups",
+      "fr": "Différencier les groupes démographiques",
+      "de": "Zwischen demografischen Gruppen unterscheiden",
+      "es": "Diferenciar entre grupos demográficos",
+      "it": "Distingui tra gruppi demografici",
+      "is": "Birta blæbrigðamun á lýðfræðihópum",
+      "sv": "Differentiera mellan demografiska grupper"
+    },
+    {
+      "en": "Distribution overview",
+      "fr": "Aperçu de la distribution",
+      "de": "Verteilungs­übersicht",
+      "es": "Resumen de la distribución",
+      "it": "Panoramica della distribuzione",
+      "is": "Yfirlit dreifingar",
+      "sv": "Fördelnings­översikt"
+    },
+    {
+      "en": "Employee",
+      "fr": "Employé",
+      "de": "Beschäftigte",
+      "es": "Empleado",
+      "it": "Dipendente",
+      "is": "Starfsmaður",
+      "sv": "Anställd"
+    },
+    {
+      "en": "Employee pay transparency report",
+      "fr": "Rapport sur la transparence salariale des employés",
+      "de": "Bericht zur Gehaltstransparenz der Mitarbeiter",
+      "es": "Informe de transparencia salarial de los empleados",
+      "it": "Rapporto sulla trasparenza delle retribuzioni dei dipendenti",
+      "sv": "Rapport om insyn i anställdas löner"
+    },
+    {
+      "en": "Equal average comparison",
+      "fr": "Comparaison de moyenne égale",
+      "de": "Vergleich des gleichen Durchschnitts",
+      "es": "Comparación de la media igual",
+      "it": "Confronto della media uguale",
+      "is": "Jafn meðaltalssamanburður",
+      "sv": "Jämförelse av samma genomsnitt"
+    },
+    {
+      "en": "Equal average method",
+      "fr": "Méthode de moyenne égale",
+      "de": "Methode des gleichen Durchschnitts",
+      "es": "Método de la media igual",
+      "it": "Metodo della media uguale",
+      "is": "Jöfn meðaltalsaðferð",
+      "sv": "Metod för lika genomsnitt"
+    },
+    {
+      "en": "Equal line comparison",
+      "fr": "Comparaison de ligne égale",
+      "de": "Vergleich der gleichen Linie",
+      "es": "Comparación de la línea igual",
+      "it": "Confronto della retta uguale",
+      "is": "Jafnlínusamanburður",
+      "sv": "Jämförelse av samma linje"
+    },
+    {
+      "en": "Equal line method",
+      "fr": "Méthode de ligne égale",
+      "de": "Methode der gleichen Linie",
+      "es": "Método de la línea igual",
+      "it": "Metodo della retta uguale",
+      "is": "Jafnlínuaðferð",
+      "sv": "Metod för lika linje"
+    },
+    {
+      "en": "Equal pay analysis",
+      "fr": "Analyse d'égalité salariale",
+      "de": "Entgeltgleichheitsanalyse",
+      "es": "Análisis de igualdad salarial",
+      "it": "Analisi della parità retributiva",
+      "is": "Jafnlaunagreining",
+      "sv": "Lika lön-analys"
+    },
+    {
+      "en": "Estimated adjusted pay gap",
+      "fr": "Écart salarial ajusté estimé",
+      "de": "Geschätzte bereinigte Lohnlücke",
+      "es": "Brecha salarial ajustada estimada",
+      "it": "Stima del divario retributivo rettificato",
+      "is": "Mat á leiðréttu launabili",
+      "sv": "Uppskattat justerat lönegap"
+    },
+    {
+      "en": "Estimated pay gap",
+      "fr": "Écart salarial estimé",
+      "de": "Geschätztes Lohngefälle",
+      "es": "Brecha salarial estimada",
+      "it": "Stima del divario retributivo",
+      "is": "Áætlað launabil",
+      "sv": "Beräknat lönegap"
+    },
+    {
+      "en": "Evaluation creation wizard",
+      "fr": "Assistant de création d'évaluations",
+      "de": "Assistenz für die Bewertungserstellung",
+      "es": "Asistente de creación de valoraciones",
+      "it": "Creazione guidata della valutazione",
+      "is": "Uppsetningaraðstoð",
+      "sv": "Utvärderingsguide"
+    },
+    {
+      "en": "Exclusions",
+      "de": "Ausschlüsse",
+      "es": "Exclusiones",
+      "it": "Esclusioni",
+      "is": "Undanskilið",
+      "sv": "Undantag"
+    },
+    {
+      "en": "Existing range",
+      "fr": "Plage existant",
+      "de": "Bestehende Bandbreite",
+      "es": "Rango existente",
+      "it": "Intervallo esistente",
+      "is": "Talnabil í gögnum",
+      "sv": "Befintligt intervall"
+    },
+    {
+      "en": "Extra salary",
+      "fr": "Rémunération supplémentaire",
+      "de": "Zusätzliches Gehalt",
+      "es": "Complementos extrasalariales",
+      "it": "Stipendio extra",
+      "is": "Viðbótarlaun",
+      "sv": "Extra lön"
+    },
+    {
+      "en": "Factor",
+      "fr": "Facteur",
+      "de": "Faktortyp",
+      "it": "Fattore",
+      "is": "Flokkur",
+      "sv": "Faktor"
+    },
+    {
+      "en": "Female predominant job class",
+      "fr": "Classe d'emploi à prédominance féminine",
+      "de": "Weiblich dominierte Jobklasse",
+      "es": "Tipo de puesto de trabajo de predominio femenino",
+      "it": "Categoria di impiego a prevalenza femminile",
+      "is": "Starfaflokkur með konur í meirihluta",
+      "sv": "Kvinnodominerad yrkeskategori"
+    },
+    {
+      "en": "Focus groups",
+      "fr": "Groupes cibles",
+      "de": "Fokus Gruppen",
+      "es": "Grupos de estudio",
+      "it": "Focus group",
+      "is": "Áhersluhópar",
+      "sv": "Fokusgrupper"
+    },
+    {
+      "en": "Gap",
+      "de": "Lücke",
+      "es": "Brecha",
+      "is": "Bil"
+    },
+    {
+      "en": "Gender",
+      "fr": "Champ du sexe",
+      "de": "Geschlecht",
+      "es": "Género",
+      "it": "Genere",
+      "is": "Dálkur sem tilgreinir kyn",
+      "sv": "Kön"
+    },
+    {
+      "en": "Gender distribution",
+      "fr": "Distribution des sexes",
+      "de": "Geschlechterverteilung",
+      "es": "Distribución por género",
+      "it": "Distribuzione di genere",
+      "is": "Kynjaskipting eftir hópi",
+      "sv": "Könsfördelning"
+    },
+    {
+      "en": "Gender pay gaps",
+      "fr": "Écarts salariaux hommes-femmes",
+      "de": "Geschlechtsspezifische Lohnunterschiede",
+      "es": "Brechas salariales de género",
+      "it": "Differenze retributive di genere",
+      "is": "Launabil",
+      "sv": "Lönegap mellan könen"
+    },
+    {
+      "en": "Granted operations",
+      "fr": "Opérations accordées",
+      "de": "Gewährte Vorgänge",
+      "es": "Operaciones concedidas",
+      "it": "Operazioni autorizzate",
+      "is": "Heimilar aðgerðir",
+      "sv": "Beviljade verksamheter"
+    },
+    {
+      "en": "Headcount",
+      "fr": "Effectif",
+      "de": "Mitarbeiterzahl",
+      "es": "Número de empleados",
+      "it": "Numero di dipendenti",
+      "sv": "Antal anställda"
+    },
+    {
+      "en": "Hiring & attrition",
+      "fr": "Embauches et départs",
+      "de": "Neueinstellungen und Arbeitskräfteabgang",
+      "es": "Contrataciones y bajas",
+      "it": "Assunzioni e abbandoni",
+      "is": "Ráðningar og starfslok",
+      "sv": "Anställning & avgångar"
+    },
+    {
+      "en": "Historical incumbency",
+      "fr": "Occupation historique",
+      "de": "Historische Dauer der Inhaberschaft",
+      "es": "Historial ocupacional",
+      "it": "Settore tipicamente femminile/maschile",
+      "is": "Sögulega ríkjandi lýðfræðibreyta",
+      "sv": "Historiskt tjänsteinnehav"
+    },
+    {
+      "en": "Initial values for raise suggestion parameters",
+      "fr": "Valeurs initiales des paramètres de suggestion d'augmentation",
+      "de": "Anfangswerte für Parameter für Lohnerhöhungsvorschläge",
+      "es": "Valores iniciales para parámetros de sugerencia de aumento",
+      "it": "Valori iniziali dei parametri dei suggerimenti di aumento",
+      "is": "Upphafsgildi fyrir launahækkunartillögur",
+      "sv": "Ingångsvärden för parametrar för löneökningsförslag"
+    },
+    {
+      "en": "Inner circle (adjusted pay gap)",
+      "fr": "Cercle intérieur (écart salarial ajusté)",
+      "de": "Innerer Kreis (bereinigte Lohnlücke)",
+      "es": "Círculo interior (brecha salarial ajustada)",
+      "it": "Cerchio interno (divario retributivo rettificato)",
+      "is": "Innri hringur (leiðrétt launabil)",
+      "sv": "Inre cirkel (Justerade lönegap)"
+    },
+    {
+      "en": "Input parameters",
+      "fr": "Paramètres d'entrée",
+      "de": "Eingabeparameter",
+      "es": "Parámetros de entrada",
+      "it": "Parametri input",
+      "is": "Valdir stikar",
+      "sv": "Ingångsparametrar"
+    },
+    {
+      "en": "Internal mobility",
+      "fr": "Mobilité interne",
+      "de": "Interne Mobilität",
+      "es": "Movilidad interna",
+      "it": "Mobilità interna",
+      "is": "Tilfærslur",
+      "sv": "Interna förflyttningar"
+    },
+    {
+      "en": "Interpreting pay gaps",
+      "fr": "Interpréter les écarts salariaux",
+      "de": "Dolmetschen von Lohnunterschieden",
+      "es": "Interpretación de las brechas salariales",
+      "it": "Interpretazione dei divari retributivi",
+      "sv": "Tolkning av löneklyftor"
+    },
+    {
+      "en": "Introduction",
+      "de": "Einführung",
+      "es": "Introducción",
+      "it": "Introduzione",
+      "is": "Inngangur",
+      "sv": "Inledning"
+    },
+    {
+      "en": "Job",
+      "fr": "Poste",
+      "es": "Puesto de trabajo",
+      "it": "Lavoro",
+      "is": "Starf",
+      "sv": "Jobb"
+    },
+    {
+      "en": "Job category",
+      "fr": "Catégorie de travail",
+      "de": "Job-Kategorie",
+      "es": "Categoría laboral",
+      "it": "Categoria di lavoro",
+      "is": "Starfaflokkur",
+      "sv": "Yrkeskategori"
+    },
+    {
+      "en": "Job class",
+      "fr": "Classe d'emploi",
+      "de": "Jobklasse",
+      "es": "Tipo de puesto de trabajo",
+      "it": "categoria di impiego",
+      "is": "Starfaflokkur",
+      "sv": "Yrkeskategori"
+    },
+    {
+      "en": "Job evaluation",
+      "fr": "Évaluation des emplois",
+      "de": "Bewertung der Arbeitsstelle",
+      "es": "Evaluación del puesto",
+      "it": "Valutazione del lavoro",
+      "sv": "Jobbutvärdering"
+    },
+    {
+      "en": "Job points",
+      "fr": "Points du poste",
+      "de": "Punktestand der Stellenbezeichnung",
+      "es": "Puntos del puesto de trabajo",
+      "it": "Punti lavoro",
+      "is": "Stig starfheitis",
+      "sv": "Poäng på yrkestitel"
+    },
+    {
+      "en": "Job Title / Job Group",
+      "fr": "Titre de l'emploi / Groupe de l'emploi",
+      "de": "Jobbezeichnung / Jobgruppe",
+      "es": "Título del puesto / Grupo del puesto",
+      "it": "Titolo professionale/Gruppo professionale",
+      "is": "Starfstitill / Starfshópur",
+      "sv": "Arbetstitel/Arbetsgrupp"
+    },
+    {
+      "en": "Job to job comparison",
+      "fr": "Comparaison entre emplois",
+      "de": "Vergleich von Jobs",
+      "es": "Comparación entre puestos de trabajo",
+      "it": "Confronto impiego a impiego",
+      "is": "Samanburður starfa",
+      "sv": "Jämförelse mellan olika jobb"
+    },
+    {
+      "en": "Job value (points)",
+      "fr": "Valeur du poste (points)",
+      "de": "Jobwert (Punkte)",
+      "es": "Valor del puesto de trabajo (puntos)",
+      "it": "Valore del lavoro (punti)",
+      "is": "Virði starfs (stig)",
+      "sv": "Jobbvärde (poäng)"
+    },
+    {
+      "en": "Key performance indicators (KPIs)",
+      "fr": "Indicateurs clés de performance (KPIs)",
+      "de": "Wichtige Leistungsindikatoren (KPIs)",
+      "es": "Indicadores clave de rendimiento (KPIs)",
+      "it": "Key Performance Indicators (KPI)",
+      "is": "Lykilmælikvarðar",
+      "sv": "Viktiga resultatindikatorer (KPI:er)"
+    },
+    {
+      "en": "Label preview",
+      "fr": "Aperçu du label",
+      "de": "Voransicht des Labels",
+      "es": "Vista previa de la etiqueta",
+      "it": "Anteprima etichetta",
+      "is": "Textasýnishorn",
+      "sv": "Förhandsvisning av etikett"
+    },
+    {
+      "en": "Level details",
+      "fr": "Information du niveau",
+      "de": "Details des Niveaus",
+      "es": "Información sobre el nivel",
+      "it": "Dettagli livello",
+      "is": "Nánari upplýsingar um þrep",
+      "sv": "Nivådetaljer"
+    },
+    {
+      "en": "Levels",
+      "fr": "Niveaux",
+      "de": "Niveaus",
+      "es": "Niveles",
+      "it": "Livelli",
+      "is": "Þrep",
+      "sv": "Nivåer"
+    },
+    {
+      "en": "Lower bound for raise suggestion",
+      "fr": "Limite inférieure pour la suggestion d'augmentations de rémunération",
+      "de": "Untergrenze für Lohnerhöhungsvorschlag",
+      "es": "Límite inferior para sugerir aumentos",
+      "it": "Limite inferiore per il suggerimento di aumento",
+      "is": "Lægri mörk fyrir launahækkunartillögur",
+      "sv": "Nedre gräns för löneökningsförslag"
+    },
+    {
+      "en": "Lowest compensation",
+      "fr": "Rémunération la moins élevée",
+      "de": "Niedrigstes Gehalt",
+      "es": "Remuneración más baja",
+      "it": "Retribuzione più bassa",
+      "is": "Lægstu laun",
+      "sv": "Lägsta kompensationen"
+    },
+    {
+      "en": "Male-Female pay gap",
+      "fr": "Écart salarial entre hommes et femmes",
+      "de": "Lohngefälle zwischen Männern und Frauen",
+      "es": "Brecha salarial entre hombres y mujeres",
+      "it": "Divario retributivo tra uomini e donne",
+      "sv": "Löneskillnader mellan män och kvinnor"
+    },
+    {
+      "en": "Maternity/Adoption leave",
+      "fr": "Congé maternité/adoption"
+    },
+    {
+      "en": "Max limits reached",
+      "fr": "Limites maximales atteintes",
+      "de": "Maximale Grenzen erreicht",
+      "es": "Límites máximos alcanzados",
+      "it": "Limiti massimi raggiunti",
+      "is": "Hámarksmörkum náð",
+      "sv": "Maximala gränser nådda"
+    },
+    {
+      "en": "Max raise",
+      "fr": "Augmentation maximale",
+      "de": "Maximale Erhöhung",
+      "es": "Aumento máximo",
+      "it": "Aumento massimo",
+      "is": "Hámarkshækkun",
+      "sv": "Max löneökning"
+    },
+    {
+      "en": "Max raise and pay gap target",
+      "fr": "Augmentation maximale et objectif d'écart salarial",
+      "de": "Maximale Erhöhung und Ziel für den Lohnunterschied",
+      "es": "Aumento máximo y brecha salarial objetivo",
+      "it": "Aumento massimo e divario retributivo target",
+      "is": "Hámarkshækkun og launabilsmarkmið",
+      "sv": "Maximal löneökning och mål för lönegap"
+    },
+    {
+      "en": "Maximum",
+      "de": "Maximal",
+      "es": "Máximo",
+      "it": "Massimo",
+      "is": "Hæsta gildi",
+      "sv": "Maximalt"
+    },
+    {
+      "en": "Maximum points for level",
+      "fr": "Nombre maximal de points par niveau",
+      "de": "Maximale Punktzahl für Niveaus",
+      "es": "Puntos máximos por nivel",
+      "it": "Punti massimi per livello",
+      "is": "Hæsti fjöldi stiga fyrir þrep",
+      "sv": "Maxpoäng på nivån"
+    },
+    {
+      "en": "Mean gender pay gap",
+      "fr": "Moyenne des écarts de rémunération entre sexes",
+      "de": "Durchschnittlicher geschlechtsspezifischer Lohnunterschied",
+      "es": "Brecha salarial de género media",
+      "it": "Divario retributivo medio di genere",
+      "is": "Óleiðrétt launabil miðað við meðaltal launa",
+      "sv": "Snittlöneskillnad"
+    },
+    {
+      "en": "Median compensation",
+      "fr": "Rémunération médiane",
+      "de": "Gehalts-Medianwert",
+      "es": "Remuneración mediana",
+      "it": "Retribuzione mediana",
+      "is": "Miðgildi launa",
+      "sv": "Medianlön"
+    },
+    {
+      "en": "Median gender pay gap",
+      "fr": "Médiane des écarts de rémunération entre sexes",
+      "de": "Geschlechtsspezifischer Lohnunterschied als Median",
+      "es": "Brecha salarial de género mediana",
+      "it": "Divario retributivo mediano di genere",
+      "is": "Óleiðrétt launabil miðað við miðgildi launa",
+      "sv": "Medianlöneskillnad mellan könen"
+    },
+    {
+      "en": "Median hourly salary pay gap",
+      "fr": "Écart salarial horaire médian",
+      "de": "Durchschnittliches Lohngefälle pro Stunde",
+      "es": "Brecha salarial media por hora",
+      "it": "Differenza salariale oraria mediana",
+      "sv": "Median timlöneskillnad"
+    },
+    {
+      "en": "Median pay gap",
+      "fr": "Écart salarial médian",
+      "de": "Durchschnittliches Lohngefälle",
+      "es": "Brecha salarial media",
+      "it": "Divario retributivo mediano",
+      "is": "Miðgildi launabils",
+      "sv": "Medianlöneskillnad"
+    },
+    {
+      "en": "Mid quartiles",
+      "fr": "Quartiles médians",
+      "de": "Mittlere Quartile",
+      "es": "Cuartiles intermedios",
+      "it": "Quartili medi",
+      "is": "Miðfjórðungar",
+      "sv": "Mittkvartiler"
+    },
+    {
+      "en": "Mid-point",
+      "fr": "À mi-parcours",
+      "de": "Mittelpunkt",
+      "es": "Punto medio",
+      "it": "Punto intermedio",
+      "is": "Miðgildi",
+      "sv": "Mittpunkt"
+    },
+    {
+      "en": "Minimum size for receiving raises",
+      "fr": "Taille minimale pour recevoir des augmentations",
+      "de": "Mindestgröße für den Erhalt von Gehaltserhöhungen",
+      "es": "Tamaño mínimo para recibir aumentos",
+      "it": "Dimensione minima per ricevere gli aumenti",
+      "sv": "Minsta storlek för att ta emot höjningar"
+    },
+    {
+      "en": "Moderately significant focus groups (before raises)",
+      "fr": "Groupes de discussion modérément importants (avant les augmentations)",
+      "de": "Mittelschwere Fokusgruppen (vor den Gehaltserhöhungen)",
+      "es": "Grupos focales moderadamente importantes (antes de los aumentos)",
+      "it": "Focus group moderatamente significativi (prima dei rilanci)",
+      "sv": "Måttligt signifikanta fokusgrupper (före höjningar)"
+    },
+    {
+      "en": "Modify pay bands",
+      "fr": "Modifier les fourchettes salariales",
+      "de": "Gehaltsspannen anpassen",
+      "es": "Modificar las bandas salariales",
+      "it": "Modifica le fasce retributive",
+      "is": "Breyta launaspönnum",
+      "sv": "Ändra lönespann"
+    },
+    {
+      "en": "Nonbinary",
+      "fr": "Non-binaire",
+      "de": "Nicht binär",
+      "es": "No binario",
+      "it": "Non binario",
+      "is": "Kynsegin",
+      "sv": "Icke-binär"
+    },
+    {
+      "en": "Not reported",
+      "fr": "Non communiqué",
+      "de": "Nicht angegeben",
+      "es": "No informado",
+      "it": "Non riportato",
+      "is": "Ekki uppgefið",
+      "sv": "Inte angivet"
+    },
+    {
+      "en": "Number of employees",
+      "fr": "Nombre d’employés",
+      "de": "Anzahl der Beschäftigten",
+      "es": "Número de empleados",
+      "it": "Numero di dipendenti",
+      "is": "Fjöldi starfsfólks",
+      "sv": "Antal anställda"
+    },
+    {
+      "en": "Occupational stereotypes",
+      "fr": "Stéréotypes professionnels",
+      "de": "Berufliche Stereotypen",
+      "es": "Estereotipos ocupacionales",
+      "it": "Stereotipi occupazionali",
+      "is": "Starfstengdar staðalímyndir",
+      "sv": "Stereotyper inom yrket"
+    },
+    {
+      "en": "On temporary contracts",
+      "fr": "Sous contrat temporaire",
+      "de": "Bei befristeten Arbeitsverträgen",
+      "es": "Con contrato temporal",
+      "it": "Con contratto a tempo determinato",
+      "is": "Á tímabundnum samningi",
+      "sv": "På tillfälliga kontrakt"
+    },
+    {
+      "en": "optional",
+      "fr": "facultatif",
+      "es": "opcional",
+      "it": "facoltativo",
+      "is": "valkvætt",
+      "sv": "valfritt"
+    },
+    {
+      "en": "Other factors",
+      "fr": "Autres facteurs",
+      "de": "Andere Faktoren",
+      "es": "Otros factores",
+      "it": "Altri fattori",
+      "is": "Aðrir matsþættir",
+      "sv": "Andra faktorer"
+    },
+    {
+      "en": "Outlier percentage after raise (%)",
+      "fr": "Pourcentage de valeurs aberrantes après augmentation (%)",
+      "de": "Prozentsatz der Ausreißer nach Erhöhung (%)",
+      "es": "Porcentaje atípico tras aumento (%)",
+      "it": "Percentuale anomala dopo l'aumento (%)",
+      "is": "Útlagagreining eftir hækkun (%)",
+      "sv": "Avvikande procentsats efter höjning (%)"
+    },
+    {
+      "en": "Outlier percentage by gender",
+      "fr": "Pourcentage des valeurs aberrantes par sexe",
+      "de": "Ausreißeranteil nach Geschlecht",
+      "es": "Porcentaje de valores atípicos por género",
+      "it": "Percentuale di anomalia per genere",
+      "is": "Útlagaprósenta eftir kyni",
+      "sv": "Överskridande andel enligt kön"
+    },
+    {
+      "en": "Overall representation",
+      "fr": "Représentation globale",
+      "de": "Allgemeine Repräsentation",
+      "es": "Representación global",
+      "it": "Rappresentanza complessiva",
+      "is": "Heildarsamsetning",
+      "sv": "Total representation"
+    },
+    {
+      "en": "Overview of demographic and position split",
+      "fr": "Aperçu de la répartition démographique et des postes",
+      "de": "Überblick über die Aufteilung von Demografie und Position",
+      "es": "Resumen de la división demográfica y de puestos",
+      "it": "Panoramica della suddivisione demografica e delle posizioni",
+      "is": "Yfirlit yfir lýðfræðiskiptingu hópa",
+      "sv": "Översikt av demografisk fördelning och befattningar"
+    },
+    {
+      "en": "Part-time",
+      "fr": "Temps partiel",
+      "de": "Teilzeit",
+      "es": "Tiempo parcial",
+      "is": "Hlutastarf",
+      "sv": "Deltid"
+    },
+    {
+      "en": "Part-time employees",
+      "fr": "Employés à temps partiel",
+      "de": "Teilzeitmitarbeitende",
+      "es": "Empleados a tiempo parcial",
+      "it": "Dipendenti part-time",
+      "is": "Starfsfólk í hlutastarfi",
+      "sv": "Deltidsanställda"
+    },
+    {
+      "en": "Pay band ceiling",
+      "fr": "Plafond de l'fourchette salariale",
+      "de": "Gehaltsband-Obergrenze",
+      "es": "Límite máximo de banda salarial",
+      "it": "Soffitto a fascia retributiva",
+      "is": "Þak launaspannar",
+      "sv": "Lönebandstak"
+    },
+    {
+      "en": "Pay band floor",
+      "fr": "Plancher salarial",
+      "de": "Bezahlen Sie Band Floor",
+      "es": "Sala de bandas de pago",
+      "is": "Gólf launaspannar",
+      "sv": "Lönebandsgolv"
+    },
+    {
+      "en": "Pay bands",
+      "fr": "Échelle de rémunération",
+      "de": "Bands spielen",
+      "es": "Bandas salariales",
+      "it": "Gruppi di pagamento",
+      "sv": "Betalningsband"
+    },
+    {
+      "en": "Pay equity analysis",
+      "fr": "Analyse de l'équité salariale",
+      "de": "Analyse zur Lohngleichheit",
+      "es": "Análisis de equidad salarial",
+      "it": "Analisi della parità retributiva",
+      "is": "Jafnlaunagreining",
+      "sv": "Lika lön-analys"
+    },
+    {
+      "en": "Pay Equity Overview",
+      "fr": "Aperçu de l'équité salariale",
+      "de": "Überblick über die Lohngleichheit",
+      "es": "Descripción general de la igualdad salarial",
+      "it": "Panoramica sull'equità retributiva",
+      "sv": "Översikt över lönekapital"
+    },
+    {
+      "en": "Pay equity target",
+      "fr": "Objectif d'équité salariale",
+      "de": "Gehaltseigenkapitalziel",
+      "es": "Objetivo de igualdad salarial",
+      "it": "Obiettivo di equità retributiva",
+      "sv": "Löneskapitalmål"
+    },
+    {
+      "en": "Pay gap",
+      "fr": "Écart salarial",
+      "de": "Lohnunterschied",
+      "es": "Brecha salarial",
+      "it": "Divario retributivo",
+      "is": "Launabil",
+      "sv": "Lönegap"
+    },
+    {
+      "en": "Pay Transparency",
+      "fr": "Rémunération transparente",
+      "de": "Gehaltstransparenz",
+      "es": "Transparencia de pagos",
+      "it": "Trasparenza salariale",
+      "is": "Launagagnsæi",
+      "sv": "Lönetransparens"
+    },
+    {
+      "en": "Point value",
+      "fr": "Valeur en points",
+      "de": "Punktwert",
+      "es": "Valor en puntos",
+      "it": "Valore in punti",
+      "is": "Stig",
+      "sv": "Poängens värde"
+    },
+    {
+      "en": "Points based on job evaluations only",
+      "fr": "Points basés uniquement sur les évaluations de l'emploi",
+      "de": "Punkte nur auf Basis von Stellenbewertungen",
+      "es": "Puntos basados solamente en las valoraciones de puestos de trabajo",
+      "it": "Punti basati solo sulle valutazioni del lavoro",
+      "is": "Stig eingöngu byggð á starfsmati",
+      "sv": "Poäng baserade enbart på arbetsvärderingar"
+    },
+    {
+      "en": "Points column",
+      "fr": "Colonne des points",
+      "de": "Punktespalte",
+      "es": "Columna de los puntos",
+      "it": "Colonna punti",
+      "is": "Dálkur sem tilgreinir virði",
+      "sv": "Poängkolumn"
+    },
+    {
+      "en": "Position",
+      "fr": "Poste",
+      "es": "Posición",
+      "it": "Posizione",
+      "is": "Stöðugildi"
+    },
+    {
+      "en": "Position-in-Range after raise",
+      "fr": "Position à portée après l'augmentation",
+      "de": "Position in Reichweite nach Erhöhung",
+      "es": "Posición dentro del rango tras subida",
+      "it": "Posizione nel range dopo il rialzo",
+      "is": "Staða í spönn eftir hækkun",
+      "sv": "Position inom räckvidd efter höjning"
+    },
+    {
+      "en": "Position-in-Range before raise",
+      "fr": "Position à portée avant l'augmentation",
+      "de": "Position in Reichweite vor Erhöhung",
+      "es": "Posición dentro del rango antes de la subida",
+      "it": "Posizione nel range prima del rialzo",
+      "is": "Staða í spönn fyrir hækkun",
+      "sv": "Position inom räckhåll före höjning"
+    },
+    {
+      "en": "Predicted compensation",
+      "fr": "Rémunération prévue",
+      "de": "Voraussichtliches Gehalt",
+      "es": "Remuneración prevista",
+      "it": "Retribuzione prevista",
+      "is": "Áætluð laun",
+      "sv": "Förutsedd lön"
+    },
+    {
+      "en": "Predominant demographic value of comparison group",
+      "fr": "Valeur démographique prédominante du groupe de comparaison",
+      "de": "Überwiegender demografischer Wert der Vergleichsgruppe",
+      "es": "Valor demográfico predominante del grupo de comparación",
+      "it": "Valore demografico predominante del gruppo di confronto",
+      "is": "Ríkjandi lýðfræðibreyta samanburðarhóps",
+      "sv": "Dominerande demografiskt värde för jämförelsegrupp"
+    },
+    {
+      "en": "Previous exchange rate",
+      "fr": "Taux de change précédent",
+      "de": "Bisheriger Wechselkurs",
+      "es": "Tipo de cambio anterior",
+      "it": "Tasso di cambio precedente",
+      "is": "Fyrri gengisskráning",
+      "sv": "Tidigare växelkurs"
+    },
+    {
+      "en": "Primary currency",
+      "fr": "Devise principale",
+      "de": "Hauptwährung",
+      "es": "Divisa principal",
+      "it": "Valuta principale",
+      "is": "Aðalgjaldmiðill",
+      "sv": "Primär valuta"
+    },
+    {
+      "en": "Progress Toward Pay Equity",
+      "fr": "Progrès en matière d'équité salariale",
+      "de": "Fortschritte auf dem Weg zur Lohngleichheit",
+      "es": "El progreso hacia la igualdad salarial",
+      "it": "Progressi verso l'equità retributiva",
+      "sv": "Framsteg mot lönejämlikhet"
+    },
+    {
+      "en": "Quartile",
+      "de": "Viertelwert",
+      "es": "Cuartil",
+      "is": "Fjórðungur",
+      "sv": "Kvartil"
+    },
+    {
+      "en": "Quartile boundaries",
+      "fr": "Frontières des quartiles",
+      "de": "Quartilsgrenzen",
+      "es": "Límites de los cuartiles",
+      "it": "Limiti del quartile",
+      "is": "Fjórðungamörk",
+      "sv": "Kvartilgränser"
+    },
+    {
+      "en": "Quartile pay bands",
+      "fr": "Quartiles de rémunération",
+      "de": "Quartile Lohnbänder",
+      "es": "Bandas salariales por cuartiles",
+      "it": "Fasce retributive del quartile",
+      "is": "Fjórðungslaunabil",
+      "sv": "Löneintervall per kvartil"
+    },
+    {
+      "en": "Raise",
+      "fr": "Augmentation",
+      "de": "Lohnerhöhung",
+      "es": "Aumento",
+      "it": "Aumento",
+      "is": "Launahækkun",
+      "sv": "Löneökning"
+    },
+    {
+      "en": "Raise allocations",
+      "fr": "Répartition des augmentations",
+      "de": "Lohnerhöhungszuordnungen",
+      "es": "Distribución de los aumentos",
+      "it": "Ripartizione degli aumenti",
+      "is": "Dreifing launahækkana",
+      "sv": "Höja anslagen"
+    },
+    {
+      "en": "Raise ceiling",
+      "fr": "Augmentation maximale",
+      "de": "Obergrenze für Lohnerhöhung",
+      "es": "Aumento máximo",
+      "it": "Massimale aumento",
+      "is": "Þak á hækkun",
+      "sv": "Tak för löneökning"
+    },
+    {
+      "en": "Raise configuration",
+      "fr": "Configuration des augmentations",
+      "de": "Konfiguration der Gehaltserhöhung",
+      "es": "Configuración de los aumentos",
+      "it": "Configurazione aumento",
+      "is": "Stillingar fyrir launahækkanir",
+      "sv": "Konfiguration av löneökning"
+    },
+    {
+      "en": "Raise effect on pay gap",
+      "fr": "Effet de l'augmentation salariale sur l'écart salarial",
+      "de": "Auswirkung der Lohnerhöhung auf den Lohnunterschied",
+      "es": "Efecto del aumento en la brecha salarial",
+      "it": "Effetto dell'aumento sul divario retributivo",
+      "is": "Áhrif hækkunar á launabil",
+      "sv": "Löneökningens effekt på lönegapet"
+    },
+    {
+      "en": "Raise in percentages",
+      "fr": "Augmentation en pourcentage",
+      "de": "Lohnerhöhung in Prozentsätzen",
+      "es": "Aumento en porcentajes",
+      "it": "Aumento in percentuale",
+      "is": "Hækkun í prósentum",
+      "sv": "Löneökning i procentandelar"
+    },
+    {
+      "en": "Raise suggestion configuration",
+      "fr": "Augmenter la configuration des suggestions",
+      "de": "Konfiguration des Vorschlags einreichen",
+      "es": "Aumentar la configuración de sugerencias",
+      "it": "Aumentare la configurazione dei suggerimenti",
+      "sv": "Höj förslagskonfigurationen"
+    },
+    {
+      "en": "Range",
+      "fr": "Plage",
+      "de": "Bereich:",
+      "es": "Rango",
+      "it": "Intervallo",
+      "is": "Bil",
+      "sv": "Intervall"
+    },
+    {
+      "en": "Ratio",
+      "de": "Verhältnis",
+      "it": "Rapporto",
+      "is": "Hlutfall",
+      "sv": "Proportion"
+    },
+    {
+      "en": "Ratio between average of groups",
+      "fr": "Ratio entre la moyenne des groups",
+      "de": "Verhältnis zwischen den Durchschnittswerten der Gruppen",
+      "es": "Índice entre la media de los grupos",
+      "it": "Rapporto tra la media dei gruppi",
+      "is": "Hlutfall meðaltala hópa",
+      "sv": "Förhållande mellan gruppers genomsnitt"
+    },
+    {
+      "en": "Ratio between median of groups",
+      "fr": "Ratio entre la médiane des groupes",
+      "de": "Verhältnis zwischen den Medianen der Gruppen",
+      "es": "Ratio entre la mediana de los grupos",
+      "it": "Rapporto tra le mediane dei gruppi",
+      "is": "Hlutfall milli miðgildis hópa",
+      "sv": "Förhållande mellan medianvärden för grupperna"
+    },
+    {
+      "en": "Received a bonus payment",
+      "fr": "A reçu une prime",
+      "de": "Hat eine Bonuszahlung erhalten",
+      "es": "Recibió una bonificación",
+      "it": "Hanno ricevuto un bonus",
+      "is": "Fékk bónusgreiðslu",
+      "sv": "Erhållit en bonusutbetalning"
+    },
+    {
+      "en": "Received benefits in kind",
+      "fr": "A reçu des avantages en nature",
+      "de": "Hat Sachbezüge erhalten",
+      "es": "Recibió prestaciones en especie",
+      "it": "Hanno ricevuto prestazioni in natura",
+      "is": "Naut fríðinda",
+      "sv": "Mottagna naturaförmåner"
+    },
+    {
+      "en": "Reference group",
+      "fr": "Groupe de référence",
+      "de": "Referenzgruppe",
+      "es": "Grupo de referencia",
+      "it": "Gruppo di riferimento",
+      "is": "Viðmiðunarhópur",
+      "sv": "Referensgrupp"
+    },
+    {
+      "en": "Reference group average compensation",
+      "fr": "Rémunération moyenne du groupe de référence",
+      "de": "Durchschnittsvergütung der Referenzgruppe",
+      "es": "Compensación media del grupo de referencia",
+      "it": "Retribuzione media del gruppo di riferimento",
+      "sv": "Genomsnittlig ersättning för referensgrupp"
+    },
+    {
+      "en": "Regression coefficient",
+      "fr": "Coefficient de régression",
+      "de": "Regressionskoeffizient",
+      "es": "Coeficiente de regresión",
+      "it": "Coefficiente di regressione",
+      "is": "Stiki",
+      "sv": "Regressionskoefficient"
+    },
+    {
+      "en": "Regression intercept term",
+      "fr": "Terme d'interception de la régression",
+      "de": "Regressions-Achsenabschnittsterm",
+      "es": "Término de intercepción de la regresión",
+      "it": "Intercetta della regressione",
+      "is": "Skurðpunktur",
+      "sv": "Skärningspunkt"
+    },
+    {
+      "en": "Regression results",
+      "fr": "Résultats de la régression",
+      "de": "Regressionsergebnisse",
+      "es": "Resultados de la regresión",
+      "it": "Risultati della regressione",
+      "is": "Niðurstaða aðhvarfsgreiningar",
+      "sv": "Regressionsresultat"
+    },
+    {
+      "en": "Regular employees (full-time and permanent)",
+      "fr": "Employés fixes (temps plein et permanent)",
+      "de": "Festangestellte Mitarbeitende (Vollzeit und unbefristet)",
+      "es": "Empleados fijos (a tiempo completo e indefinido)",
+      "it": "Dipendenti regolari (a tempo pieno e indeterminato)",
+      "is": "Reglulegt starfsfólk (fullt starf og framtíðarsamningur)",
+      "sv": "Ordinarie anställda (heltids- och tillsvidareanställda)"
+    },
+    {
+      "en": "Representation across compensation structure",
+      "fr": "Représentation dans la structure salariale",
+      "de": "Repräsentation innerhalb der Vergütungsstruktur",
+      "es": "Representación en la estructura retributiva",
+      "it": "Rappresentazione in tutta la struttura retributiva",
+      "is": "Fjölbreytileiki þvert á launauppbyggingu",
+      "sv": "Representation över hela ersättningsstrukturen"
+    },
+    {
+      "en": "Representation by category",
+      "fr": "Représentation par catégorie",
+      "de": "Repräsentation nach Kategorie",
+      "es": "Representación por categoría",
+      "it": "Rappresentazione per categoria",
+      "is": "Fjölbreytileiki eftir flokkum",
+      "sv": "Representation efter kategori"
+    },
+    {
+      "en": "R² value",
+      "fr": "Valeur R²",
+      "de": "R²-Wert",
+      "es": "Valor del R²",
+      "it": "Valore dell'R²",
+      "is": "R² gildi",
+      "sv": "R²-värde"
+    },
+    {
+      "en": "Salary",
+      "fr": "Salaire",
+      "de": "Gehalt",
+      "es": "Salario",
+      "it": "Salario",
+      "sv": "Lön"
+    },
+    {
+      "en": "Salary - Pay Gap",
+      "fr": "Salaire et écart salarial",
+      "de": "Gehalt — Lohngefälle",
+      "es": "Salario: brecha salarial",
+      "it": "Salario - Divario retributivo",
+      "sv": "Lön - Löneskillnad"
+    },
+    {
+      "en": "Salary - Quartile pay bands",
+      "fr": "Salaire : tranches salariales par quartiles",
+      "de": "Gehalt — Quartile Paybands",
+      "es": "Salario: bandas salariales del cuartil",
+      "it": "Stipendio - Fasce retributive del quartile",
+      "sv": "Lön - Kvartillöneband"
+    },
+    {
+      "en": "Salary by categories of workers",
+      "fr": "Salaire par catégorie de travailleurs",
+      "de": "Gehalt nach Kategorien von Arbeitnehmern",
+      "es": "Salario por categorías de trabajadores",
+      "it": "Salario per categorie di lavoratori",
+      "sv": "Lön efter kategorier av arbetstagare"
+    },
+    {
+      "en": "Salary component",
+      "fr": "Élément de la rémunération",
+      "de": "Gehaltsbestandteil",
+      "es": "Complementos salariales",
+      "it": "Componente salariale",
+      "is": "Launaþáttur",
+      "sv": "Lönekomponent"
+    },
+    {
+      "en": "Salary component analyzed",
+      "fr": "Élément de rémunération analysé",
+      "de": "Gehaltskomponente analysiert",
+      "es": "Componente de la remuneración analizado",
+      "it": "Componente salariale analizzata",
+      "is": "Launabreyta notuð í greiningu",
+      "sv": "Analyserad lönekomponent"
+    },
+    {
+      "en": "Saving all raises",
+      "fr": "Enregistrement de toutes les augmentations",
+      "de": "Alle Erhöhungen werden gespeichert",
+      "es": "Guardando todos los aumentos",
+      "it": "Salva tutti gli aumenti",
+      "is": "Vista allar hækkanir",
+      "sv": "Spara alla löneökningar"
+    },
+    {
+      "en": "Set to EEOC pay brackets",
+      "fr": "Établir les fourchettes de rémunération de EEOC",
+      "de": "Auf EEOC-Lohnbänder einstellen",
+      "es": "Ajustar a las bandas salariales del EEOC",
+      "it": "Imposta fasce retributive EEOC",
+      "is": "Stilla á stöðluð EEOC launabil",
+      "sv": "Ställ in på EEOC-löneintervall"
+    },
+    {
+      "en": "should be lower than max raise",
+      "fr": "doit être inférieur à l'augmentation de rémunération max.",
+      "de": "muss niedriger als maximale Lohnerhöhung sein",
+      "es": "debería ser inferior al aumento máximo",
+      "it": "deve essere inferiore all'aumento massimo",
+      "is": "þarf að vera lægri en hámarkshækkun",
+      "sv": "måste vara lägre än den maximala löneökningen"
+    },
+    {
+      "en": "Significance level",
+      "fr": "Niveau de signification",
+      "de": "Signifikanzniveau",
+      "es": "Nivel de significación",
+      "it": "Livello di significatività",
+      "is": "Marktækni",
+      "sv": "Signifikansnivå"
+    },
+    {
+      "en": "Significance target",
+      "fr": "Objectif de significativité",
+      "de": "Signifikanzziel",
+      "es": "Objetivo de significancia",
+      "it": "Obiettivo di significatività",
+      "is": "Marktæknismarkmið",
+      "sv": "Signifikansmål"
+    },
+    {
+      "en": "Significant focus groups (before raises)",
+      "fr": "Groupes de discussion importants (avant les augmentations)",
+      "de": "Signifikante Fokusgruppen (vor den Gehaltserhöhungen)",
+      "es": "Grupos focales importantes (antes de los aumentos)",
+      "it": "Focus group significativi (prima dei rilanci)",
+      "sv": "Betydande fokusgrupper (före höjningar)"
+    },
+    {
+      "en": "Similarity score",
+      "fr": "Score de similarité",
+      "de": "Ähnlichkeitsscore",
+      "es": "Puntuación de similitud",
+      "it": "Punteggio di somiglianza",
+      "is": "Samanburðarskor",
+      "sv": "Likhetspoäng"
+    },
+    {
+      "en": "Size of brackets",
+      "fr": "Taille des fourchettes",
+      "de": "Klassengröße",
+      "es": "Tamaño de los tramos",
+      "it": "Dimensione delle fasce",
+      "is": "Stærð bila",
+      "sv": "Gruppernas storlek"
+    },
+    {
+      "en": "Size of value ranges",
+      "fr": "Taille des plages de valeurs",
+      "de": "Größe der Wertebereiche",
+      "es": "Tamaño de los rangos de valor",
+      "it": "Dimensione degli intervalli di valori",
+      "is": "Stærð stigaspannar",
+      "sv": "Storlek på värdeintervall"
+    },
+    {
+      "en": "Some employees are part-time",
+      "fr": "Certains employés sont à temps partiel",
+      "de": "Einige Mitarbeitende sind teilzeitbeschäftigt",
+      "es": "Algunos empleados trabajan a media jornada",
+      "it": "Alcuni dipendenti sono part-time",
+      "is": "Fyrirtækið er með starfsfólk í hlutastarfi",
+      "sv": "Vissa anställda arbetar deltid"
+    },
+    {
+      "en": "Specify target pay gap",
+      "fr": "Spécifiez l'écart salarial cible",
+      "de": "Angestrebte Verdienstlücke angeben",
+      "es": "Especificar brecha salarial objetivo",
+      "it": "Specifica divario retributivo target",
+      "is": "Tilgreindu markmiðsfjárveitingu",
+      "sv": "Ange mål för lönegap"
+    },
+    {
+      "en": "Sub-factor",
+      "fr": "Sous-facteur",
+      "de": "Unterfaktor",
+      "es": "Subfactor",
+      "it": "Sotto-fattore",
+      "is": "Matsþáttur",
+      "sv": "Delfaktor"
+    },
+    {
+      "en": "Suggested compensation",
+      "fr": "Rémunération suggérée",
+      "de": "Vorgeschlagenes Gehalt",
+      "es": "Remuneración sugerida",
+      "it": "Retribuzione suggerita",
+      "is": "Launatillaga",
+      "sv": "Föreslagen lön"
+    },
+    {
+      "en": "Suggested compensation breakdown",
+      "fr": "Répartition de la rémunération suggérée",
+      "de": "Vorgeschlagene Aufschlüsselung der Vergütung",
+      "es": "Desglose de la remuneración sugerida",
+      "it": "Ripartizione della retribuzione suggerita",
+      "is": "Sundurliðun á launatillögu",
+      "sv": "Analys av föreslagen lön"
+    },
+    {
+      "en": "Suggested raise",
+      "fr": "Augmentation suggérée",
+      "de": "Vorgeschlagene Gehaltserhöhung",
+      "es": "Aumento sugerido",
+      "it": "Aumento suggerito",
+      "is": "Hækkunartillaga",
+      "sv": "Föreslagen löneökning"
+    },
+    {
+      "en": "Summary of jobs in evaluation",
+      "fr": "Résumé des emplois à évaluer",
+      "de": "Zusammenfassung der Tätigkeiten in der Bewertung",
+      "es": "Resumen de los puestos de trabajo en valoración",
+      "it": "Riepilogo dei lavori in valutazione",
+      "is": "Samantekt á störfum í starfsmati",
+      "sv": "Sammanfattning av jobb i utvärdering"
+    },
+    {
+      "en": "Target budget",
+      "fr": "Spécifiez le budget",
+      "de": "Zielbudget",
+      "es": "Presupuesto objetivo",
+      "it": "Specifica budget",
+      "is": "Markmiðsfjárveiting",
+      "sv": "Målbudget"
+    },
+    {
+      "en": "Target gap",
+      "fr": "Écart cible",
+      "de": "Ziel-Gefälle",
+      "es": "Brecha objetivo",
+      "it": "Divario target",
+      "is": "Launabilsmarkmið",
+      "sv": "Målgap"
+    },
+    {
+      "en": "Target group",
+      "fr": "Groupe cible",
+      "de": "Zielgruppe",
+      "es": "Grupo objetivo",
+      "it": "Gruppo target",
+      "is": "Markhópur",
+      "sv": "Målgrupp"
+    },
+    {
+      "en": "Target pay gap",
+      "fr": "Écart salarial cible",
+      "de": "Ziel-Lohnlücke",
+      "es": "Brecha salarial objetivo",
+      "it": "Divario retributivo target",
+      "is": "Markmið um mældan launamun",
+      "sv": "Mål för lönegap"
+    },
+    {
+      "en": "Target reached",
+      "fr": "Objectif atteint",
+      "de": "Ziel erreicht",
+      "es": "Objetivo alcanzado",
+      "it": "Obiettivo raggiunto",
+      "sv": "Mål uppnådd"
+    },
+    {
+      "en": "Top 10% representation",
+      "fr": "Représentation du 10% supérieur",
+      "de": "Repräsentation der obersten 10 %",
+      "es": "Representación en el 10% superior",
+      "it": "Rappresentanza del 10% superiore",
+      "is": "Fjöldi í efstu 10%",
+      "sv": "De 10 % mest representerade"
+    },
+    {
+      "en": "Top level category",
+      "fr": "Catégorie de niveau supérieur",
+      "de": "Übergeordnete Kategorie",
+      "es": "Categoría de primer nivel",
+      "it": "Categoria di primo livello",
+      "is": "Efsta stig flokkunar",
+      "sv": "Överordnad kategori"
+    },
+    {
+      "en": "Top quartile",
+      "fr": "Quartile supérieur",
+      "de": "Oberstes Quartil",
+      "es": "Cuartil superior",
+      "it": "Quartile superiore",
+      "is": "Efsti fjórðungur",
+      "sv": "Översta kvartilen"
+    },
+    {
+      "en": "Top/bottom quartiles",
+      "fr": "Quartiles supérieurs et inférieurs",
+      "de": "Obere/untere Quartile",
+      "es": "Cuartiles superiores/inferiores",
+      "it": "Quartili superiore/inferiore",
+      "is": "Topp/botnfjórðungar",
+      "sv": "Övre/undre kvartiler"
+    },
+    {
+      "en": "Total compensation",
+      "fr": "Indemnisation totale",
+      "de": "Gesamtvergütung",
+      "es": "Compensación total",
+      "it": "Compensazione totale",
+      "sv": "Total ersättning"
+    },
+    {
+      "en": "Total compensation - Pay Gap",
+      "fr": "Rémunération totale - Écart salarial",
+      "de": "Gesamtvergütung — Lohngefälle",
+      "es": "Compensación total: brecha salarial",
+      "it": "Compensazione totale - Retribuzione",
+      "sv": "Total ersättning - Löneskillnad"
+    },
+    {
+      "en": "Total compensation - Quartile pay bands",
+      "fr": "Rémunération totale - Échelle salariale par quartile",
+      "de": "Gesamtvergütung — Gehaltsstufen in vierteljährlichen Gehaltsstufen",
+      "es": "Compensación total: bandas salariales del cuartil",
+      "it": "Compensazione totale - Fasce retributive quartili",
+      "sv": "Total ersättning - kvartillöneintervall"
+    },
+    {
+      "en": "Total compensation after raises",
+      "fr": "Rémunération totale après augmentations",
+      "de": "Gesamtvergütung nach Gehaltserhöhungen",
+      "es": "Compensación total tras los aumentos",
+      "it": "Compensazione totale dopo gli aumenti",
+      "is": "Heildarlaun eftir launahækkanir",
+      "sv": "Total ersättning efter höjningar"
+    },
+    {
+      "en": "Total compensation by categories of workers",
+      "fr": "Rémunération totale par catégorie de travailleurs",
+      "de": "Gesamtvergütung nach Kategorien von Arbeitnehmern",
+      "es": "Compensación total por categorías de trabajadores",
+      "it": "Compensazione totale per categorie di lavoratori",
+      "sv": "Total ersättning per kategori av arbetstagare"
+    },
+    {
+      "en": "Total cost after raises",
+      "fr": "Coût total après augmentation",
+      "de": "Gesamtkosten nach Gehaltserhöhungen",
+      "es": "Coste total después de los aumentos",
+      "it": "Costo totale dopo gli aumenti",
+      "sv": "Totala kostnader efter höjningar"
+    },
+    {
+      "en": "Total cost before raises",
+      "fr": "Coût total avant les augmentations",
+      "de": "Gesamtkosten vor Gehaltserhöhungen",
+      "es": "Coste total antes de los aumentos",
+      "it": "Costo totale prima degli aumenti",
+      "sv": "Totala kostnader före höjningar"
+    },
+    {
+      "en": "Total cost of raises",
+      "fr": "Coût total des augmentations",
+      "de": "Gesamtkosten der Erhöhungen",
+      "es": "Coste total de los aumentos",
+      "it": "Costo totale degli aumenti",
+      "is": "Heildarkostnaður við launahækkanir",
+      "sv": "Total kostnad för löneökningar"
+    },
+    {
+      "en": "Total cost of raises in %",
+      "fr": "Coût total des augmentations en %",
+      "de": "Gesamtkosten der Erhöhungen in%",
+      "es": "Coste total de los aumentos en%",
+      "it": "Costo totale degli aumenti in%",
+      "sv": "Totala kostnader för höjningar i%"
+    },
+    {
+      "en": "Total cost with raises",
+      "fr": "Coût total avec augmentations",
+      "de": "Gesamtkosten mit Gehaltserhöhungen",
+      "es": "Coste total con aumentos",
+      "it": "Costo totale con aumenti",
+      "sv": "Totalkostnad med höjningar"
+    },
+    {
+      "en": "Total extra salary",
+      "fr": "Rémunération supplémentaire totale",
+      "de": "Gesamtes zusätzliches Gehalt",
+      "es": "Remuneración extrasalarial total",
+      "it": "Totale stipendio extra",
+      "is": "Heildar viðbótarlaun",
+      "sv": "Total extra lön"
+    },
+    {
+      "en": "Total gross annual remuneration",
+      "es": "Remuneración anual bruta total",
+      "it": "Totale retribuzione annua lorda",
+      "is": "Heildar árslaun (brúttó)",
+      "sv": "Sammanlagd årlig bruttoersättning"
+    },
+    {
+      "en": "Total gross annual remuneration level",
+      "es": "Nivel de remuneración anual bruta total",
+      "it": "Livello di retribuzione totale annua lorda",
+      "is": "Fjórðungskipting heildarlauna (brúttó)",
+      "sv": "Total bruttolönsnivå per år"
+    },
+    {
+      "en": "Total headcount",
+      "fr": "Effectif total",
+      "de": "Gesamtzahl der Mitarbeiter",
+      "es": "Plantilla total",
+      "it": "Numero totale di dipendenti",
+      "sv": "Totalt antal anställda"
+    },
+    {
+      "en": "Total points",
+      "fr": "Points totaux",
+      "de": "Gesamtpunktzahl",
+      "es": "Puntos totales",
+      "it": "Punti totali",
+      "is": "Heildarstig",
+      "sv": "Totalt antal poäng"
+    },
+    {
+      "en": "Total salary",
+      "fr": "Rémunération totale",
+      "de": "Gesamtgehalt",
+      "es": "Remuneración total",
+      "it": "Totale stipendio",
+      "is": "Heildarlaun",
+      "sv": "Total lön"
+    },
+    {
+      "en": "Total salary components",
+      "fr": "Éléments de la rémunération totaux",
+      "de": "Gesamte Gehaltsbestandteile",
+      "es": "Componentes de remuneración totales",
+      "it": "Componenti salariali totali",
+      "is": "Heildarlaunaþættir",
+      "sv": "Totala lönekomponenter"
+    },
+    {
+      "en": "Unadjusted gender pay gap",
+      "fr": "Écart salarial non ajusté entre les femmes et les hommes",
+      "de": "Unbereinigte Lohnlücke",
+      "es": "Brecha salarial de género no ajustada",
+      "it": "Divario retributivo di genere non corretto",
+      "is": "Óleiðrétt launabil kynja",
+      "sv": "Ojusterade löneskillnader mellan könen"
+    },
+    {
+      "en": "Unadjusted pay gap",
+      "fr": "Écart salarial non ajusté",
+      "de": "Unbereinigte Lohnlücke",
+      "es": "Brecha salarial no ajustada",
+      "it": "Divario retributivo non rettificato",
+      "is": "Óleiðrétt launabil",
+      "sv": "Ojusterat lönegap"
+    },
+    {
+      "en": "Unadjusted pay gap after raises",
+      "fr": "Écart salarial non ajusté après les augmentations",
+      "de": "Unbereinigte Lohnlücke nach Erhöhungen",
+      "es": "Brecha salarial sin ajustar tras los aumentos",
+      "it": "Divario retributivo non corretto dopo gli aumenti",
+      "sv": "Ojusterad löneskillnad efter höjningar"
+    },
+    {
+      "en": "Unadjusted pay gap before raises",
+      "fr": "Écart salarial non ajusté avant les augmentations",
+      "de": "Unbereinigte Lohnlückevor Erhöhungen",
+      "es": "Brecha salarial no ajustada antes de los aumentos",
+      "it": "Divario retributivo non corretto prima degli aumenti",
+      "sv": "Ojusterad löneskillnad före höjningar"
+    },
+    {
+      "en": "Unadjusted pay gap by category",
+      "fr": "Écart salarial non ajusté par catégorie",
+      "de": "Unbereinigtes Lohngefälle nach Kategorie",
+      "es": "Brecha salarial no ajustada por categoría",
+      "it": "Differenza retributiva non rettificata per categoria",
+      "is": "Óleiðrétt launabil eftir flokkum",
+      "sv": "Ojusterad löneskillnad per kategori"
+    },
+    {
+      "en": "Understanding & analyzing the compensation model",
+      "fr": "Comprendre et analyser le modèle de rémunération",
+      "de": "Das Vergütungsmodell verstehen und analysieren",
+      "es": "Comprender y analizar el modelo de compensación",
+      "it": "Comprensione e analisi del modello retributivo",
+      "sv": "Förstå och analysera kompensationsmodellen"
+    },
+    {
+      "en": "Universal fair pay check report",
+      "fr": "Rapport universal fair pay check",
+      "de": "Universal Fair Pay Check Bericht",
+      "es": "Informe universal fair pay check",
+      "is": "Universal fair pay check skýrsla",
+      "sv": "Universell rapport om rättvisa löner"
+    },
+    {
+      "en": "Value point mapping",
+      "fr": "Correspondance des points de valeur",
+      "de": "Zuweisung von Wertpunkten",
+      "es": "Asignación de los puntos de valor",
+      "it": "Mappatura dei punti di valore",
+      "is": "Pörun starfaflokka og stiga",
+      "sv": "Kartläggning av värdepunkter"
+    },
+    {
+      "en": "Value point range",
+      "fr": "Plage des points de valeur",
+      "de": "Wertepunktbereich",
+      "es": "Rango del punto de valor",
+      "it": "Intervallo di punti di valore",
+      "is": "Stigaspönn",
+      "sv": "Värdepoängsintervall"
+    },
+    {
+      "en": "Value points for comparison group",
+      "fr": "Points de valeur pour le groupe de comparaison",
+      "de": "Wertepunkte für Vergleichsgruppe",
+      "es": "Puntos de valor para el grupo de comparación",
+      "it": "Punti di valore per il gruppo di confronto",
+      "is": "Stig fyrir samanburðarhóp",
+      "sv": "Värdepoäng för jämförelsegrupp"
+    },
+    {
+      "en": "Value range",
+      "fr": "Plage de valeurs",
+      "de": "Wertebereich",
+      "es": "Rango de valor",
+      "it": "Intervallo di valori",
+      "is": "Launaspönn",
+      "sv": "Värdeintervall"
+    },
+    {
+      "en": "Value range comparison",
+      "fr": "Vue comparative des plages de valeurs",
+      "de": "Wertebereich-Vergleichs­ansicht",
+      "es": "Vista comparativa del rango de valor",
+      "it": "Visualizzazione di confronto dell'intervallo di valori",
+      "is": "Samanburður launaspanna",
+      "sv": "Jämförelse av värdeintervall"
+    },
+    {
+      "en": "Value-based Comparison",
+      "fr": "Comparaison selon la valeur",
+      "de": "Wertebasierter Vergleich",
+      "es": "Comparación basada en el valor",
+      "it": "Confronto basato sul valore",
+      "is": "Virðismiðaður samanburður",
+      "sv": "Värdebaserad jämförelse"
+    },
+    {
+      "en": "Weights",
+      "fr": "Pondérations",
+      "de": "Gewichte",
+      "es": "Ponderaciones",
+      "it": "Pesi",
+      "is": "Vægi",
+      "sv": "Vikter"
+    },
+    {
+      "en": "Weights (%)",
+      "fr": "Pondérations (%)",
+      "de": "Gewichte (%)",
+      "es": "Ponderaciones (%)",
+      "it": "Pesi (%)",
+      "is": "Vægi (%)",
+      "sv": "Vikter (%)"
+    },
+    {
+      "en": "Workforce analytics",
+      "fr": "Analyse des effectifs",
+      "de": "Analyse der Belegschaft",
+      "es": "Análisis de la fuerza laboral",
+      "it": "Analisi della forza lavoro",
+      "sv": "Analyser av arbetskraft"
+    },
+    {
+      "en": "Workforce analytics configuration",
+      "fr": "Configuration de l'analyse du personnel",
+      "de": "Konfiguration für Gleichbehandlung am Arbeitsplatz",
+      "es": "Configuración del análisis del personal",
+      "it": "Configurazione dell'analisi del personale",
+      "is": "Stillingar jafnréttisvísa",
+      "sv": "Inställningar för personalanalys"
+    },
+    {
+      "en": "Workforce composition",
+      "fr": "Composition des effectifs",
+      "de": "Zusammensetzung der Belegschaft",
+      "es": "Composición de la plantilla",
+      "it": "Composizione della forza lavoro",
+      "is": "Samsetning starfsfólks",
+      "sv": "Personalstyrkans sammansättning"
+    },
+    {
+      "en": "Workforce mobility",
+      "fr": "Mobilité des effectifs",
+      "de": "Mobilität der Belegschaft",
+      "es": "Movilidad de la plantilla",
+      "it": "Mobilità della forza lavoro",
+      "is": "Tilfærslur",
+      "sv": "Förflyttningar av personalstyrkan."
+    },
+    {
+      "en": "Workforce segmentation",
+      "fr": "Segmentation des effectifs",
+      "de": "Segmentierung der Belegschaft",
+      "es": "Segmentación de la plantilla",
+      "it": "Segmentazione della forza lavoro",
+      "is": "Skipting starfsfólks",
+      "sv": "Segmentering av personalstyrkan"
+    },
+    {
+      "en": "Workforce segments",
+      "fr": "Segments des effectifs",
+      "de": "Segmente der Belegschaft",
+      "es": "Segmentos de la plantilla",
+      "it": "Segmenti della forza lavoro",
+      "is": "Skipting starfsfólks",
+      "sv": "Segment för personalstyrka"
+    }
+  ]
+}

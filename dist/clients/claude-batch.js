@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { getEnv } from "../config/env.js";
 import { getLogger } from "../utils/logger.js";
 import { ClaudeError, ValidationError } from "../utils/errors.js";
+import { recordCost } from "../utils/cost-log.js";
 const MODEL_MAP = {
     "haiku-4-5": "claude-haiku-4-5",
     "sonnet-4-6": "claude-sonnet-4-6",
@@ -9,6 +10,8 @@ const MODEL_MAP = {
 export class ClaudeBatchClient {
     client;
     logger;
+    /** Tracks attribution per job_id (custom_id) until the batch completes. */
+    jobMetaByCustomId = new Map();
     getClient() {
         if (!this.client) {
             const env = getEnv();
@@ -31,6 +34,15 @@ export class ClaudeBatchClient {
             const batch = await this.getClient().beta.messages.batches.create({
                 requests,
             });
+            // Stash attribution per job_id so the cost log can find it when the
+            // batch finishes (potentially hours later).
+            for (const job of jobs) {
+                this.jobMetaByCustomId.set(job.job_id, {
+                    projectId: job.projectId,
+                    targetLanguage: job.targetLanguage,
+                    model: job.model,
+                });
+            }
             this.getLogger().info({ batchId: batch.id, jobCount: jobs.length }, "Batch submitted");
             return batch.id;
         }
@@ -72,10 +84,19 @@ export class ClaudeBatchClient {
         const pollInterval = 10000;
         while (true) {
             const status = await this.getBatchStatus(batchId);
-            if (status.status === "succeeded" ||
+            // Anthropic's Batch API uses processing_status="ended" as the
+            // terminal state. Older docs/clients sometimes refer to
+            // "succeeded"/"failed"/"expired" — we accept all of them so the
+            // poller works regardless of which surface returns the result.
+            if (status.status === "ended" ||
+                status.status === "succeeded" ||
                 status.status === "failed" ||
                 status.status === "expired") {
-                this.getLogger().info({ batchId, status: status.status }, "Batch complete");
+                this.getLogger().info({
+                    batchId,
+                    status: status.status,
+                    counts: status.request_counts,
+                }, "Batch complete");
                 return this.parseBatchResults(batchId);
             }
             const elapsed = Date.now() - startTime;
@@ -94,7 +115,10 @@ export class ClaudeBatchClient {
     }
     async getBatchResultsIfReady(batchId) {
         const status = await this.getBatchStatus(batchId);
-        if (status.status === "succeeded" || status.status === "failed" || status.status === "expired") {
+        if (status.status === "ended" ||
+            status.status === "succeeded" ||
+            status.status === "failed" ||
+            status.status === "expired") {
             return this.parseBatchResults(batchId);
         }
         return null;
@@ -126,8 +150,21 @@ export class ClaudeBatchClient {
                         this.getLogger().warn({ customId: result.custom_id }, "Non-text response in batch");
                         continue;
                     }
+                    // Cost log: record attribution + usage for this batch entry.
+                    const usage = this.extractUsage(message.usage);
+                    const meta = this.jobMetaByCustomId.get(result.custom_id);
+                    void recordCost({
+                        jobId: result.custom_id,
+                        projectId: meta?.projectId,
+                        targetLanguage: meta?.targetLanguage,
+                        model: meta?.model ?? "haiku-4-5",
+                        isBatch: true,
+                        usage,
+                    });
+                    this.jobMetaByCustomId.delete(result.custom_id);
                     try {
                         const parsed = this.parseResponse(content.text, result.custom_id);
+                        parsed.usage = usage;
                         results.push(parsed);
                     }
                     catch (error) {
@@ -149,6 +186,7 @@ export class ClaudeBatchClient {
                         translations: {},
                         error: errorMessage,
                     });
+                    this.jobMetaByCustomId.delete(result.custom_id);
                 }
             }
             this.getLogger().debug({ batchId, resultCount: results.length }, "Batch results parsed");
@@ -175,6 +213,19 @@ export class ClaudeBatchClient {
         catch (error) {
             throw new ClaudeError(`Failed to parse result: ${error instanceof Error ? error.message : String(error)}`, 500);
         }
+    }
+    extractUsage(usage) {
+        if (!usage) {
+            return { input_tokens: 0, output_tokens: 0 };
+        }
+        return {
+            input_tokens: usage.input_tokens ?? 0,
+            output_tokens: usage.output_tokens ?? 0,
+            cache_creation_input_tokens: usage
+                .cache_creation_input_tokens,
+            cache_read_input_tokens: usage
+                .cache_read_input_tokens,
+        };
     }
     stripCodeFences(text) {
         const trimmed = text.trim();

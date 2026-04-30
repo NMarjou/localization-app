@@ -1,0 +1,1318 @@
+{
+  "source_lang": "en-US",
+  "target_lang": "en-GB",
+  "entries": [
+    {
+      "source": "\"Behaviors\" widget",
+      "target": "\"Behaviours\" widget"
+    },
+    {
+      "source": "# Behaviors",
+      "target": "# Behaviours"
+    },
+    {
+      "source": "# Behaviors received",
+      "target": "# Behaviours received"
+    },
+    {
+      "source": "# Behaviors requested",
+      "target": "# Behaviours requested"
+    },
+    {
+      "source": "# Favorite",
+      "target": "# Favourite"
+    },
+    {
+      "source": "# Received behaviors request",
+      "target": "# Received behaviours request"
+    },
+    {
+      "source": "# Sent behaviors",
+      "target": "# Sent behaviours"
+    },
+    {
+      "source": "% Aligned behavior ratings",
+      "target": "% Aligned behaviour ratings"
+    },
+    {
+      "source": "% Feedback with behaviors",
+      "target": "% Feedback with behaviours"
+    },
+    {
+      "source": "% Requests with behaviors",
+      "target": "% Requests with behaviours"
+    },
+    {
+      "source": "% Users having behaviors",
+      "target": "% Users having behaviours"
+    },
+    {
+      "source": "%RT count of sent behavior",
+      "target": "%RT count of sent behaviour"
+    },
+    {
+      "source": "A Pay Intelligence feature that offers powerful analytics for data analysis, visualization, and insights.",
+      "target": "A Pay Intelligence feature that offers powerful analytics for data analysis, visualisation, and insights."
+    },
+    {
+      "source": "A Performance Management feature that enables HR Administrators to create behavior libraries that workers can then use to highlight specific actions in the feedback they offer.",
+      "target": "A Performance Management feature that enables HR Administrators to create behaviour libraries that workers can then use to highlight specific actions in the feedback they offer."
+    },
+    {
+      "source": "A Performance Management feature that offers a smart search detecting unprofessional words according to a customizable list.",
+      "target": "A Performance Management feature that offers a smart search detecting unprofessional words according to a customisable list."
+    },
+    {
+      "source": "A plan with this code already exists.",
+      "target": "A plan with that code already exists."
+    },
+    {
+      "source": "A smart search for specific words that are considered unprofessional or deemed sensitive in your organization will be performed. A standard set of words is provided, but the list of words can be customized after activating the settings below, using the “Update sensitive word list” button.",
+      "target": "A smart search for specific words that are considered unprofessional or deemed sensitive in your organisation will be performed. A standard set of words is provided, but the list of words can be customised after activating the settings below, using the “Update sensitive word list” button."
+    },
+    {
+      "source": "Activate our powerful analytics framework for in-depth data analysis, data visualization, and business/operational insights. Users need the \"Analytics\" professional role to access these dashboards.",
+      "target": "Activate our powerful analytics framework for in-depth data analysis, data visualisation, and business/operational insights. Users need the \"Analytics\" professional role to access these dashboards."
+    },
+    {
+      "source": "Add all organizational units",
+      "target": "Add all organisational units"
+    },
+    {
+      "source": "Add behavior",
+      "target": "Add behaviour"
+    },
+    {
+      "source": "Add behaviors",
+      "target": "Add behaviours"
+    },
+    {
+      "source": "Add behaviors to the library",
+      "target": "Add behaviours to the library"
+    },
+    {
+      "source": "Alerts & anonymization",
+      "target": "Alerts & anonymisation"
+    },
+    {
+      "source": "All organizational units",
+      "target": "All organisational units"
+    },
+    {
+      "source": "Allow managers to conduct structured discussions with their direct reports. Using dedicated widgets, they can comment on areas such as performance, goals, and behaviors. Once finalized, workers can review comments and either accept the check-in, or propose a follow-up meeting directly from the check-in page.",
+      "target": "Allow managers to conduct structured discussions with their direct reports. Using dedicated widgets, they can comment on areas such as performance, goals, and behaviours. Once finalised, workers can review comments and either accept the check-in, or propose a follow-up meeting directly from the check-in page."
+    },
+    {
+      "source": "Analyzing goal parameters…",
+      "target": "Analysing goal parameters…"
+    },
+    {
+      "source": "Anonymization",
+      "target": "Anonymisation"
+    },
+    {
+      "source": "Anonymization configuration",
+      "target": "Anonymisation configuration"
+    },
+    {
+      "source": "Anonymization placeholder",
+      "target": "Anonymisation placeholder"
+    },
+    {
+      "source": "Anonymization placeholder text",
+      "target": "Anonymisation placeholder text"
+    },
+    {
+      "source": "Anonymization threshold",
+      "target": "Anonymisation threshold"
+    },
+    {
+      "source": "Are you sure you want to delete this behavior?",
+      "target": "Are you sure you want to delete this behaviour?"
+    },
+    {
+      "source": "Assign the library to an organizational unit",
+      "target": "Assign the library to an organisational unit"
+    },
+    {
+      "source": "Authorized editors",
+      "target": "Authorised editors"
+    },
+    {
+      "source": "Automatically advance to next step when end date is reached",
+      "target": "Sets a deadline for this step. Workers who have not been moved by the end date will be automatically advance to the next step on the following day."
+    },
+    {
+      "source": "Avg. aligned goal progress",
+      "target": "Avg. aligned goals progress"
+    },
+    {
+      "source": "Avg. behaviors per feedback",
+      "target": "Avg. behaviours per feedback"
+    },
+    {
+      "source": "Back to \"Manage behavior libraries\" page",
+      "target": "Back to \"Manage behaviour libraries\" page"
+    },
+    {
+      "source": "Background color",
+      "target": "Background colour"
+    },
+    {
+      "source": "Base your feedback on behaviors you’ve observed.",
+      "target": "Base your feedback on behaviours you’ve observed."
+    },
+    {
+      "source": "Before proceeding, please select an item to customize your review form.",
+      "target": "Before proceeding, please select an item to customise your review form."
+    },
+    {
+      "source": "Behavior",
+      "target": "Behaviour"
+    },
+    {
+      "source": "Behavior Overview",
+      "target": "Behaviour Overview"
+    },
+    {
+      "source": "Behavior actions",
+      "target": "Behaviour actions"
+    },
+    {
+      "source": "Behavior count distribution",
+      "target": "Behaviour count distribution"
+    },
+    {
+      "source": "Behavior distribution",
+      "target": "Behaviour distribution"
+    },
+    {
+      "source": "Behavior feedback",
+      "target": "Behaviour feedback"
+    },
+    {
+      "source": "Behavior libraries",
+      "target": "Behaviour libraries"
+    },
+    {
+      "source": "Behavior library",
+      "target": "Behaviour library"
+    },
+    {
+      "source": "Behavior library details",
+      "target": "Behaviour library details"
+    },
+    {
+      "source": "Behavior name",
+      "target": "Behaviour name"
+    },
+    {
+      "source": "Behavior profile",
+      "target": "Behaviour profile"
+    },
+    {
+      "source": "Behavior received",
+      "target": "Behaviour received"
+    },
+    {
+      "source": "Behavior requested",
+      "target": "Behaviour requested"
+    },
+    {
+      "source": "Behavior sent",
+      "target": "Behaviour sent"
+    },
+    {
+      "source": "Behavior settings",
+      "target": "Behaviour settings"
+    },
+    {
+      "source": "Behavior wheel",
+      "target": "Behaviour wheel"
+    },
+    {
+      "source": "Behavior:",
+      "target": "Behaviour:"
+    },
+    {
+      "source": "Behaviors",
+      "target": "Behaviours"
+    },
+    {
+      "source": "Behaviors received",
+      "target": "Behaviours received"
+    },
+    {
+      "source": "Behaviors sent",
+      "target": "Behaviours sent"
+    },
+    {
+      "source": "Behaviors sent over time",
+      "target": "Behaviours sent over time"
+    },
+    {
+      "source": "Budget & modeling",
+      "target": "Budget & modelling"
+    },
+    {
+      "source": "Canceled",
+      "target": "Cancelled"
+    },
+    {
+      "source": "Change upload behavior",
+      "target": "Change upload behaviour"
+    },
+    {
+      "source": "Changes in this table only apply to the individual worker. To update goal weights for organizational goals across the entire population, use the Edit view of the goal.",
+      "target": "Changes in this table only apply to the individual worker. To update goal weights for organisational goals across the entire population, use the Edit view of the goal."
+    },
+    {
+      "source": "Color",
+      "target": "Colour"
+    },
+    {
+      "source": "Column color",
+      "target": "Column colour"
+    },
+    {
+      "source": "Combine properties (round fields), operators (+, −, ×, ÷), and functions (math, text, logic) to build your formula. Auto-suggestion helps as you type.",
+      "target": "Combine properties (round fields), operators (+, −, ×, ÷), and functions (maths, text, logic) to build your formula. Auto-suggestion helps as you type."
+    },
+    {
+      "source": "Configure default anonymization rules for countries without local rules.",
+      "target": "Configure default anonymisation rules for countries without local rules."
+    },
+    {
+      "source": "Copyright © {{year}} beqom. All rights reserved. These online services are confidential and proprietary to beqom and for use by authorized beqom customers only.",
+      "target": "Copyright © {{year}} beqom. All rights reserved. These online services are confidential and proprietary to beqom and for use by authorised beqom customers only."
+    },
+    {
+      "source": "Cost Center",
+      "target": "Cost Centre"
+    },
+    {
+      "source": "Cost center",
+      "target": "Cost centre"
+    },
+    {
+      "source": "Cost center code",
+      "target": "Cost centre code"
+    },
+    {
+      "source": "Cost center name",
+      "target": "Cost centre name"
+    },
+    {
+      "source": "Craft personalized tags visible in goals. Workers can easily select fitting tags that refine the focus of their goals and foster clear direction in their pursuits.",
+      "target": "Craft personalised tags visible in goals. Workers can easily select fitting tags that refine the focus of their goals and foster clear direction in their pursuits."
+    },
+    {
+      "source": "Create a supportive environment where workers feel comfortable sharing their aspirations, challenges, and goals. Listen actively and ask thoughtful questions to better understand their vision.",
+      "target": "Create a supportive environment where employees feel comfortable sharing their aspirations, challenges, and goals. Listen actively and ask thoughtful questions to better understand their vision."
+    },
+    {
+      "source": "Create and publish performance reviews for your organization.",
+      "target": "Create and publish performance reviews for your organisation."
+    },
+    {
+      "source": "Create behavior library",
+      "target": "Create behaviour library"
+    },
+    {
+      "source": "Create your first behavior library",
+      "target": "Create your first behaviour library"
+    },
+    {
+      "source": "Create your organization's compensation framework and comp elements, including salary, allowances, per diems, bonus, deferrals, equity, and indirect benefits/allowances.",
+      "target": "Create your organisation's compensation framework and comp elements, including salary, allowances, per diems, bonus, deferrals, equity, and indirect benefits/allowances."
+    },
+    {
+      "source": "Create your organization's compensation framework and specific comp elements: salary, allowances, per diems, bonus, deferrals, equity and indirect benefits/allowances.",
+      "target": "Create your organisation's compensation framework and specific comp elements: salary, allowances, per diems, bonus, deferrals, equity and indirect benefits/allowances."
+    },
+    {
+      "source": "Current salary - Annualized (functional)",
+      "target": "Current salary - Annualised (functional)"
+    },
+    {
+      "source": "Current salary - Annualized (global)",
+      "target": "Current salary - Annualised (global)"
+    },
+    {
+      "source": "Current salary - Annualized (local)",
+      "target": "Current salary - Annualised (local)"
+    },
+    {
+      "source": "Current salary functional annualized",
+      "target": "Current salary functional annualised"
+    },
+    {
+      "source": "Current salary global annualized",
+      "target": "Current salary global annualised"
+    },
+    {
+      "source": "Current salary local annualized",
+      "target": "Current salary local annualised"
+    },
+    {
+      "source": "Currently, our company does not have a formal behavior library in place. However, we are diligently working on creating one to better serve our organizational goals. Our team is actively developing a comprehensive behavior library that aligns with our company values and objectives. We appreciate your understanding and anticipate sharing our progress with you in the near future.",
+      "target": "Currently, our company does not have a formal behaviour library in place. However, we are diligently working on creating one to better serve our organisational goals. Our team is actively developing a comprehensive behaviour library that aligns with our company values and objectives. We appreciate your understanding and anticipate sharing our progress with you in the near future."
+    },
+    {
+      "source": "Custom Labeling",
+      "target": "Custom Labelling"
+    },
+    {
+      "source": "Customize formula",
+      "target": "Customise formula"
+    },
+    {
+      "source": "Customize the file name with variables",
+      "target": "Customise the file name with variables"
+    },
+    {
+      "source": "Customize the goal form",
+      "target": "Customise the goal form"
+    },
+    {
+      "source": "Data Modeler",
+      "target": "Data Modeller"
+    },
+    {
+      "source": "Data Modeling",
+      "target": "Data Modelling"
+    },
+    {
+      "source": "Data upload behavior configuration",
+      "target": "Data upload behaviour configuration"
+    },
+    {
+      "source": "Define system parameters and customize the user experience on the platform.",
+      "target": "Define system parameters and customise the user experience on the platform."
+    },
+    {
+      "source": "Define the global data retention rules that apply across whole organization.",
+      "target": "Define the global data retention rules that apply across whole organisation."
+    },
+    {
+      "source": "Define the timeframe for bonus calculations.",
+      "target": "Define the time frame for bonus calculations."
+    },
+    {
+      "source": "Delete behavior",
+      "target": "Delete behaviour"
+    },
+    {
+      "source": "Direct reports, organizational unit and below",
+      "target": "Direct reports, organisational unit and below"
+    },
+    {
+      "source": "Disable localization",
+      "target": "Disable localisation"
+    },
+    {
+      "source": "Display a confirmation popup when sending feedback to a number of users higher than the defined limit",
+      "target": "Display a confirmation message when sending feedback to a number of users higher than the defined limit"
+    },
+    {
+      "source": "Display of the data in the user interface when someone is anonymized or removed from the system.",
+      "target": "Display of the data in the user interface when someone is anonymised or removed from the system."
+    },
+    {
+      "source": "Dragging was canceled and the sortable item was dropped.",
+      "target": "Dragging was cancelled and the sortable item was dropped."
+    },
+    {
+      "source": "Edit behavior library",
+      "target": "Edit behaviour library"
+    },
+    {
+      "source": "Edit conversation labeling",
+      "target": "Edit conversation labelling"
+    },
+    {
+      "source": "Enable anonymization",
+      "target": "Enable anonymisation"
+    },
+    {
+      "source": "Enable anonymization and define the minimum number of workers required in a population (All, Male, or Female) for average values to be displayed.",
+      "target": "Enable anonymisation and define the minimum number of workers required in a population (All, Male, or Female) for average values to be displayed."
+    },
+    {
+      "source": "Enable behavior",
+      "target": "Enable behaviour"
+    },
+    {
+      "source": "Enable behaviors",
+      "target": "Enable behaviours"
+    },
+    {
+      "source": "Enable feedback requests regarding behaviors",
+      "target": "Enable feedback requests regarding behaviours"
+    },
+    {
+      "source": "Enable localization",
+      "target": "Enable localisation"
+    },
+    {
+      "source": "Enable overall rating for behaviors",
+      "target": "Enable overall rating for behaviours"
+    },
+    {
+      "source": "Enable rating for each behavior",
+      "target": "Enable rating for each behaviour"
+    },
+    {
+      "source": "Enable the \"Behavior rating\" widget",
+      "target": "Enable the \"Behaviour rating\" widget"
+    },
+    {
+      "source": "Enable the \"Behaviors\" feature",
+      "target": "Enable the \"Behaviours\" feature"
+    },
+    {
+      "source": "Enable the \"Behaviors\" widget",
+      "target": "Enable the \"Behaviours\" widget"
+    },
+    {
+      "source": "Enable weighting and editability options for each goal type in the goal plan to allow managers and workers to customize the weight of their goals.",
+      "target": "Enable weighting and editability options for each goal type in the goal plan to allow managers and workers to customise the weight of their goals."
+    },
+    {
+      "source": "Enables users with manager and HR roles to assign organizational goals to organizational units, so that workers who belong to that organization can see the goal.",
+      "target": "Enables users with manager and HR roles to assign organisational goals to organisational units, so that workers who belong to that organisation can see the goal."
+    },
+    {
+      "source": "Export organization",
+      "target": "Export organisation"
+    },
+    {
+      "source": "Failed to retrieve the document template file.",
+      "target": "Failed to retrieve the document template file"
+    },
+    {
+      "source": "Favorite",
+      "target": "Favourite"
+    },
+    {
+      "source": "Favorite feedback",
+      "target": "Favourite feedback"
+    },
+    {
+      "source": "Favorite this feedback to let your colleague know how much you value their opinion!",
+      "target": "Favourite this feedback to let your colleague know how much you value their opinion!"
+    },
+    {
+      "source": "Favorites",
+      "target": "Favourites"
+    },
+    {
+      "source": "Feedback with behaviors",
+      "target": "Feedback with behaviours"
+    },
+    {
+      "source": "Field behavior",
+      "target": "Field behaviour"
+    },
+    {
+      "source": "Finalizing and perfecting…",
+      "target": "Finalising and perfecting…"
+    },
+    {
+      "source": "Find workers by cost center",
+      "target": "Find workers by cost centre"
+    },
+    {
+      "source": "Find workers by organizational unit",
+      "target": "Find workers by organisational unit"
+    },
+    {
+      "source": "For your conversation, reflect on your behavior profile and think about occurrences when you demonstrated each behavior, or how you can focus on them in the future. Reflect on any feedback or insights you have received from your colleagues and whether you can use these to highlight any examples you have.\nNotice any gaps in your wheel? Request feedback now from your peers and stakeholders on any key behaviors.",
+      "target": "For your conversation, reflect on your behaviour profile and think about occurrences when you demonstrated each behaviour, or how you can focus on them in the future. Reflect on any feedback or insights you have received from your colleagues and whether you can use these to highlight any examples you have.\nNotice any gaps in your wheel? Request feedback now from your peers and stakeholders on any key behaviours."
+    },
+    {
+      "source": "For your conversation, reflect on your behavior profile, and think about examples of times when you demonstrated each behavior and how you can focus on them in the future. Reflect on any feedback or insights you have received from your colleagues and determine if you can use these to highlight any examples you have. Notice gaps in your wheel? Request feedback on key behaviors now from your peers and stakeholders.",
+      "target": "For your conversation, reflect on your behaviour profile, and think about examples of times when you demonstrated each behaviour and how you can focus on them in the future. Reflect on any feedback or insights you have received from your colleagues and determine if you can use these to highlight any examples you have. Notice gaps in your wheel? Request feedback on key behaviours now from your peers and stakeholders."
+    },
+    {
+      "source": "For your conversation, reflect on {{employee}}'s behavior profile and think about examples of times when they demonstrated each behavior and what you think they should focus on in the future.",
+      "target": "For your conversation, reflect on {{employee}}'s behaviour profile and think about examples of times when they demonstrated each behaviour and what you think they should focus on in the future."
+    },
+    {
+      "source": "For your conversation, reflect on {{name}}'s behavior profile and think about occurrences when they have demonstrated each behavior, and what you think they should focus on in the future.",
+      "target": "For your conversation, reflect on {{name}}'s behaviour profile and think about occurrences when they have demonstrated each behaviour, and what you think they should focus on in the future."
+    },
+    {
+      "source": "Fulfillment",
+      "target": "Fulfilment"
+    },
+    {
+      "source": "Gain insight into how your manager thinks you are progressing on your behaviors over this period.",
+      "target": "Gain insight into how your manager thinks you are progressing on your behaviours over this period."
+    },
+    {
+      "source": "Gain insight into how your manager thinks you have progressed on your behaviors over this period.",
+      "target": "Gain insight into how your manager thinks you have progressed on your behaviours over this period."
+    },
+    {
+      "source": "Gather your performance data, including feedback from colleagues, progress on your goals, survey reports, and any other relevant data. It is important to analyze your performance data so that you're ready and prepared for your performance review.",
+      "target": "Gather your performance data, including feedback from colleagues, progress on your goals, survey reports, and any other relevant data. It is important to analyse your performance data so that you're ready and prepared for your performance review."
+    },
+    {
+      "source": "Get started by uploading a localization file.",
+      "target": "Get started by uploading a localisation file."
+    },
+    {
+      "source": "Global anonymization configuration",
+      "target": "Global anonymisation configuration"
+    },
+    {
+      "source": "Goal section. Enables the user to align the goal with another goal in the organization. It also enables them to connect it, for example, to one of their manager's goals or to a department goal.",
+      "target": "Goal section. Enables the user to align the goal with another goal in the organisation. It also enables them to connect it, for example, to one of their manager's goals or to a department goal."
+    },
+    {
+      "source": "Goal types can be configured to serve any goal plan, with population, privacy and form fields available for customization.",
+      "target": "Goal types can be configured to serve any goal plan, with population, privacy and form fields available for customisation."
+    },
+    {
+      "source": "Goal widget displayed in the \"Create goal\" and \"My goals\" pages. We recommend enabling this widget for organizational goals and goal alignment.",
+      "target": "Goal widget displayed in the \"Create goal\" and \"My goals\" pages. We recommend enabling this widget for organisational goals and goal alignment."
+    },
+    {
+      "source": "Goals made simple with goal types. Set individual or organizational goals, and target your entire company or specific populations.",
+      "target": "Goals made simple with goal types. Set individual or organisational goals, and target your entire company or specific populations."
+    },
+    {
+      "source": "Has {{givenName}} demonstrated any of our company behaviors?",
+      "target": "Has {{givenName}} demonstrated any of our company behaviours?"
+    },
+    {
+      "source": "Have they demonstrated any company behaviors?",
+      "target": "Have they demonstrated any company behaviours?"
+    },
+    {
+      "source": "Have they demonstrated any of our company behaviors?",
+      "target": "Have they demonstrated any of our company behaviours?"
+    },
+    {
+      "source": "Have they demonstrated any of the below behaviors?",
+      "target": "Have they demonstrated any of the below behaviours?"
+    },
+    {
+      "source": "Header color",
+      "target": "Header colour"
+    },
+    {
+      "source": "Help Center",
+      "target": "Help Centre"
+    },
+    {
+      "source": "Hide behavior details",
+      "target": "Hide behaviour details"
+    },
+    {
+      "source": "Hide or display the technical localization keys in the user interface.",
+      "target": "Hide or display the technical localisation keys in the user interface."
+    },
+    {
+      "source": "How can {{givenName}} improve this behavior?",
+      "target": "How can {{givenName}} improve this behaviour?"
+    },
+    {
+      "source": "I acknowledge having had a performance coaching conversation with my manager. ",
+      "target": "I acknowledge having had a performance coaching conversation with my manager."
+    },
+    {
+      "source": "Identifies the relationship between the organization and the user.",
+      "target": "Identifies the relationship between the organisation and the user."
+    },
+    {
+      "source": "Ignore the defined limit for the feedback sharing. Enable this setting to allow Feedback broadcast to send feedback to the whole organization.",
+      "target": "Ignore the defined limit for the feedback sharing. Enable this setting to allow Feedback broadcast to send feedback to the whole organisation."
+    },
+    {
+      "source": "Increase salary global annualized",
+      "target": "Increase salary global annualised"
+    },
+    {
+      "source": "Language & timezone",
+      "target": "Language & time zone"
+    },
+    {
+      "source": "Localization",
+      "target": "Localisation"
+    },
+    {
+      "source": "Localizations",
+      "target": "Localisations"
+    },
+    {
+      "source": "Manage workers and organizational data",
+      "target": "Manage workers and organisational data"
+    },
+    {
+      "source": "Manager behavior comment",
+      "target": "Manager behaviour comment"
+    },
+    {
+      "source": "Manager behavior rating name",
+      "target": "Manager behaviour rating name"
+    },
+    {
+      "source": "Manager review behavior distribution",
+      "target": "Manager review behaviour distribution"
+    },
+    {
+      "source": "Manager's overall behavior rating comment",
+      "target": "Manager's overall behaviour rating comment"
+    },
+    {
+      "source": "Manager's overall behavior rating scale ID",
+      "target": "Manager's overall behaviour rating scale ID"
+    },
+    {
+      "source": "Managers will be able to create performance check-ins with their direct reports. The check-ins include widgets in which managers can give their view on a direct report's progress, their overall performance, their goals, and their behaviors. Once the check-in is submitted, workers will be able to see these widgets and decide whether to select \"Accept\" or \"Let's Meet\" on the check-in page.",
+      "target": "Managers will be able to create performance check-ins with their direct reports. The check-ins include widgets in which managers can give their view on a direct report's progress, their overall performance, their goals, and their behaviours. Once the check-in is submitted, workers will be able to see these widgets and decide whether to select \"Accept\" or \"Let's Meet\" on the check-in page."
+    },
+    {
+      "source": "Most recognized skill",
+      "target": "Most recognised skill"
+    },
+    {
+      "source": "My behavior profile",
+      "target": "My behaviour profile"
+    },
+    {
+      "source": "My organization",
+      "target": "My organisation"
+    },
+    {
+      "source": "No behavior libraries available.",
+      "target": "No behaviour libraries available."
+    },
+    {
+      "source": "No behaviors",
+      "target": "No behaviours"
+    },
+    {
+      "source": "No currencies with the name \"{{phrase}}\"",
+      "target": "No currencies with the name \"{{phrase}}\"."
+    },
+    {
+      "source": "No customizations yet.",
+      "target": "No customisations yet."
+    },
+    {
+      "source": "No results",
+      "target": "No results."
+    },
+    {
+      "source": "No results match the search/filter criteria. Remove the filters and clear the search to show all results",
+      "target": "No results match the search/filter criteria. Remove the filters and clear the search to show all results."
+    },
+    {
+      "source": "No results match the search/filter criteria.Remove your filters and clear your search to show all results.",
+      "target": "No results match the search/filter criteria. Remove your filters and clear your search to show all results."
+    },
+    {
+      "source": "No skills added yet. Upload your company's skills library to start tracking, developing, and optimizing your team's talents.",
+      "target": "No skills added yet. Upload your company's skills library to start tracking, developing, and optimising your team's talents."
+    },
+    {
+      "source": "OTB amount annualized (global)",
+      "target": "OTB amount annualised (global)"
+    },
+    {
+      "source": "OTB amount annualized (local)",
+      "target": "OTB amount annualised (local)"
+    },
+    {
+      "source": "Offer your team member insight into how you think they have progressed on their behaviors over this period.",
+      "target": "Offer your team member insight into how you think they have progressed on their behaviours over this period."
+    },
+    {
+      "source": "Offer your team member insights into how you think they have progressed on their behaviors this period.",
+      "target": "Offer your team member insights into how you think they have progressed on their behaviours this period."
+    },
+    {
+      "source": "Once a review is closed, it is finalized and no longer editable by either the manager or the worker. However, both parties can still view the content and download the review as a PDF for reference.\n\nNote that reviews are processed in the background. Depending on the number of selected reviews, you might still see some forms temporarily in other stages they are being processed. You may continue using the application and perform other actions while the updates are applied.",
+      "target": "Once a review is closed, it is finalised and no longer editable by either the manager or the worker. However, both parties can still view the content and download the review as a PDF for reference.\n\nNote that reviews are processed in the background. Depending on the number of selected reviews, you might still see some forms temporarily in other stages they are being processed. You may continue using the application and perform other actions while the updates are applied."
+    },
+    {
+      "source": "Only to the selected organizational unit(s)",
+      "target": "Only to the selected organisational unit(s)"
+    },
+    {
+      "source": "Organization",
+      "target": "Organisation"
+    },
+    {
+      "source": "Organization ID",
+      "target": "Organisation ID"
+    },
+    {
+      "source": "Organization details",
+      "target": "Organisation details"
+    },
+    {
+      "source": "Organization external ID",
+      "target": "Organisation external ID"
+    },
+    {
+      "source": "Organization goals",
+      "target": "Organisation goals"
+    },
+    {
+      "source": "Organization name",
+      "target": "Organisation name"
+    },
+    {
+      "source": "Organization structure",
+      "target": "Organisation structure"
+    },
+    {
+      "source": "Organizational",
+      "target": "Organisational"
+    },
+    {
+      "source": "Organizational Units",
+      "target": "Organisational Units"
+    },
+    {
+      "source": "Organizational goal",
+      "target": "Organisational goal"
+    },
+    {
+      "source": "Organizational unit",
+      "target": "Organisational unit"
+    },
+    {
+      "source": "Organizational unit and below",
+      "target": "Organisational unit and below"
+    },
+    {
+      "source": "Organizational unit:",
+      "target": "Organisational unit:"
+    },
+    {
+      "source": "Organizational units:",
+      "target": "Organisational units:"
+    },
+    {
+      "source": "Our security filter has blocked your request. Please refresh the page and try again. If the issue persists, please reach out to your IT team for assistance.",
+      "target": "Our security filter has blocked your request. Please refresh the page and try again. If the issue persists, please reach out to your IT team for help."
+    },
+    {
+      "source": "Overall behavior comment",
+      "target": "Overall behaviour comment"
+    },
+    {
+      "source": "Overall behavior rating",
+      "target": "Overall behaviour rating"
+    },
+    {
+      "source": "Overall behavior review",
+      "target": "Overall behaviour review"
+    },
+    {
+      "source": "Parent organization ID",
+      "target": "Parent organisation ID"
+    },
+    {
+      "source": "Parent organization external ID",
+      "target": "Parent organisation external ID"
+    },
+    {
+      "source": "Parent organization name",
+      "target": "Parent organisation name"
+    },
+    {
+      "source": "Performance Reviews - Goals & Behaviors",
+      "target": "Performance Reviews - Goals & Behaviours"
+    },
+    {
+      "source": "Pick a color to visually group or highlight this column in the grid.",
+      "target": "Pick a colour to visually group or highlight this column in the grid."
+    },
+    {
+      "source": "Precision and flexibility with goal plans. Set fixed or recurring dates. Integrate with goal types, and assign your entire organization or specific populations.",
+      "target": "Precision and flexibility with goal plans. Set fixed or recurring dates. Integrate with goal types, and assign your entire organisation or specific populations."
+    },
+    {
+      "source": "Preview behavior wheel widget",
+      "target": "Preview behaviour wheel widget"
+    },
+    {
+      "source": "Proposed bonus amount annualized (global)",
+      "target": "Proposed bonus amount annualised (global)"
+    },
+    {
+      "source": "Proposed bonus annualized (local)",
+      "target": "Proposed bonus annualised (local)"
+    },
+    {
+      "source": "Proposed salary - Annualized (functional)",
+      "target": "Proposed Salary - Annualised (functional)"
+    },
+    {
+      "source": "Proposed salary - Annualized (global)",
+      "target": "Proposed Salary - Annualised (global)"
+    },
+    {
+      "source": "Proposed salary - Annualized (local)",
+      "target": "Proposed Salary - Annualised (local)"
+    },
+    {
+      "source": "Provide the context of your interaction with the person. \nAsk for feedback on a specific achievement or behavior (with explicit examples/observations) and the impact it had on them/others.\nThank them for their openness and their time.",
+      "target": "Provide the context of your interaction with the person. \nAsk for feedback on a specific achievement or behaviour (with explicit examples/observations) and the impact it had on them/others.\nThank them for their openness and their time."
+    },
+    {
+      "source": "Provide your team member insight into how you think they have progressed on their behaviors over this period.",
+      "target": "Provide your team member insight into how you think they have progressed on their behaviours over this period."
+    },
+    {
+      "source": "Received behaviors",
+      "target": "Received behaviours"
+    },
+    {
+      "source": "Recognize behavior profile of:",
+      "target": "Recognise behaviour profile of:"
+    },
+    {
+      "source": "Recognized behaviors",
+      "target": "Recognised behaviours"
+    },
+    {
+      "source": "Recognized behaviors for all",
+      "target": "Recognised behaviours for all"
+    },
+    {
+      "source": "Recognized behaviors for {{givenName}}",
+      "target": "Recognised behaviours for {{givenName}}"
+    },
+    {
+      "source": "Recognized behaviors on which you have received feedback from colleagues.",
+      "target": "Recognised behaviours on which you have received feedback from colleagues."
+    },
+    {
+      "source": "Recognized behaviors on which you've received feedback from colleagues.",
+      "target": "Recognised behaviours on which you've received feedback from colleagues."
+    },
+    {
+      "source": "Request feedback on a behavior",
+      "target": "Request feedback on a behaviour"
+    },
+    {
+      "source": "Requested behavior",
+      "target": "Requested behaviour"
+    },
+    {
+      "source": "Requested behaviors",
+      "target": "Requested behaviours"
+    },
+    {
+      "source": "Requests with behaviors",
+      "target": "Requests with behaviours"
+    },
+    {
+      "source": "Review Behaviors Details",
+      "target": "Review Behaviours Details"
+    },
+    {
+      "source": "Review Goals & Behaviors Overview",
+      "target": "Review Goals & Behaviours Overview"
+    },
+    {
+      "source": "Reviews with aligned behavior ratings",
+      "target": "Reviews with aligned behaviour ratings"
+    },
+    {
+      "source": "Sample text describing the behavior of enabling and disabling Analytics Hub. To be changed.",
+      "target": "Sample text describing the behaviour of enabling and disabling Analytics Hub. To be changed."
+    },
+    {
+      "source": "Search for a cost center",
+      "target": "Search for a cost centre"
+    },
+    {
+      "source": "Search for a worker or an organization",
+      "target": "Search for a worker or an organisation"
+    },
+    {
+      "source": "Search for an organizational unit",
+      "target": "Search for an organisational unit"
+    },
+    {
+      "source": "Search for people or organizational units",
+      "target": "Search for people or organisational units"
+    },
+    {
+      "source": "Search for workers or organizational units",
+      "target": "Search for workers or organisational units"
+    },
+    {
+      "source": "Select a color for the group",
+      "target": "Select a colour for the group"
+    },
+    {
+      "source": "Select an effective date to preview a population. This step is for visualization purposes only; no effective date will be assigned to the population configuration.",
+      "target": "Select an effective date to preview a population. This step is for visualisation purposes only; no effective date will be assigned to the population configuration."
+    },
+    {
+      "source": "Select one or more team members to view their performance metrics. Check the box next to their name to analyze their data.",
+      "target": "Select one or more team members to view their performance metrics. Check the box next to their name to analyse their data."
+    },
+    {
+      "source": "Select the company behaviors that {{Name}} has demonstrated.",
+      "target": "Select the company behaviours that {{Name}} has demonstrated."
+    },
+    {
+      "source": "Select the upload behavior for SFTP and UI data upload.",
+      "target": "Select the upload behaviour for SFTP and UI data upload."
+    },
+    {
+      "source": "Sent behaviors",
+      "target": "Sent behaviour"
+    },
+    {
+      "source": "Set rating for this behavior",
+      "target": "Set rating for this behaviour"
+    },
+    {
+      "source": "Set the minimum or fixed value that must be honored.",
+      "target": "Set the minimum or fixed value that must be honoured."
+    },
+    {
+      "source": "Show behavior details",
+      "target": "Show behaviour details"
+    },
+    {
+      "source": "Stabilize",
+      "target": "Stabilise"
+    },
+    {
+      "source": "Stacked behaviors sent by org level",
+      "target": "Stacked behaviours sent by org level"
+    },
+    {
+      "source": "Start building your feedback center!",
+      "target": "Start building your feedback centre!"
+    },
+    {
+      "source": "Start building your feedback center! Give feedback to your colleagues.",
+      "target": "Start building your feedback centre! Give feedback to your colleagues."
+    },
+    {
+      "source": "Start building your feedback center! Request feedback to kick-start your development.",
+      "target": "Start building your feedback centre! Request feedback to kick-start your development."
+    },
+    {
+      "source": "Supported file formats: PDF. \nMaximum file size: 10MB. \nMaximum number of files per upload: 1 file.",
+      "target": "Supported file formats: PDF.\nMaximum file size: 10MB.\nMaximum number of files per upload: 1 file."
+    },
+    {
+      "source": "Synchronize to check for available analyses.",
+      "target": "Synchronise to check for available analyses."
+    },
+    {
+      "source": "Thanks, Favorites & Let's meet",
+      "target": "Thanks, Favourites & Let's meet"
+    },
+    {
+      "source": "The blank value behavior is required.",
+      "target": "The blank value behaviour is required."
+    },
+    {
+      "source": "The compensation round was successfully saved as pending draft.",
+      "target": "The compensation round was successfully saved as a pending draft."
+    },
+    {
+      "source": "The configuration of the modeler was saved successfully.",
+      "target": "The configuration of the modeller was saved successfully."
+    },
+    {
+      "source": "The document \"{{fileName}}\" cannot be imported. Make sure it matches the format and size requirements.",
+      "target": "The document \"{{fileName}}\" cannot be imported. Check the format and size requirements."
+    },
+    {
+      "source": "The document was successfully canceled.",
+      "target": "The document was successfully cancelled."
+    },
+    {
+      "source": "The scheduled check-in <u>{{title}} with {{name}}</u> was canceled.",
+      "target": "The scheduled check-in <u>{{title}} with {{name}}</u> was cancelled."
+    },
+    {
+      "source": "The selected color will apply to the columns of the group.",
+      "target": "The selected colour will apply to the columns of the group."
+    },
+    {
+      "source": "The upload behavior was successfully updated.",
+      "target": "The upload behaviour was successfully updated."
+    },
+    {
+      "source": "The worker is finalizing their answers to the widget questions. Once the answers are published, you will be able to view them.",
+      "target": "The worker is finalising their answers to the widget questions. Once the answers are published, you will be able to view them."
+    },
+    {
+      "source": "There aren’t enough data to display the behavior wheel. Give this worker feedback to complete their performance picture.",
+      "target": "There aren’t enough data to display the behaviour wheel. Give this worker feedback to complete their performance picture."
+    },
+    {
+      "source": "There's not enough data to display your behavior wheel yet. Request feedback from your colleagues to start building a complete picture of your performance.",
+      "target": "There's not enough data to display your behaviour wheel yet. Request feedback from your colleagues to start building a complete picture of your performance."
+    },
+    {
+      "source": "This export is filtered based on your access permissions. It contains only the worker data you are authorized to see.",
+      "target": "This export is filtered based on your access permissions. It contains only the worker data you are authorised to see."
+    },
+    {
+      "source": "This export is filtered based on your access permissions. It contains only the worker data you are authorized to view.",
+      "target": "This export is filtered based on your access permissions. It contains only the worker data you are authorised to view."
+    },
+    {
+      "source": "This gives you insights into how your manager thinks you are progressing on your behaviors over this period.",
+      "target": "This gives you insights into how your manager thinks you are progressing on your behaviours over this period."
+    },
+    {
+      "source": "This goal is published for the selected organizational unit and all units below it.",
+      "target": "This goal is published for the selected organisational unit and all units below it."
+    },
+    {
+      "source": "This information is for your reference only and will not be submitted as part of the review. Only the person who performs the reviewer can see the content of this page. The information in feedback, feedback request, and behaviors is based on the review period. Content outside this review period will not appear here, but is accessible in the usual places in the application.",
+      "target": "This information is for your reference only and will not be submitted as part of the review. Only the person who performs the reviewer can see the content of this page. The information in feedback, feedback request, and behaviours is based on the review period. Content outside this review period will not appear here, but is accessible in the usual places in the application."
+    },
+    {
+      "source": "This information is for your reference only and will not be submitted as part of the review. Only the self-reviewer and the manager reviewer can see the content of this panel. The information regarding feedback, feedback requests and behaviors is based on the review period. Content outside this review period, will not be displayed here but is accessible in the relevant locations within the application.",
+      "target": "This information is for your reference only and will not be submitted as part of the review. Only the self-reviewer and the manager reviewer can see the content of this panel. The information regarding feedback, feedback requests and behaviours is based on the review period. Content outside this review period, will not be displayed here but is accessible in the relevant locations within the application."
+    },
+    {
+      "source": "This organizational unit has related references. If you delete it, all related references will be removed.\nAre you sure you want to delete the organizational unit?",
+      "target": "This organisational unit has related references. If you delete it, all related references will be removed.\nAre you sure you want to delete the organisational unit?"
+    },
+    {
+      "source": "This setting cannot be turned on because the \"Behaviors\" feature is not currently enabled.",
+      "target": "This setting cannot be turned on because the \"Behaviours\" feature is not currently enabled."
+    },
+    {
+      "source": "This snapshot reflects the status of the behaviors as of {{date}}",
+      "target": "This snapshot reflects the status of the behaviours as of {{date}}"
+    },
+    {
+      "source": "This snapshot reflects the status of the behaviors as of {{date}}.",
+      "target": "This snapshot reflects the status of the behaviours as of {{date}}."
+    },
+    {
+      "source": "To customize steps, uncheck the template in the \"Performance review details\" step.",
+      "target": "To customise steps, uncheck the template in the \"Performance review details\" step."
+    },
+    {
+      "source": "To update goal weights for organizational goals across the entire population, use the Edit view of the goal.",
+      "target": "To update goal weights for organisational goals across the entire population, use the Edit view of the goal."
+    },
+    {
+      "source": "Top behavior",
+      "target": "Top behaviour"
+    },
+    {
+      "source": "Total behaviors",
+      "target": "Total behaviours"
+    },
+    {
+      "source": "Total behaviors requested",
+      "target": "Total behaviours requested"
+    },
+    {
+      "source": "Total requests by behavior",
+      "target": "Total requests by behaviour"
+    },
+    {
+      "source": "Total reviews with behavior rating",
+      "target": "Total reviews with behaviour rating"
+    },
+    {
+      "source": "Total reviews with behavior ratings",
+      "target": "Total reviews with behaviour ratings"
+    },
+    {
+      "source": "Unselect all",
+      "target": "Deselect all"
+    },
+    {
+      "source": "Upload log",
+      "target": "Ingestion log entries"
+    },
+    {
+      "source": "Use the Team planner view to control which columns managers and HRBPs see in your compensation grid, rename and reorder them, group columns, create columns, set decimal precision, assign colors, and add tooltips.",
+      "target": "Use the Team planner view to control which columns managers and HRBPs see in your compensation grid, rename and reorder them, group columns, create columns, set decimal precision, assign colours, and add tooltips."
+    },
+    {
+      "source": "User or organization",
+      "target": "User or organisation"
+    },
+    {
+      "source": "Users having behaviors",
+      "target": "Users having behaviours"
+    },
+    {
+      "source": "Users will be able to create and manage behavior libraries within the application. When enabled, workers will be able to give and receive behaviors, and provide behavior data in coaching reports.",
+      "target": "Users will be able to create and manage behaviour libraries within the application. When enabled, workers will be able to give and receive behaviours, and provide behaviour data in coaching reports."
+    },
+    {
+      "source": "Users will be able to include behaviors when requesting feedback.",
+      "target": "Users will be able to include behaviours when requesting feedback."
+    },
+    {
+      "source": "Users will be able to publicly share feedback given to another user within the organization. When disabled, the \"Share feedback\" and the \"Public feedback\" categories are not available.",
+      "target": "Users will be able to publicly share feedback given to another user within the organisation. When disabled, the \"Share feedback\" and the \"Public feedback\" categories are not available."
+    },
+    {
+      "source": "Users will no longer be able to continue to tag this behavior, but they will see behaviors that were received or sent.",
+      "target": "Users will no longer be able to continue to tag this behaviour, but they will see behaviours that were received or sent."
+    },
+    {
+      "source": "View behaviors",
+      "target": "View behaviours"
+    },
+    {
+      "source": "View organizational unit",
+      "target": "View organisational unit"
+    },
+    {
+      "source": "We don’t have enough data to display your behavior wheel yet. Request feedback from your colleagues to start building a complete picture of your performance.",
+      "target": "We don’t have enough data to display your behaviour wheel yet. Request feedback from your colleagues to start building a complete picture of your performance."
+    },
+    {
+      "source": "What do you think are their top stand out behaviors?",
+      "target": "What do you think are their top stand out behaviours?"
+    },
+    {
+      "source": "What key behaviors should I practice?",
+      "target": "What key behaviours should I practice?"
+    },
+    {
+      "source": "What key behaviors should they practice?",
+      "target": "What key behaviours should they practice?"
+    },
+    {
+      "source": "What skills do you think I should learn/improve?",
+      "target": "What skills do you think I should learn or improve?"
+    },
+    {
+      "source": "When enabled, users will only be able to reply to a feedback request with a \"Let's meet\" invitation, or a comment and/or behavior tag, not both. Disable this restriction to make both reply options available.",
+      "target": "When enabled, users will only be able to reply to a feedback request with a \"Let's meet\" invitation, or a comment and/or behaviour tag, not both. Disable this restriction to make both reply options available."
+    },
+    {
+      "source": "Why not request feedback on your behaviors now?",
+      "target": "Why not request feedback on your behaviours now?"
+    },
+    {
+      "source": "Wonderful! Favoriting feedback is the highest compliment.",
+      "target": "Wonderful! Favouriting feedback is the highest compliment."
+    },
+    {
+      "source": "Worker behavior comment",
+      "target": "Worker behaviour comment"
+    },
+    {
+      "source": "Worker behavior rating name",
+      "target": "Worker behaviour rating name"
+    },
+    {
+      "source": "Worker overall behavior rating scale",
+      "target": "Worker overall behaviour rating scale"
+    },
+    {
+      "source": "Workers overall behavior rating comment",
+      "target": "Workers overall behaviour rating comment"
+    },
+    {
+      "source": "You have canceled this request to meet. Send a new request if you didn't intend to cancel.",
+      "target": "You have cancelled this request to meet. Send a new request if you didn't intend to cancel."
+    },
+    {
+      "source": "You have not received any behaviors over this review period.",
+      "target": "You have not received any behaviours over this review period."
+    },
+    {
+      "source": "You have not submitted your drafted comments and ratings as part of this review. Do you want to display your unpublished content below? Goals and behaviors without drafted content are not displayed.",
+      "target": "You have not submitted your drafted comments and ratings as part of this review. Do you want to display your unpublished content below? Goals and behaviours without drafted content are not displayed."
+    },
+    {
+      "source": "You have not submitted your drafted comments and ratings as part of this review. Do you want you to display your unpublished content below? <br>Goals and behaviors without drafted content are not displayed.",
+      "target": "You have not submitted your drafted comments and ratings as part of this review. Do you want you to display your unpublished content below? <br>Goals and behaviours without drafted content are not displayed."
+    },
+    {
+      "source": "You have received no behaviors from this library",
+      "target": "You have received no behaviours from this library"
+    },
+    {
+      "source": "You have removed this favorite",
+      "target": "You have removed this favourite"
+    },
+    {
+      "source": "You have requested feedback regarding these behaviors:",
+      "target": "You have requested feedback regarding these behaviours:"
+    },
+    {
+      "source": "You haven’t marked any feedback as favorites yet. Explore the feedback you received and highlight the ones that inspire you the most!",
+      "target": "You haven’t marked any feedback as favourites yet. Explore the feedback you received and highlight the ones that inspire you the most!"
+    },
+    {
+      "source": "Your favorite received feedback",
+      "target": "Your favourite received feedback"
+    },
+    {
+      "source": "Your organization has not subscribed to this feature. For information regarding subscription and activation, please contact your beqom representative.",
+      "target": "Your organisation has not subscribed to this feature. For information regarding subscription and activation, please contact your beqom representative."
+    },
+    {
+      "source": "Your team member's tagged behaviors will be displayed here. These will enable you to get insight into how they are perceived within your organization.",
+      "target": "Your team member's tagged behaviours will be displayed here. These will enable you to get insight into how they are perceived within your organisation."
+    },
+    {
+      "source": "You’re about to visit ",
+      "target": "You’re about to visit"
+    },
+    {
+      "source": "{{employee}}'s behavior profile",
+      "target": "{{employee}}'s behaviour profile"
+    },
+    {
+      "source": "{{givenName}} has requested feedback in relation to these behaviors",
+      "target": "{{givenName}} has requested feedback in relation to these behaviours"
+    },
+    {
+      "source": "{{givenName}} has requested feedback regarding this behavior.",
+      "target": "{{givenName}} has requested feedback regarding this behaviour."
+    },
+    {
+      "source": "{{givenName}} {{nickName}} has requested feedback in relation to these behaviors:",
+      "target": "{{givenName}} {{nickName}} has requested feedback in relation to these behaviours:"
+    },
+    {
+      "source": "{{givenName}}'s answer to your behavior feedback request",
+      "target": "{{givenName}}'s answer to your behaviour feedback request"
+    },
+    {
+      "source": "{{name}} - Organizational goal",
+      "target": "{{name}} - Organisational goal"
+    },
+    {
+      "source": "{{name}} has not received any behaviors over this review period.",
+      "target": "{{name}} has not received any behaviours over this review period."
+    },
+    {
+      "source": "{{name}} hasn't received any behaviors from this library.",
+      "target": "{{name}} hasn't received any behaviours from this library."
+    },
+    {
+      "source": "{{name}}'s ({{nickName}}) behavior profile",
+      "target": "{{name}}'s ({{nickName}}) behaviour profile"
+    },
+    {
+      "source": "{{name}}'s behavior profile",
+      "target": "{{name}}'s behaviour profile"
+    }
+  ]
+}

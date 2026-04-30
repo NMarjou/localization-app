@@ -1,0 +1,25 @@
+﻿Category,Guideline
+Language,Turkish (Turkey)
+Reference language,en-US (American English)
+,
+--- VOICE & TONE ---,
+Formality / Register,Formal register. Uses siz (formal you) consistently. Verbs in formal second person plural.
+Tone,Professional and instructional.
+Gender inclusivity,Turkish is naturally gender-neutral; no specific gender markers needed.
+,
+--- TYPOGRAPHY & FORMATTING ---,
+Capitalization,Turkish capitalization: proper nouns and sentence beginnings. Note Turkish-specific dotted/dotless I distinction.
+Quotation marks,Standard double quotes for feature names.
+Punctuation,Standard Turkish punctuation. Colons for labels.
+Number formatting,{{variable}} placeholders preserved. MB for megabytes.
+,
+--- LANGUAGE PATTERNS ---,
+Compound words,"Turkish agglutination: compound terms built with suffixes. Davranis kitapliklari, Ucretlendirme ayarlari."
+English loanwords,"Some kept: Check-in, Analytics Hub, Data Foundation, API, CSV, SFTP. Generally translated: Widget -> pencere ogesi (window element); Feedback -> Geri bildirimler; Chat -> Sohbet; PII -> fully spelled out as Kisisel olarak tanimlanabilir bilgi."
+Verbs in buttons,"Imperative formal: Yayinla (publish), Iptal Et (cancel), Yenile (refresh). Instructions: Secin..., Tanimlayin..."
+,
+--- UI STRING PATTERNS ---,
+UI patterns,Enable: X ozelligini etkinlestirin or X pencere ogesini etkinlestirin. Confirmations: ...istediginizden emin misiniz? Success: ...basariyla... Empty states: Henuz ... yok.
+,
+--- KEY TERMINOLOGY ---,
+Terminology mapping,Check-in=Check-in gorusmesi (adds meeting); Review=Degerlendirme; Goal=Hedef; Worker=Calisan; Manager=Yonetici; Compensation=Ucretlendirme; Behavior=Davranis; Widget=Pencere ogesi; Career Development=Kariyer Gelisimi; Settings=Ayarlar; Library=Kitaplik; PII=Kisisel olarak tanimlanabilir bilgi

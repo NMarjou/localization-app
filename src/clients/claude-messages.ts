@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { getEnv } from "../config/env.js";
 import { getLogger } from "../utils/logger.js";
 import { ClaudeError, ValidationError } from "../utils/errors.js";
+import { recordCost } from "../utils/cost-log.js";
 import type {
   TranslationJob,
   ClaudeResponse,
@@ -85,6 +86,16 @@ export class ClaudeMessagesClient {
 
         const parsed = this.parseResponse(content.text, job.job_id);
         parsed.usage = this.extractUsage(response.usage);
+
+        // Fire-and-forget cost log (records tokens + USD attribution).
+        void recordCost({
+          jobId: job.job_id,
+          projectId: job.projectId,
+          targetLanguage: job.targetLanguage,
+          model: job.model,
+          isBatch: false,
+          usage: parsed.usage,
+        });
 
         this.getLogger().debug(
           {

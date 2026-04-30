@@ -11,6 +11,50 @@ declare const ProjectSchema: z.ZodObject<{
      */
     styleGuide: z.ZodOptional<z.ZodString>;
     /**
+     * Free-form description of the application being translated. Helps Claude
+     * pick the right tone, terminology and register. Examples of useful content:
+     *   - what the app does (one-liner)
+     *   - who the audience is (B2B vs consumer, technical vs general)
+     *   - the domain/industry and any specialised jargon
+     *   - key concepts the translator should be aware of
+     * Injected into the system prompt as an "Application Context" section.
+     */
+    appContext: z.ZodOptional<z.ZodString>;
+    /**
+     * How many TM entries to fold into the cached system prompt.
+     * Larger values give Claude more reference translations (better
+     * consistency) AND push the prompt past the model's cache threshold so
+     * subsequent calls within the 5-min window pay 10% of input cost.
+     * Default 100. Lower (e.g. 20) trades cache benefit for shorter prompts.
+     */
+    tmContextSize: z.ZodOptional<z.ZodNumber>;
+    /**
+     * How many glossary terms to fold into the cached system prompt.
+     * Default 100. Cap exists so a single bloated language file (e.g. 1000+
+     * imported terms) doesn't blow up per-call cost.
+     */
+    glossaryContextSize: z.ZodOptional<z.ZodNumber>;
+    /**
+     * If true, every human-approved target-language translation
+     * (translation.approved event from Lokalise) is also written into
+     * the project-wide glossary.json — provided the source string passes
+     * the "term-like" thresholds below. Existing rows have their language
+     * column filled in; short approved sources that don't yet exist in
+     * the glossary create new rows. Long sentences only go to TM.
+     * Default: false.
+     */
+    glossaryAutoLearn: z.ZodOptional<z.ZodBoolean>;
+    /**
+     * Maximum character length for a source string to be considered a
+     * glossary candidate when glossaryAutoLearn is on. Default: 60.
+     */
+    glossaryAutoLearnMaxChars: z.ZodOptional<z.ZodNumber>;
+    /**
+     * Maximum word count for a source string to be considered a glossary
+     * candidate when glossaryAutoLearn is on. Default: 8.
+     */
+    glossaryAutoLearnMaxWords: z.ZodOptional<z.ZodNumber>;
+    /**
      * Source language ISO code. When set, the service skips the Lokalise
      * base_language_iso API call on every webhook, saving a round-trip.
      */
@@ -32,6 +76,12 @@ declare const ProjectSchema: z.ZodObject<{
     webhookSecret: string;
     model?: "haiku-4-5" | "sonnet-4-6" | undefined;
     styleGuide?: string | undefined;
+    appContext?: string | undefined;
+    tmContextSize?: number | undefined;
+    glossaryContextSize?: number | undefined;
+    glossaryAutoLearn?: boolean | undefined;
+    glossaryAutoLearnMaxChars?: number | undefined;
+    glossaryAutoLearnMaxWords?: number | undefined;
     sourceLanguage?: string | undefined;
     languages?: string[] | undefined;
 }, {
@@ -41,6 +91,12 @@ declare const ProjectSchema: z.ZodObject<{
     model?: "haiku-4-5" | "sonnet-4-6" | undefined;
     enabled?: boolean | undefined;
     styleGuide?: string | undefined;
+    appContext?: string | undefined;
+    tmContextSize?: number | undefined;
+    glossaryContextSize?: number | undefined;
+    glossaryAutoLearn?: boolean | undefined;
+    glossaryAutoLearnMaxChars?: number | undefined;
+    glossaryAutoLearnMaxWords?: number | undefined;
     sourceLanguage?: string | undefined;
     languages?: string[] | undefined;
 }>;

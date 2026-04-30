@@ -1,0 +1,25 @@
+﻿Category,Guideline
+Language,Thai (Thailand)
+Reference language,en-US (American English)
+,
+--- VOICE & TONE ---,
+Formality / Register,Polite register. Uses polite particles and formal constructions.
+Tone,Professional and respectful.
+Gender inclusivity,Thai is largely gender-neutral in professional contexts.
+,
+--- TYPOGRAPHY & FORMATTING ---,
+Capitalization,N/A for Thai script. English terms and acronyms in Latin characters.
+Quotation marks,Standard double quotes for feature names.
+Punctuation,Thai uses spaces between clauses. Question marks for questions. Colons for labels.
+Number formatting,{{variable}} placeholders preserved.
+,
+--- LANGUAGE PATTERNS ---,
+Compound words,Thai compound words without spaces between related terms. Transliterated English words common for technical terms.
+English loanwords,"Extensive Thai transliteration for technical terms (widget, check-in, feedback, chat, entity, field). Some kept in English: Analytics Hub, Data Foundation, PII, API, CSV, SFTP."
+Verbs in buttons,Thai verb forms for buttons. Instructions use polite request forms.
+,
+--- UI STRING PATTERNS ---,
+UI patterns,Enable: open-feature X pattern. Confirmations: are-you-sure pattern. Success: ...successfully pattern. Empty states: not-yet pattern.
+,
+--- KEY TERMINOLOGY ---,
+Terminology mapping,Check-in=check-in (Thai); Review=assessment (Thai); Goal=target (Thai); Worker=employee (Thai); Manager=supervisor (Thai); Compensation=reward (Thai); Behavior=behavior (Thai); Career Development=career advancement (Thai); Settings=settings (Thai); Library=library (Thai transliteration)

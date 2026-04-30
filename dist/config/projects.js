@@ -14,6 +14,50 @@ const ProjectSchema = z.object({
      */
     styleGuide: z.string().optional(),
     /**
+     * Free-form description of the application being translated. Helps Claude
+     * pick the right tone, terminology and register. Examples of useful content:
+     *   - what the app does (one-liner)
+     *   - who the audience is (B2B vs consumer, technical vs general)
+     *   - the domain/industry and any specialised jargon
+     *   - key concepts the translator should be aware of
+     * Injected into the system prompt as an "Application Context" section.
+     */
+    appContext: z.string().optional(),
+    /**
+     * How many TM entries to fold into the cached system prompt.
+     * Larger values give Claude more reference translations (better
+     * consistency) AND push the prompt past the model's cache threshold so
+     * subsequent calls within the 5-min window pay 10% of input cost.
+     * Default 100. Lower (e.g. 20) trades cache benefit for shorter prompts.
+     */
+    tmContextSize: z.number().int().positive().optional(),
+    /**
+     * How many glossary terms to fold into the cached system prompt.
+     * Default 100. Cap exists so a single bloated language file (e.g. 1000+
+     * imported terms) doesn't blow up per-call cost.
+     */
+    glossaryContextSize: z.number().int().positive().optional(),
+    /**
+     * If true, every human-approved target-language translation
+     * (translation.approved event from Lokalise) is also written into
+     * the project-wide glossary.json — provided the source string passes
+     * the "term-like" thresholds below. Existing rows have their language
+     * column filled in; short approved sources that don't yet exist in
+     * the glossary create new rows. Long sentences only go to TM.
+     * Default: false.
+     */
+    glossaryAutoLearn: z.boolean().optional(),
+    /**
+     * Maximum character length for a source string to be considered a
+     * glossary candidate when glossaryAutoLearn is on. Default: 60.
+     */
+    glossaryAutoLearnMaxChars: z.number().int().positive().optional(),
+    /**
+     * Maximum word count for a source string to be considered a glossary
+     * candidate when glossaryAutoLearn is on. Default: 8.
+     */
+    glossaryAutoLearnMaxWords: z.number().int().positive().optional(),
+    /**
      * Source language ISO code. When set, the service skips the Lokalise
      * base_language_iso API call on every webhook, saving a round-trip.
      */

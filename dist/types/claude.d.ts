@@ -6,6 +6,9 @@ export interface TranslationJob {
     model: ModelOption;
     estimated_tokens?: number;
     is_batch?: boolean;
+    /** Project + language attribution propagated from TranslateOptions. */
+    projectId?: string;
+    targetLanguage?: string;
 }
 export interface ClaudeMessage {
     role: "user" | "assistant";
@@ -31,7 +34,12 @@ export interface ClaudeResponse {
 export interface BatchJob {
     job_id: string;
     batch_id: string;
-    status: "queued" | "processing" | "succeeded" | "failed" | "expired";
+    /**
+     * Anthropic's actual processing_status values are "in_progress" and
+     * "ended" (terminal). The legacy aliases are kept for compatibility
+     * with older code paths.
+     */
+    status: "in_progress" | "ended" | "queued" | "processing" | "succeeded" | "failed" | "expired";
     request_counts: {
         succeeded: number;
         processing: number;
@@ -63,6 +71,9 @@ export interface TranslateOptions {
     sync?: boolean;
     maxWaitMs?: number;
     modelOverride?: ModelOption;
+    /** Project + language attribution for cost logging (optional). */
+    projectId?: string;
+    targetLanguage?: string;
 }
 export interface BackfillJob {
     /** Unique id encoding lang and chunk: e.g. "fr-FR:0", "fr-FR:1" */

@@ -5,6 +5,7 @@ import { claudeClient } from "../clients/claude.js";
 import { lokaliseClient } from "../clients/lokalise.js";
 import { fileLoader } from "../utils/file-loader.js";
 import { promptManager } from "../builders/prompt-manager.js";
+import { getProject } from "../config/projects.js";
 export class WebhookHandler {
     pendingBatches = new Map();
     pendingBackfillBatches = new Map();
@@ -122,9 +123,10 @@ export class WebhookHandler {
                     })),
                 },
             };
-            // Split into chunks of 50 keys to keep Claude responses clean and parseable.
-            // Large batches (300+ keys) cause Claude to wrap JSON in code fences.
-            const CHUNK_SIZE = 50;
+            // Split into chunks of 25 keys to keep Claude responses small enough to
+            // parse reliably. 50-key chunks empirically trigger code-fence wrapping
+            // (and thus JSON parse failures) often enough that 25 is the sweet spot.
+            const CHUNK_SIZE = 25;
             const allTranslations = {};
             const allFlags = [];
             for (let i = 0; i < translationRequest.strings.length; i += CHUNK_SIZE) {
@@ -134,6 +136,8 @@ export class WebhookHandler {
                 const promptMessages = await pm.buildMessages(chunkRequest);
                 const chunkResponse = await claudeClient.translate(promptMessages, {
                     modelOverride: pm.getModel(),
+                    projectId: context.projectId,
+                    targetLanguage: context.targetLanguage,
                 });
                 if ("batch_id" in chunkResponse) {
                     // Batch API path — store and stop chunking (whole request is async).
@@ -209,6 +213,52 @@ export class WebhookHandler {
                         appended: result.appended,
                         total: result.total,
                     });
+                    // Optionally also write to the project-wide glossary if the
+                    // project has glossaryAutoLearn enabled and the source string
+                    // looks like a term (short enough). Sentences only go to TM.
+                    const project = context.projectId
+                        ? getProject(context.projectId)
+                        : undefined;
+                    if (project?.glossaryAutoLearn) {
+                        const maxChars = project.glossaryAutoLearnMaxChars ?? 60;
+                        const maxWords = project.glossaryAutoLearnMaxWords ?? 8;
+                        const wordCount = sourceText.trim().split(/\s+/).length;
+                        const isTermLike = sourceText.length <= maxChars && wordCount <= maxWords;
+                        if (!isTermLike) {
+                            this.getLogger().debug({
+                                eventId: context.eventId,
+                                keyId,
+                                source: sourceText,
+                                chars: sourceText.length,
+                                words: wordCount,
+                                maxChars,
+                                maxWords,
+                            }, "Glossary auto-learn skipped: source not term-like");
+                        }
+                        else {
+                            try {
+                                const g = await fileLoader(context.projectId).appendProjectGlossaryEntry(context.sourceLanguage, context.targetLanguage, sourceText, targetText);
+                                if (g.added || g.updated) {
+                                    recordEvent("translation_pushed", g.added
+                                        ? `Glossary row added for ${context.targetLanguage}`
+                                        : `Glossary updated for ${context.targetLanguage}`, {
+                                        eventId: context.eventId,
+                                        keyId,
+                                        targetLanguage: context.targetLanguage,
+                                        added: g.added,
+                                        updated: g.updated,
+                                    });
+                                }
+                            }
+                            catch (gErr) {
+                                this.getLogger().warn({
+                                    eventId: context.eventId,
+                                    keyId,
+                                    error: gErr instanceof Error ? gErr.message : String(gErr),
+                                }, "Glossary auto-learn write failed (non-fatal)");
+                            }
+                        }
+                    }
                 }
                 catch (err) {
                     this.getLogger().error({

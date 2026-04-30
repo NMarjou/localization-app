@@ -54,8 +54,20 @@ async function runProjectBackfill(projectId, opts) {
         submitted: 0,
         skipped: 0,
         errors: 0,
+        skipReasons: {
+            noSourceTranslation: 0,
+            emptySource: 0,
+            notReviewed: 0,
+            upToDate: 0,
+        },
+        skipSamples: {
+            noSourceTranslation: [],
+            emptySource: [],
+            notReviewed: [],
+        },
         durationMs: 0,
     };
+    const requireReviewedSource = opts.requireReviewedSource ?? true;
     try {
         logger.info({ runId, projectId, opts }, "Backfill run starting");
         recordEvent("backfill_started", "Backfill run starting", { runId, projectId, opts });
@@ -86,9 +98,25 @@ async function runProjectBackfill(projectId, opts) {
         summary.keysInspected = filteredKeys.length;
         // Collect every (keyId, targetLang) pair that actually needs work.
         const workItems = [];
+        const pushSample = (arr, id) => {
+            if (arr.length < 20)
+                arr.push(id);
+        };
         for (const key of filteredKeys) {
             const source = key.translations?.find((t) => t.language_iso === sourceLang);
-            if (!source || !source.translation || !source.is_reviewed) {
+            if (!source) {
+                summary.skipReasons.noSourceTranslation++;
+                pushSample(summary.skipSamples.noSourceTranslation, Number(key.key_id));
+                continue;
+            }
+            if (!source.translation) {
+                summary.skipReasons.emptySource++;
+                pushSample(summary.skipSamples.emptySource, Number(key.key_id));
+                continue;
+            }
+            if (requireReviewedSource && !source.is_reviewed) {
+                summary.skipReasons.notReviewed++;
+                pushSample(summary.skipSamples.notReviewed, Number(key.key_id));
                 continue;
             }
             const sourceTs = source.modified_at_timestamp ?? 0;
@@ -97,8 +125,11 @@ async function runProjectBackfill(projectId, opts) {
                 const targetTs = target?.modified_at_timestamp ?? 0;
                 const isUntranslated = !target?.translation || target.translation === "";
                 const isStale = targetTs < sourceTs;
-                if (isUntranslated || isStale) {
+                if (opts.force || isUntranslated || isStale) {
                     workItems.push({ keyId: Number(key.key_id), targetLang });
+                }
+                else {
+                    summary.skipReasons.upToDate++;
                 }
             }
         }
@@ -121,7 +152,10 @@ async function runProjectBackfill(projectId, opts) {
             targetLanguages: byLanguage.size,
         }, "Backfill plan built");
         const keyMap = new Map(filteredKeys.map(k => [String(k.key_id), k]));
-        const CHUNK_SIZE = 50;
+        // 25 keys per chunk: larger chunks empirically trigger more JSON parse
+        // failures from Claude. Smaller chunks → more API calls but fewer
+        // dropped keys.
+        const CHUNK_SIZE = 25;
         const chunks = [];
         for (const [targetLang, keyIds] of byLanguage) {
             const keyIdToTranslationId = {};
@@ -167,14 +201,78 @@ async function runProjectBackfill(projectId, opts) {
             }
         }
         logger.info({ runId, chunkCount: chunks.length, languages: byLanguage.size }, "Processing backfill chunks with concurrency");
-        // Process chunks with bounded concurrency
+        /**
+         * Build a prompt for an arbitrary subset of keyIds (used both for bulk
+         * chunks and per-key fallback). Returns null if there are no usable
+         * source strings.
+         */
+        const buildPromptForKeys = async (targetLang, keyIds) => {
+            const chunkKeys = keyIds.map(id => keyMap.get(String(id))).filter(Boolean);
+            const strings = chunkKeys.map((key) => ({
+                key_id: key.key_id,
+                key_name: typeof key.key_name === 'object' && key.key_name !== null
+                    ? (key.key_name.web ?? key.key_name.other ?? key.key_name.ios ?? String(key.key_name))
+                    : String(key.key_name),
+                value: key.translations?.find((t) => t.language_iso === sourceLang)?.translation ?? '',
+                max_char_limit: key.character_limit,
+                screen_or_section: 'web',
+            })).filter((s) => s.value);
+            if (strings.length === 0)
+                return null;
+            const pm = promptManager(projectId);
+            const prompts = await pm.buildMessages({
+                target_language: targetLang,
+                strings,
+                context: {},
+            });
+            return { prompts, model: pm.getModel() };
+        };
+        /**
+         * Translate one specific key in isolation. Single-key responses are
+         * compact and reliably parse cleanly, so this is the safety net when a
+         * 25-key chunk fails after retries.
+         */
+        const translateOneKey = async (keyId, targetLang, keyIdToTranslationId, keyIdToTags) => {
+            try {
+                const built = await buildPromptForKeys(targetLang, [keyId]);
+                if (!built) {
+                    logger.warn({ runId, keyId, targetLang }, "Per-key fallback: no source string");
+                    return false;
+                }
+                const resp = await claudeClient.translateSync(built.prompts, built.model, { projectId, targetLanguage: targetLang });
+                if (!resp.success) {
+                    logger.error({ runId, keyId, targetLang, err: resp.error }, "Per-key fallback failed");
+                    return false;
+                }
+                await webhookHandler.pushResults(resp, {
+                    eventId: `${runId}:${targetLang}:fallback:${keyId}`,
+                    projectId,
+                    sourceLanguage: sourceLang,
+                    targetLanguage: targetLang,
+                    keyIds: [keyId],
+                    keyIdToTranslationId,
+                    keyIdToTags,
+                    timestamp: Date.now(),
+                });
+                return true;
+            }
+            catch (err) {
+                logger.error({ runId, keyId, targetLang, error: err instanceof Error ? err.message : String(err) }, "Per-key fallback threw");
+                return false;
+            }
+        };
+        // Process chunks with bounded concurrency. On chunk-level failure
+        // (after the Messages client's own 3 retries), fall back to per-key
+        // calls so a single bad string doesn't drop 24 healthy ones.
         let submitted = 0;
         let errors = 0;
         for (let i = 0; i < chunks.length; i += CONCURRENCY) {
             const batch = chunks.slice(i, i + CONCURRENCY);
             await Promise.all(batch.map(async (chunk) => {
+                let chunkFailed = false;
+                let chunkError;
                 try {
-                    const response = await claudeClient.translateSync(chunk.prompts, chunk.model);
+                    const response = await claudeClient.translateSync(chunk.prompts, chunk.model, { projectId, targetLanguage: chunk.targetLang });
                     if (response.success) {
                         await webhookHandler.pushResults(response, {
                             eventId: `${runId}:${chunk.targetLang}:${i}`,
@@ -187,15 +285,34 @@ async function runProjectBackfill(projectId, opts) {
                             timestamp: Date.now(),
                         });
                         submitted += chunk.keyIds.length;
+                        return;
                     }
-                    else {
-                        errors++;
-                        logger.error({ targetLang: chunk.targetLang, error: response.error }, "Chunk translation failed");
-                    }
+                    chunkFailed = true;
+                    chunkError = response.error;
                 }
                 catch (err) {
-                    errors++;
-                    logger.error({ targetLang: chunk.targetLang, error: err instanceof Error ? err.message : String(err) }, "Chunk processing error");
+                    chunkFailed = true;
+                    chunkError = err;
+                }
+                if (chunkFailed) {
+                    logger.warn({
+                        runId,
+                        targetLang: chunk.targetLang,
+                        keyCount: chunk.keyIds.length,
+                        error: chunkError instanceof Error ? chunkError.message : String(chunkError),
+                    }, "Chunk failed — falling back to per-key translation");
+                    let recovered = 0;
+                    let stillFailed = 0;
+                    for (const keyId of chunk.keyIds) {
+                        const ok = await translateOneKey(keyId, chunk.targetLang, chunk.keyIdToTranslationId, chunk.keyIdToTags);
+                        if (ok)
+                            recovered++;
+                        else
+                            stillFailed++;
+                    }
+                    submitted += recovered;
+                    errors += stillFailed;
+                    logger.info({ runId, targetLang: chunk.targetLang, recovered, stillFailed }, "Per-key fallback complete");
                 }
             }));
             logger.info({ runId, processed: Math.min(i + CONCURRENCY, chunks.length), total: chunks.length }, "Backfill progress");

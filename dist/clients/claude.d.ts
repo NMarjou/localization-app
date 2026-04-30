@@ -10,12 +10,17 @@ export declare class ClaudeClient {
     }>;
     pollBatchResult(batchId: string, maxWaitMs?: number): Promise<ClaudeResponse[]>;
     /** Always uses the Messages API (synchronous). Used by backfill concurrency loop. */
-    translateSync(prompts: PromptMessages, model?: ModelOption): Promise<ClaudeResponse>;
+    translateSync(prompts: PromptMessages, model?: ModelOption, attribution?: {
+        projectId?: string;
+        targetLanguage?: string;
+    }): Promise<ClaudeResponse>;
     submitBackfillBatch(jobs: Array<{
         id: string;
         prompts: PromptMessages;
         model: ModelOption;
         estimatedStringCount: number;
+        projectId?: string;
+        targetLanguage?: string;
     }>): Promise<string>;
     getBatchResultsIfReady(batchId: string): Promise<ClaudeResponse[] | null>;
     private handleBatchJob;

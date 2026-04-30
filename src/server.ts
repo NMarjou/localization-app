@@ -14,6 +14,7 @@ import {
   getStartedAt,
   recordEvent,
 } from "./utils/event-log.js";
+import { summarizeCosts } from "./utils/cost-log.js";
 import type {
   LokaliseWebhookEvent,
   LokaliseWebhookEventType,
@@ -262,6 +263,50 @@ app.get("/status", (req: Request, res: Response) => {
   });
 });
 
+// Cost summary endpoint. Aggregates the JSONL cost log into per-project,
+// per-language and per-model totals. Optional filters:
+//   ?projectId=<id>       — only count this project
+//   ?since=<ms-epoch>     — only entries at/after this timestamp
+//   ?until=<ms-epoch>     — only entries at/before this timestamp
+//
+// Public read-only — no auth — because costs are local data and the
+// service is typically behind a reverse proxy / ngrok already.
+app.get("/cost", async (req: Request, res: Response) => {
+  try {
+    const projectId = typeof req.query.projectId === "string"
+      ? req.query.projectId
+      : undefined;
+    const since = typeof req.query.since === "string"
+      ? Number(req.query.since)
+      : undefined;
+    const until = typeof req.query.until === "string"
+      ? Number(req.query.until)
+      : undefined;
+    const format = typeof req.query.format === "string"
+      ? req.query.format.toLowerCase()
+      : "json";
+
+    // Resolve project IDs to names so the text view shows readable labels.
+    const projectsList = loadProjects();
+    const lookup = (id: string) =>
+      projectsList.find((p) => p.id === id)?.name ?? id;
+
+    const summary = await summarizeCosts({ projectId, since, until }, lookup);
+
+    if (format === "text") {
+      res.type("text/plain").send(summary.formatted);
+      return;
+    }
+    res.json(summary);
+  } catch (err) {
+    logger.error(
+      { error: err instanceof Error ? err.message : String(err) },
+      "Cost summary failed"
+    );
+    res.status(500).json({ error: "Failed to compute cost summary" });
+  }
+});
+
 // Serve the dashboard UI (kept at repo root so no build step is needed).
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 app.get("/ui", (_req: Request, res: Response) => {
@@ -295,6 +340,11 @@ app.post("/trigger/backfill", (req: Request, res: Response) => {
     languages: Array.isArray(body.languages) ? body.languages : undefined,
     maxItems: typeof body.maxItems === "number" ? body.maxItems : undefined,
     projectId: typeof body.projectId === "string" ? body.projectId : undefined,
+    requireReviewedSource:
+      typeof body.requireReviewedSource === "boolean"
+        ? body.requireReviewedSource
+        : undefined,
+    force: typeof body.force === "boolean" ? body.force : undefined,
   }).catch((err) =>
     logger.error(
       { runId, error: err instanceof Error ? err.message : String(err) },

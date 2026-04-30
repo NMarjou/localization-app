@@ -1,0 +1,28 @@
+Category,Guideline
+Language,Swedish (Sweden)
+Reference language,en-US (American English)
+,
+--- VOICE & TONE ---,
+Formality / Register,Neutral — Swedish du-reform (1960s) makes informal du universal and non-disrespectful. Use du throughout. No Sie/vous equivalent needed.
+Tone,"Professional, clear, and direct. Neutral on pay gap data."
+Gender inclusivity,Use hen or gender-neutral constructions where natural. Avoid defaulting to masculine forms.
+,
+--- TYPOGRAPHY & FORMATTING ---,
+Capitalization,"Sentence case throughout. Swedish does not capitalize job titles, common nouns, months, or languages. Never use title case."
+Quotation marks,"Straight double quotes (""example"") used consistently in existing TM."
+Punctuation,"Standard Swedish punctuation. Percent: 15 % (space before sign — Swedish convention). Decimal separator: comma (,). Thousands: space."
+Number formatting,"{variable} placeholders preserved unchanged. Date: YYYY-MM-DD (ISO standard, dominant in Swedish business)."
+,
+--- LANGUAGE PATTERNS ---,
+Compound words,"Swedish compounds written as single words: Lönegap, Medarbetargrupp, Jämförelsegrupp, Personalanalys. Do not split with spaces."
+English loanwords,"Kept in English: PayAnalytics, gap (as in lönegap — do not replace with löneskillnad), bonus, KPI, p-value, API, CSV, feedback, benchmark (acceptable in UI labels). Swedish readily adopts English HR terminology."
+Verbs in buttons,"Swedish V2 rule: imperative for UI labels: Lägg till filter, Exportera lista, Jämför. Verb placed first."
+,
+--- UI STRING PATTERNS ---,
+UI patterns,"Actions: Lägg till [noun], Ta bort [noun], Exportera [noun]. Confirmations: Är du säker på att du vill...? Success: ...[noun] har sparats."
+,
+--- KEY TERMINOLOGY ---,
+Terminology mapping,Pay gap=Lönegap (keeps English 'gap'); Adjusted pay gap=Justerat lönegap; Unadjusted pay gap=Ojusterat lönegap; Gender pay gap=Lönegap mellan könen; Pay band=Lönespann; Salary range=Löneintervall; Compensation=Ersättning; Salary=Lön; Raise=Löneökning; Benchmark=Riktmärkning; Pay equity=Rättvis lönesättning; Equal pay=Lika lön; Job evaluation=Jobbutvärdering; Workforce analytics=Personalanalys; Headcount=Antal anställda; Dataset=Datamängd; Comparison group=Jämförelsegrupp; Employee group=Medarbetargrupp; Maternity leave=Föräldraledighet; Bonus=Bonus (kept); Compa-ratio=Compa-ratio (kept)
+,
+--- TEXT EXPANSION ---,
+Expansion ratio,+8% average length vs. English. Close to English in length — good fit for UI strings.

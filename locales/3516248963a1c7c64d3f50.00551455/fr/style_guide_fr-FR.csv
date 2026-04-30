@@ -1,0 +1,25 @@
+﻿Category,Guideline
+Language,French (France)
+Reference language,en-US (American English)
+,
+--- VOICE & TONE ---,
+Formality / Register,Formal register (vouvoiement). Uses vous consistently.
+Tone,"Formal, professional, and instructive. Polite phrasing with Veuillez in prompts."
+Gender inclusivity,"Inclusive writing with parenthetical notation: employe(e)s, un(e) employe(e), selectionne(e), notifie(e)s. The pattern ils/elles used for pronouns."
+,
+--- TYPOGRAPHY & FORMATTING ---,
+Capitalization,French capitalization: minimal. Feature names after quotes are lowercase unless proper nouns.
+Quotation marks,"Spaced straight quotes with internal spaces around quoted text for widget/feature names: Widget "" Favoris "". Note the spaces inside the quotes."
+Punctuation,"French typography: space before : ; ! ? (e.g., Cree par :, Entite :)."
+Number formatting,{{variable}} placeholders preserved. Mo for megabytes (not MB).
+,
+--- LANGUAGE PATTERNS ---,
+Compound words,"Preposition-linked: Parametres des comportements, Bibliotheques de comportement, Details du champ."
+English loanwords,"Kept: Check-in(s), Widget, Feedback, Chat, Coaching, SFTP, API, CSV. Translated: Analytics Hub -> Plateforme d analyses. PII -> DCP (Donnees a Caractere Personnel) in some contexts."
+Verbs in buttons,"Infinitive for buttons: Publier, Annuler, Supprimer, Rafraichir. Imperative formal for instructions: Selectionnez..., Enregistrez..."
+,
+--- UI STRING PATTERNS ---,
+UI patterns,"Enable: Activer la fonction "" X "" or Activer le widget "" X "". Confirmations: Voulez-vous vraiment...? Success: ...correctement publiees. Empty states: Aucun(e) ... pour le moment."
+,
+--- KEY TERMINOLOGY ---,
+Terminology mapping,Check-in=Check-in (kept); Review=Bilan; Goal=Objectif; Employee=Employe(e); Manager=Manager (kept); Compensation=Remuneration; Behavior=Comportement; PII=DCP/PII; Career Development=Developpement de carriere; Settings=Parametres; Template=Modele; Proxy=Acces procuration

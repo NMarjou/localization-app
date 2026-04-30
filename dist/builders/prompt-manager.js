@@ -63,10 +63,15 @@ export class PromptManager {
         const loader = fileLoader(this.projectId);
         const glossary = await loader.loadGlossary(language);
         const translationMemory = await loader.loadTranslationMemory(language);
+        const projectLanguageStyleGuide = await loader.loadStyleGuide(language);
         return {
             styleGuide,
+            appContext: project?.appContext,
+            projectLanguageStyleGuide: projectLanguageStyleGuide || undefined,
             glossary,
             translationMemory,
+            tmContextSize: project?.tmContextSize,
+            glossaryContextSize: project?.glossaryContextSize,
         };
     }
     /**

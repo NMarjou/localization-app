@@ -2,9 +2,11 @@ import Anthropic from "@anthropic-ai/sdk";
 import { getEnv } from "../config/env.js";
 import { getLogger } from "../utils/logger.js";
 import { ClaudeError, ValidationError } from "../utils/errors.js";
+import { recordCost } from "../utils/cost-log.js";
 import type {
   TranslationJob,
   ClaudeResponse,
+  ClaudeUsage,
   BatchJob,
   BatchRequest,
   ModelOption,
@@ -16,9 +18,18 @@ const MODEL_MAP: Record<ModelOption, string> = {
   "sonnet-4-6": "claude-sonnet-4-6",
 };
 
+/** Attribution metadata used by the cost log when batch results land. */
+interface JobMeta {
+  projectId?: string;
+  targetLanguage?: string;
+  model: ModelOption;
+}
+
 export class ClaudeBatchClient {
   private client?: Anthropic;
   private logger?: ReturnType<typeof getLogger>;
+  /** Tracks attribution per job_id (custom_id) until the batch completes. */
+  private jobMetaByCustomId = new Map<string, JobMeta>();
 
   private getClient(): Anthropic {
     if (!this.client) {
@@ -46,6 +57,16 @@ export class ClaudeBatchClient {
       const batch = await this.getClient().beta.messages.batches.create({
         requests,
       });
+
+      // Stash attribution per job_id so the cost log can find it when the
+      // batch finishes (potentially hours later).
+      for (const job of jobs) {
+        this.jobMetaByCustomId.set(job.job_id, {
+          projectId: job.projectId,
+          targetLanguage: job.targetLanguage,
+          model: job.model,
+        });
+      }
 
       this.getLogger().info(
         { batchId: batch.id, jobCount: jobs.length },
@@ -116,12 +137,24 @@ export class ClaudeBatchClient {
     while (true) {
       const status = await this.getBatchStatus(batchId);
 
+      // Anthropic's Batch API uses processing_status="ended" as the
+      // terminal state. Older docs/clients sometimes refer to
+      // "succeeded"/"failed"/"expired" — we accept all of them so the
+      // poller works regardless of which surface returns the result.
       if (
+        status.status === "ended" ||
         status.status === "succeeded" ||
         status.status === "failed" ||
         status.status === "expired"
       ) {
-        this.getLogger().info({ batchId, status: status.status }, "Batch complete");
+        this.getLogger().info(
+          {
+            batchId,
+            status: status.status,
+            counts: status.request_counts,
+          },
+          "Batch complete"
+        );
         return this.parseBatchResults(batchId);
       }
 
@@ -150,7 +183,12 @@ export class ClaudeBatchClient {
 
   async getBatchResultsIfReady(batchId: string): Promise<ClaudeResponse[] | null> {
     const status = await this.getBatchStatus(batchId);
-    if (status.status === "succeeded" || status.status === "failed" || status.status === "expired") {
+    if (
+      status.status === "ended" ||
+      status.status === "succeeded" ||
+      status.status === "failed" ||
+      status.status === "expired"
+    ) {
       return this.parseBatchResults(batchId);
     }
     return null;
@@ -195,8 +233,22 @@ export class ClaudeBatchClient {
             continue;
           }
 
+          // Cost log: record attribution + usage for this batch entry.
+          const usage = this.extractUsage(message.usage);
+          const meta = this.jobMetaByCustomId.get(result.custom_id);
+          void recordCost({
+            jobId: result.custom_id,
+            projectId: meta?.projectId,
+            targetLanguage: meta?.targetLanguage,
+            model: meta?.model ?? "haiku-4-5",
+            isBatch: true,
+            usage,
+          });
+          this.jobMetaByCustomId.delete(result.custom_id);
+
           try {
             const parsed = this.parseResponse(content.text, result.custom_id);
+            parsed.usage = usage;
             results.push(parsed);
           } catch (error) {
             this.getLogger().error(
@@ -222,6 +274,7 @@ export class ClaudeBatchClient {
             translations: {},
             error: errorMessage,
           });
+          this.jobMetaByCustomId.delete(result.custom_id);
         }
       }
 
@@ -256,6 +309,22 @@ export class ClaudeBatchClient {
         500
       );
     }
+  }
+
+  private extractUsage(
+    usage: Anthropic.Messages.Usage | undefined
+  ): ClaudeUsage {
+    if (!usage) {
+      return { input_tokens: 0, output_tokens: 0 };
+    }
+    return {
+      input_tokens: usage.input_tokens ?? 0,
+      output_tokens: usage.output_tokens ?? 0,
+      cache_creation_input_tokens: (usage as unknown as Record<string, unknown>)
+        .cache_creation_input_tokens as number | undefined,
+      cache_read_input_tokens: (usage as unknown as Record<string, unknown>)
+        .cache_read_input_tokens as number | undefined,
+    };
   }
 
   private stripCodeFences(text: string): string {

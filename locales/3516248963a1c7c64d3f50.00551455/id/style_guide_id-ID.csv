@@ -1,0 +1,25 @@
+﻿Category,Guideline
+Language,Indonesian (Indonesia)
+Reference language,en-US (American English)
+,
+--- VOICE & TONE ---,
+Formality / Register,"Formal register. Uses Anda (formal you, always capitalized) consistently."
+Tone,"Professional, clear, and instructional."
+Gender inclusivity,Indonesian is largely gender-neutral by nature.
+,
+--- TYPOGRAPHY & FORMATTING ---,
+Capitalization,Standard Indonesian: capitalize first word and proper nouns.
+Quotation marks,Standard double quotes for feature names.
+Punctuation,Standard punctuation. Colons for labels.
+Number formatting,{{variable}} placeholders preserved.
+,
+--- LANGUAGE PATTERNS ---,
+Compound words,"Space-separated compounds: Pengaturan perilaku, Katalog perilaku. Note: library is translated as katalog (not perpustakaan)."
+English loanwords,"Many retained: Check-in, Widget, Analytics Hub, Feedback, Chat, Benchmarking, Data Modeler, PII, API, CSV, SFTP, Proxy, Template. Adapted: Kompensasi, Entitas."
+Verbs in buttons,"Bare verb for buttons: Publikasikan, Batal, Hapus. Imperative for instructions: Pilih..., Tentukan..."
+,
+--- UI STRING PATTERNS ---,
+UI patterns,Enable: Aktifkan fitur X or Aktifkan widget X. Confirmations: Apakah Anda yakin ingin...? Success: ...berhasil dipublikasikan. Empty states: Belum ada...
+,
+--- KEY TERMINOLOGY ---,
+Terminology mapping,Check-in=Check-in; Review=Ulasan; Goal=Tujuan; Worker=Pekerja; Manager=Manajer; Compensation=Kompensasi; Behavior=Perilaku; Library=Katalog; Career Development=Pengembangan Karier; Settings=Pengaturan

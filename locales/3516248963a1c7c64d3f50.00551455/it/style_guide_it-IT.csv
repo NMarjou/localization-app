@@ -1,0 +1,25 @@
+﻿Category,Guideline
+Language,Italian (Italy)
+Reference language,en-US (American English)
+,
+--- VOICE & TONE ---,
+Formality / Register,"Mixed: predominantly informal tu form (Seleziona..., Puoi creare..., Sei sicuro...) but occasional formal Lei (Le sue modifiche...). The informal register is dominant and should be preferred for consistency."
+Tone,Professional but approachable due to informal register.
+Gender inclusivity,Standard Italian gendered forms. Collaboratori (masculine plural) as default for workers. No inclusive notation observed.
+,
+--- TYPOGRAPHY & FORMATTING ---,
+Capitalization,Italian rules: minimal capitalization.
+Quotation marks,Standard double quotes for feature names.
+Punctuation,"Standard Italian. Colons for labels without space before: Creato da:, Entita:."
+Number formatting,{{variable}} placeholders preserved. MB for megabytes.
+,
+--- LANGUAGE PATTERNS ---,
+Compound words,"Preposition-linked: Impostazioni dei comportamenti, Librerie dei comportamenti, Dettagli del campo."
+English loanwords,"Kept: Check-in, Widget, Feedback, Chat, Coaching, Benchmarking, Data Foundation, PII, API, CSV, SFTP. Translated: Analytics Hub -> Hub analisi. Knowledge Base kept in English."
+Verbs in buttons,"Imperative informal for buttons: Pubblica, Annulla, Aggiorna. Infinitive in some confirmations: Eliminare questo comportamento?"
+,
+--- UI STRING PATTERNS ---,
+UI patterns,Enable: Abilita la funzionalita X or Abilita il widget X. Confirmations: mixed Sei sicuro di voler...? (informal) and Eliminare questo...? (impersonal). Success: ...correttamente or ...con successo.
+,
+--- KEY TERMINOLOGY ---,
+Terminology mapping,Check-in=Check-in; Review=Valutazione; Goal=Obiettivo; Worker=Collaboratori; Manager=Manager; Compensation=Retribuzione; Behavior=Comportamento; Career Development=Sviluppo professionale; Settings=Impostazioni; Library=Libreria

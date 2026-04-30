@@ -1,0 +1,25 @@
+﻿Category,Guideline
+Language,Japanese (Japan)
+Reference language,en-US (American English)
+,
+--- VOICE & TONE ---,
+Formality / Register,Polite/formal register (desu/masu form). Standard keigo throughout.
+Tone,Professional and respectful. Polite forms throughout.
+Gender inclusivity,Japanese is inherently gender-neutral in most constructions.
+,
+--- TYPOGRAPHY & FORMATTING ---,
+Capitalization,N/A for Japanese characters. English loanwords and acronyms in half-width Latin characters.
+Quotation marks,Japanese corner brackets used for feature/widget names consistently.
+Punctuation,Full-width colons for labels. Standard Japanese periods and commas.
+Number formatting,{{variable}} placeholders preserved. Japanese counting patterns. MB for megabytes.
+,
+--- LANGUAGE PATTERNS ---,
+Compound words,Kanji compound nouns for domain terms. Katakana for transliterated English terms.
+English loanwords,"Extensive katakana transliteration: widget, check-in, feedback, template, coaching, custom field, entity, status. Kept in English: Analytics Hub, Data Foundation, Data Modeler, PII, API, CSV, SFTP, True, False."
+Verbs in buttons,Noun form or polite command for buttons. For longer instructions: ...shite kudasai (please...).
+,
+--- UI STRING PATTERNS ---,
+UI patterns,Enable: [X] feature wo yuukoka. Confirmations: ...shitemo yoroshii desu ka? Success: ...seijou ni...saremashita. Empty states: Mada...ga arimasen.
+,
+--- KEY TERMINOLOGY ---,
+Terminology mapping,Check-in=chekkuin; Review=rebyuu; Goal=mokuhyou; Worker=shain/juugyouin; Manager=maneejaa; Compensation=houshuu; Behavior=koudou; Career Development=kyaria kaihatsu; Settings=settei; Library=raiburari

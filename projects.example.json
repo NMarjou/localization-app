@@ -15,6 +15,8 @@
 
     "styleGuide": "Brand Voice: Friendly and direct. No jargon. Use short sentences. Prefer active voice. Avoid exclamation marks except for errors and confirmations.",
 
+    "appContext": "PayAnalytics is a B2B SaaS platform used by HR and compensation teams to analyse pay equity. Audience: HR analysts, compensation managers, and DEI leads. Translations should use formal register and treat statistical/HR terms (e.g. 'pay gap', 'regression analysis', 'compensation band') as terms of art — keep them precise rather than colloquial.",
+
     "sourceLanguage": "en"
   },
   {

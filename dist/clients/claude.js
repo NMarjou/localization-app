@@ -2,7 +2,21 @@ import { getLogger } from "../utils/logger.js";
 import { ValidationError } from "../utils/errors.js";
 import { ClaudeMessagesClient } from "./claude-messages.js";
 import { ClaudeBatchClient } from "./claude-batch.js";
-const TOKEN_LIMIT_FOR_BATCH = 10000;
+/**
+ * Estimated-token threshold above which a translate() call is routed to the
+ * Batch API instead of the Messages API.
+ *
+ * Originally set to 10K (a guess), but in practice that pushed legitimate
+ * webhook chunks (e.g. languages with large glossaries) onto Batch — which
+ * adds minutes-to-hours of latency, not acceptable for live edits.
+ *
+ * Raised to 150K so virtually all real-time webhook traffic stays on the
+ * Messages API. Backfill explicitly opts into Batch via submitBackfillBatch;
+ * it doesn't rely on this threshold.
+ *
+ * Models support 200K context; this leaves headroom.
+ */
+const TOKEN_LIMIT_FOR_BATCH = 150000;
 const DEFAULT_MODEL = "haiku-4-5";
 export class ClaudeClient {
     logger;
@@ -27,6 +41,8 @@ export class ClaudeClient {
             model,
             estimated_tokens: estimatedTokens,
             is_batch: isBatch,
+            projectId: options?.projectId,
+            targetLanguage: options?.targetLanguage,
         };
         if (isBatch) {
             return this.handleBatchJob(job, options);
@@ -40,7 +56,7 @@ export class ClaudeClient {
         return this.batchClient.pollBatchCompletion(batchId, maxWaitMs);
     }
     /** Always uses the Messages API (synchronous). Used by backfill concurrency loop. */
-    async translateSync(prompts, model = DEFAULT_MODEL) {
+    async translateSync(prompts, model = DEFAULT_MODEL, attribution) {
         this.validatePrompts(prompts);
         const jobId = this.generateJobId();
         const job = {
@@ -49,6 +65,8 @@ export class ClaudeClient {
             model,
             estimated_tokens: this.estimateTokens(prompts),
             is_batch: false,
+            projectId: attribution?.projectId,
+            targetLanguage: attribution?.targetLanguage,
         };
         return this.messagesClient.translate(job);
     }
@@ -60,6 +78,8 @@ export class ClaudeClient {
             model: j.model,
             estimated_tokens: j.estimatedStringCount * 60,
             is_batch: true,
+            projectId: j.projectId,
+            targetLanguage: j.targetLanguage,
         }));
         return this.batchClient.submitBatch(translationJobs);
     }

@@ -2,6 +2,8 @@ import type { TranslationJob, ClaudeResponse, BatchJob } from "../types/claude.j
 export declare class ClaudeBatchClient {
     private client?;
     private logger?;
+    /** Tracks attribution per job_id (custom_id) until the batch completes. */
+    private jobMetaByCustomId;
     private getClient;
     private getLogger;
     submitBatch(jobs: TranslationJob[]): Promise<string>;
@@ -11,6 +13,7 @@ export declare class ClaudeBatchClient {
     private formatBatchRequests;
     private parseBatchResults;
     private parseResponse;
+    private extractUsage;
     private stripCodeFences;
     private sleep;
 }

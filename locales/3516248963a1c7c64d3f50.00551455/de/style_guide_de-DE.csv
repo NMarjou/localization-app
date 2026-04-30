@@ -1,0 +1,25 @@
+﻿Category,Guideline
+Language,German (Germany)
+Reference language,en-US (American English)
+,
+--- VOICE & TONE ---,
+Formality / Register,"Formal (Sie-Form). The application consistently uses Sie (formal you) when addressing users, e.g., Sind Sie sicher..., Waehlen Sie die Widgets aus..."
+Tone,Professional and instructional. Sentences are direct and action-oriented.
+Gender inclusivity,"Gender-neutral language with colon notation (Gender-Doppelpunkt). Examples: Mitarbeiter:innen, Benutzer:innen, Fuehrungskraefte, ein:e Mitarbeiter:in. This is the consistent pattern throughout."
+,
+--- TYPOGRAPHY & FORMATTING ---,
+Capitalization,Standard German capitalization rules: all nouns are capitalized. Feature names enclosed in typographic quotation marks.
+Quotation marks,"German typographic quotes used for feature/widget names, e.g., Widget Lesezeichen, Funktion Verhalten aktivieren."
+Punctuation,"Standard German punctuation. Colons for labels (Erstellt von:, Entitaet:). Semicolons to join related clauses in warnings."
+Number formatting,{{variable}} placeholders preserved. Slashes for show/hide: ein-/ausblenden.
+,
+--- LANGUAGE PATTERNS ---,
+Compound words,"German compounds written as single words: Verhaltenseinstellungen, Verguetungsverlauf, Felddetails, Startseite. Hyphens for English loanword compounds: Check-in-Einstellungen, Upload-Verhalten."
+English loanwords,"Kept in English: Check-in, Chat, Widget, Analytics Hub, Data Modeler, Benchmarking, Upload, SFTP, API, CSV, PII, Feedback, Coaching, Data Foundation."
+Verbs in buttons,"Infinitive for action buttons: Veroeffentlichen, Abbrechen, Aktualisieren. Imperative Sie form for instructions: Waehlen Sie..., Geben Sie..."
+,
+--- UI STRING PATTERNS ---,
+UI patterns,"Enable: Funktion X aktivieren or Widget X aktivieren. Confirmations: Sind Sie sicher, dass Sie ... moechten? Success: ...wurde(n) erfolgreich..."
+,
+--- KEY TERMINOLOGY ---,
+Terminology mapping,Behavior=Verhalten; Review=Beurteilung; Goal=Ziel; Worker/Employee=Mitarbeiter:in; Manager=Fuehrungskraft; Settings=Einstellungen; Template=Vorlage; Feature=Funktion; Custom field=Benutzerdefiniertes Feld; Compensation=Verguetung; Career Development=Karriereentwicklung; Library=Bibliothek; Data Upload=Daten-Upload

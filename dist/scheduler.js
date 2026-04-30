@@ -2,8 +2,11 @@ import cron from "node-cron";
 import { getLogger } from "./utils/logger.js";
 import { runBackfill } from "./handlers/backfill.js";
 /**
- * Start the periodic backfill job. Defaults to every 4 hours (top of hour:
- * 00:00, 04:00, 08:00, 12:00, 16:00, 20:00). Override via BACKFILL_CRON env var.
+ * Start the periodic backfill job.
+ *
+ * **Disabled by default.** Set `BACKFILL_ENABLED=true` (env) to turn it
+ * on. When enabled, defaults to every 4 hours (top of hour: 00:00, 04:00,
+ * …, 20:00). Override the schedule via `BACKFILL_CRON` env var.
  *
  * The job invokes the same runBackfill as the manual POST /trigger/backfill
  * endpoint, so behaviour stays identical between the two paths.
@@ -13,6 +16,14 @@ import { runBackfill } from "./handlers/backfill.js";
  */
 export function startScheduler() {
     const logger = getLogger();
+    const enabled = (process.env.BACKFILL_ENABLED ?? "false")
+        .toLowerCase()
+        .trim() === "true";
+    if (!enabled) {
+        logger.info("Scheduled backfill disabled (set BACKFILL_ENABLED=true to enable)");
+        // Return a no-op task so callers can still call .stop() on shutdown.
+        return cron.schedule("0 0 31 2 *", () => { });
+    }
     const expression = process.env.BACKFILL_CRON?.trim() || "0 */4 * * *";
     if (!cron.validate(expression)) {
         throw new Error(`Invalid BACKFILL_CRON expression: "${expression}" (must be a valid 5-field cron)`);

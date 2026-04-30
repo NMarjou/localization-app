@@ -1,0 +1,28 @@
+Category,Guideline
+Language,German (Germany)
+Reference language,en-US (American English)
+,
+--- VOICE & TONE ---,
+Formality / Register,"Formal (Sie-Form). The application consistently uses Sie when addressing users. Du must never appear. Capitalize Sie and all inflected forms (Ihr, Ihnen, Ihre)."
+Tone,"Professional, precise, and instructional. Sentences are direct and action-oriented. Neutral stance on pay gap data."
+Gender inclusivity,"Gender-neutral language with colon notation (Genderdoppelpunkt): Mitarbeiter:innen, Benutzer:innen. Apply consistently when referring to groups of people."
+,
+--- TYPOGRAPHY & FORMATTING ---,
+Capitalization,"All nouns capitalized — this is a German grammatical rule, not title case. Adjectives and verbs remain lowercase. Never capitalize adjectives in headings."
+Quotation marks,"German low-high typographic quotes for feature/widget names: „example"". For nested quotes: ‚single'."
+Punctuation,Standard German punctuation. Colons for labels. Verb placement: finite verb second in main clauses; infinitives and past participles at end of clause.
+Number formatting,"{variable} placeholders preserved unchanged. Decimal separator: comma (,). Thousands: period (.). Date: DD.MM.YYYY."
+,
+--- LANGUAGE PATTERNS ---,
+Compound words,"German compounds written as single words: Lohngleichheit, Mitarbeitergruppe, Gehaltsspanne, Stellenbewertung. Hyphens for loanword compounds: Benchmark-Tabelle."
+English loanwords,"Kept in English: PayAnalytics, Benchmark, KPI, p-value, API, CSV, Feedback, Bonus. German form used for: Analyse, Vergleich, Datensatz."
+Verbs in buttons,"Infinitive at END of phrase: Kommentar hinzufügen, Filter hinzufügen, Liste exportieren. Opposite word order to French."
+,
+--- UI STRING PATTERNS ---,
+UI patterns,"Actions: [Noun] hinzufügen, [Noun] exportieren, [Noun] vergleichen. Confirmations: Sind Sie sicher, dass Sie ... möchten? Success: ...wurde(n) erfolgreich..."
+,
+--- KEY TERMINOLOGY ---,
+Terminology mapping,Pay gap=Lohnunterschied / Lohnlücke; Adjusted pay gap=Bereinigte Lohnlücke; Unadjusted pay gap=Unbereinigte Lohnlücke; Gender pay gap=Geschlechtsspez. Lohnunterschied; Pay band=Gehaltsband; Salary range=Gehaltsspanne; Compensation=Vergütung; Salary=Gehalt; Raise=Lohnerhöhung; Benchmark=Benchmark (kept); Pay equity=Lohngleichheit; Equal pay=Entgeltgleichheit; Job evaluation=Stellenbewertung; Workforce analytics=Personalanalyse; Headcount=Mitarbeiterzahl; Dataset=Datensatz; Comparison group=Vergleichsgruppe; Employee group=Mitarbeitergruppe; Maternity leave=Mutterschaftsurlaub; Bonus=Bonus (kept); Compa-ratio=Compa-Ratio
+,
+--- TEXT EXPANSION ---,
+Expansion ratio,+26% average length vs. English. German compounds are efficient — prefer single-word compounds over noun chains with 'von'.

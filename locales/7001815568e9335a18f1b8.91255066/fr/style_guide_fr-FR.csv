@@ -1,0 +1,28 @@
+Category,Guideline
+Language,French (France)
+Reference language,en-US (American English)
+,
+--- VOICE & TONE ---,
+Formality / Register,Formal register (vouvoiement). Uses vous consistently throughout the UI. Tu/toi must never appear.
+Tone,"Professional, precise, and neutral. Avoids sensationalizing pay gap data. Register comparable to a financial audit report."
+Gender inclusivity,Use gender-neutral phrasing where possible. Avoid defaulting to masculine generics. Inclusive writing only when explicitly requested by the client.
+,
+--- TYPOGRAPHY & FORMATTING ---,
+Capitalization,Sentence case throughout. Only the first word and proper nouns are capitalized. Title case must never be used on UI labels or headings.
+Quotation marks,French guillemets with non-breaking spaces: « example ». Do not use straight double quotes or curly quotes.
+Punctuation,Non-breaking space before: ? ! : ; « — Standard French typography rules apply. Percent: 15 % (space before sign).
+Number formatting,"{variable} placeholders preserved unchanged. Decimal separator: comma (,). Thousands: space. Date: DD/MM/YYYY."
+,
+--- LANGUAGE PATTERNS ---,
+Compound words,"Preposition-linked noun phrases: Analyse de l'équité salariale, Groupe de comparaison, Bande de rémunération."
+English loanwords,"Kept in English: PayAnalytics, benchmark, KPI, p-value, QR code, API, CSV, feedback. Translated: compensation -> Rémunération (false friend — never use 'compensation')."
+Verbs in buttons,"Infinitive for action buttons: Ajouter un filtre, Exporter la liste, Comparer. Verb placed first, followed by article + noun."
+,
+--- UI STRING PATTERNS ---,
+UI patterns,"Actions: Ajouter un [noun], Supprimer le [noun], Exporter la [noun]. Confirmations: Souhaitez-vous vraiment... ? Empty states: Aucun(e) ... pour le moment."
+,
+--- KEY TERMINOLOGY ---,
+Terminology mapping,Pay gap=Écart salarial; Adjusted pay gap=Écart salarial ajusté; Unadjusted pay gap=Écart salarial non ajusté; Gender pay gap=Écart salarial hommes-femmes; Pay band=Bande de rémunération; Salary range=Fourchette salariale; Compensation=Rémunération; Raise=Augmentation; Benchmark=Benchmark (kept); Pay equity=Équité salariale; Equal pay=Égalité salariale; Job evaluation=Évaluation de l'emploi; Workforce analytics=Analyse du personnel; Headcount=Effectif; Dataset=Jeu de données; Comparison group=Groupe de comparaison; Employee group=Groupe d'employés; Maternity leave=Congé maternité; Bonus=Prime; Compa-ratio=Compa-ratio (kept)
+,
+--- TEXT EXPANSION ---,
+Expansion ratio,+32% average length vs. English. Prefer concise equivalents; avoid padding.

@@ -1,0 +1,28 @@
+Category,Guideline
+Language,Italian (Italy)
+Reference language,en-US (American English)
+,
+--- VOICE & TONE ---,
+Formality / Register,Formal register with Lei implied. Subject pronoun typically omitted; verb conjugation carries formality. Tu must not appear in the UI.
+Tone,"Professional, precise, and instructional. Neutral stance on pay data."
+Gender inclusivity,Standard Italian grammatical gender. Use gender-neutral constructions where natural.
+,
+--- TYPOGRAPHY & FORMATTING ---,
+Capitalization,"Sentence case throughout. Italian does not capitalize job titles, months, languages, or nationalities. Never use title case."
+Quotation marks,"Straight double quotes ("") used consistently in existing TM. Angle quotes («») acceptable as alternative. Be consistent within a screen."
+Punctuation,"Standard Italian punctuation. Percent: 15% (no space). Decimal separator: comma (,). Thousands: period (.)."
+Number formatting,{variable} placeholders preserved unchanged. Date: DD/MM/YYYY.
+,
+--- LANGUAGE PATTERNS ---,
+Compound words,"Noun-adjective phrases: Divario retributivo, Fascia retributiva, Analisi del personale, Gruppo di confronto."
+English loanwords,"Kept in English: PayAnalytics, benchmark (44 occurrences in TM — do not translate), KPI, p-value, API, CSV, feedback, bonus. Italian professionals use these daily."
+Verbs in buttons,"Imperative for action labels: Aggiungi filtro, Esporta lista, Confronta. Subject omitted."
+,
+--- UI STRING PATTERNS ---,
+UI patterns,"Actions: Aggiungi [noun], Elimina [noun], Esporta [noun]. Confirmations: Sei sicuro di voler...? Success: ...salvato/a correttamente."
+,
+--- KEY TERMINOLOGY ---,
+Terminology mapping,Pay gap=Divario retributivo; Adjusted pay gap=Divario retributivo rettificato; Unadjusted pay gap=Divario retributivo non rettificato; Gender pay gap=Divario retributivo di genere; Pay band=Fascia retributiva; Salary range=Fascia salariale; Compensation=Retribuzione; Salary=Stipendio; Raise=Aumento; Benchmark=Benchmark (kept in English); Pay equity=Parità retributiva; Equal pay=Parità retributiva; Job evaluation=Valutazione del lavoro; Workforce analytics=Analisi del personale; Headcount=Numero di dipendenti; Dataset=Set di dati; Comparison group=Gruppo di confronto; Employee group=Gruppo di dipendenti; Maternity leave=Congedo di maternità; Bonus=Bonus (kept); Compa-ratio=Compa-ratio (kept)
+,
+--- TEXT EXPANSION ---,
+Expansion ratio,+24% average length vs. English.
