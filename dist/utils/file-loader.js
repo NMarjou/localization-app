@@ -181,7 +181,10 @@ export class FileLoader {
                 // Try next candidate
             }
         }
-        this.logger.warn({ language, tried: this.baseDirs(language) }, "Failed to load translation memory, returning empty");
+        // Missing TM is a legitimate runtime state (project hasn't built one
+        // yet, or this language isn't curated). Don't spam warn; debug is enough.
+        this.logger.debug({ language, tried: this.baseDirs(language) }, "No translation memory found, returning empty");
+        this.tmCache.set(cacheKey, []);
         return [];
     }
     /**
@@ -391,6 +394,16 @@ function getFileLoaderInstance(projectId) {
         _fileLoaders.set(key, new FileLoader(projectId));
     }
     return _fileLoaders.get(key);
+}
+/**
+ * Clear in-memory caches on every existing FileLoader instance. Used by
+ * the /admin/reload endpoint so on-disk edits to glossary/TM/style-guide
+ * files are picked up without restarting the server.
+ */
+export function clearAllFileLoaderCaches() {
+    for (const loader of _fileLoaders.values()) {
+        loader.clearCache();
+    }
 }
 export { getFileLoaderInstance as fileLoader };
 //# sourceMappingURL=file-loader.js.map

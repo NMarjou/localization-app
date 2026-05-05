@@ -3,6 +3,7 @@ import { getEnv } from "../config/env.js";
 import { getLogger } from "../utils/logger.js";
 import { ClaudeError, ValidationError } from "../utils/errors.js";
 import { recordCost } from "../utils/cost-log.js";
+import { tolerantParse } from "../utils/json-repair.js";
 import type {
   TranslationJob,
   ClaudeResponse,
@@ -14,6 +15,42 @@ import type { PromptResponse } from "../types/prompt.js";
 const MODEL_MAP: Record<ModelOption, string> = {
   "haiku-4-5": "claude-haiku-4-5",
   "sonnet-4-6": "claude-sonnet-4-6",
+};
+
+/**
+ * Tool definition that forces Claude to return its translations as a
+ * structured object (Anthropic parses it for us, so JSON-syntax errors
+ * are impossible). Used with tool_choice to guarantee invocation.
+ */
+const TRANSLATIONS_TOOL: Anthropic.Tool = {
+  name: "submit_translations",
+  description:
+    "Return the completed translations to the caller. Always call this tool exactly once with all requested translations.",
+  input_schema: {
+    type: "object",
+    properties: {
+      translations: {
+        type: "object",
+        description:
+          "Map of source key_id (as a string) to the translated text in the target language.",
+        additionalProperties: { type: "string" },
+      },
+      flags: {
+        type: "array",
+        description:
+          "Strings that need human review (glossary mismatch, ambiguity, cultural references, etc.).",
+        items: {
+          type: "object",
+          properties: {
+            key_id: { type: "string" },
+            reason: { type: "string" },
+          },
+          required: ["key_id", "reason"],
+        },
+      },
+    },
+    required: ["translations"],
+  },
 };
 
 export class ClaudeMessagesClient {
@@ -56,7 +93,8 @@ export class ClaudeMessagesClient {
 
     for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       try {
-        // On JSON parse retry, append a hard reminder to the last user message.
+        // On retry, append a hard reminder. Most paths now use tool_use so
+        // this only fires for the rare case where Claude emits text.
         const messages = attempt > 0
           ? [
               ...job.prompt_messages.messages.slice(0, -1),
@@ -64,7 +102,7 @@ export class ClaudeMessagesClient {
                 role: "user" as const,
                 content:
                   (job.prompt_messages.messages.at(-1)?.content ?? "") +
-                  "\n\nIMPORTANT: Your previous response was not valid JSON. Return ONLY a raw JSON object. No markdown, no code fences, no explanation.",
+                  "\n\nIMPORTANT: Use the submit_translations tool to return your output. Do not write JSON or commentary in your text response.",
               },
             ]
           : (job.prompt_messages.messages as Anthropic.MessageParam[]);
@@ -74,17 +112,11 @@ export class ClaudeMessagesClient {
           max_tokens: maxTokens,
           system: job.prompt_messages.system,
           messages,
+          tools: [TRANSLATIONS_TOOL],
+          tool_choice: { type: "tool", name: "submit_translations" },
         });
 
-        const content = response.content[0];
-        if (content.type !== "text") {
-          throw new ClaudeError(
-            "Expected text response from Claude API",
-            500
-          );
-        }
-
-        const parsed = this.parseResponse(content.text, job.job_id);
+        const parsed = this.parseFromToolUse(response, job.job_id);
         parsed.usage = this.extractUsage(response.usage);
 
         // Fire-and-forget cost log (records tokens + USD attribution).
@@ -150,42 +182,87 @@ export class ClaudeMessagesClient {
     throw new ClaudeError("Translation failed after retries", 500);
   }
 
-  private parseResponse(content: string, jobId: string): ClaudeResponse {
-    try {
-      const cleaned = this.stripCodeFences(content);
-      this.validateJSON(cleaned);
-      const parsed = JSON.parse(cleaned) as PromptResponse;
-
-      if (!parsed.translations || typeof parsed.translations !== "object") {
-        throw new ValidationError("Response missing translations object");
+  /**
+   * Pull the translations out of a tool_use block. Anthropic guarantees
+   * the input is valid JSON parsed against our schema — no string
+   * parsing needed. If the model somehow ignored tool_choice and emitted
+   * text instead, fall through to parseResponse() so jsonrepair still
+   * gives us a chance.
+   */
+  private parseFromToolUse(
+    response: Anthropic.Message,
+    jobId: string
+  ): ClaudeResponse {
+    const toolUse = response.content.find(
+      (b): b is Anthropic.ToolUseBlock =>
+        b.type === "tool_use" && b.name === "submit_translations"
+    );
+    if (toolUse) {
+      const input = toolUse.input as PromptResponse;
+      if (!input || !input.translations || typeof input.translations !== "object") {
+        throw new ValidationError("tool_use input missing translations");
       }
-
       return {
         success: true,
         job_id: jobId,
-        translations: parsed.translations,
-        flags: parsed.flags,
+        translations: input.translations,
+        flags: input.flags,
       };
-    } catch (error) {
-      if (error instanceof ValidationError) {
-        throw error;
-      }
-
-      throw new ClaudeError(
-        `Failed to parse Claude response: ${error instanceof Error ? error.message : String(error)}`,
-        500
-      );
     }
+
+    // Fallback: model emitted a text block. parseResponse handles repair.
+    const textBlock = response.content.find(
+      (b): b is Anthropic.TextBlock => b.type === "text"
+    );
+    if (textBlock) {
+      this.getLogger().warn(
+        { jobId },
+        "No tool_use in response; falling back to text-JSON parse"
+      );
+      return this.parseResponse(textBlock.text, jobId);
+    }
+
+    throw new ClaudeError(
+      "Response had neither tool_use nor text block",
+      500
+    );
   }
 
-  private validateJSON(text: string): void {
+  private parseResponse(content: string, jobId: string): ClaudeResponse {
+    const cleaned = this.stripCodeFences(content);
+
+    // Strict parse first; fall back to jsonrepair for malformed JSON
+    // (unescaped quotes, truncated strings, missing commas — common
+    // with Cyrillic/Greek/Thai/Arabic translations).
+    let parsed: PromptResponse;
+    let repaired = false;
     try {
-      JSON.parse(text);
-    } catch (error) {
+      const result = tolerantParse<PromptResponse>(cleaned);
+      parsed = result.value;
+      repaired = result.repaired;
+    } catch (err) {
       throw new ValidationError(
-        `Invalid JSON in Claude response: ${error instanceof Error ? error.message : String(error)}`
+        `Invalid JSON in Claude response: ${err instanceof Error ? err.message : String(err)}`
       );
     }
+
+    if (!parsed || !parsed.translations || typeof parsed.translations !== "object") {
+      throw new ValidationError("Response missing translations object");
+    }
+
+    if (repaired) {
+      this.getLogger().info(
+        { jobId, translations: Object.keys(parsed.translations).length },
+        "Used jsonrepair to recover malformed Claude response"
+      );
+    }
+
+    return {
+      success: true,
+      job_id: jobId,
+      translations: parsed.translations,
+      flags: parsed.flags,
+    };
   }
 
   /**

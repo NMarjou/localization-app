@@ -132,3 +132,11 @@ export function getProject(projectId: string): ProjectConfig | undefined {
 export function getAllProjects(): ProjectConfig[] {
   return loadProjects();
 }
+
+/**
+ * Reset the in-memory project cache so the next loadProjects() call
+ * re-reads projects.json from disk. Used by the /admin/reload endpoint.
+ */
+export function resetProjectsCache(): void {
+  _projects = null;
+}

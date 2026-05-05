@@ -57,5 +57,11 @@ export declare class LokaliseClient {
     listProjectLanguages(): Promise<string[]>;
 }
 declare function getLokaliseClientInstance(projectId?: string): LokaliseClient;
+/**
+ * Drop every cached Lokalise client so /admin/reload picks up fresh
+ * project state on the next call. Each client also clears its own
+ * glossary cache so we don't leak stale data.
+ */
+export declare function clearAllLokaliseClients(): void;
 export { getLokaliseClientInstance as lokaliseClient };
 //# sourceMappingURL=lokalise.d.ts.map

@@ -27,6 +27,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "glob": "^13.0.6",
+    "jsonrepair": "^3.14.0",
     "node-cron": "^4.2.1",
     "pino": "^9.1.0",
     "pino-pretty": "^13.1.3",

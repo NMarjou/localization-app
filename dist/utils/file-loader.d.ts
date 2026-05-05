@@ -94,5 +94,11 @@ export declare class FileLoader {
     }>;
 }
 declare function getFileLoaderInstance(projectId?: string): FileLoader;
+/**
+ * Clear in-memory caches on every existing FileLoader instance. Used by
+ * the /admin/reload endpoint so on-disk edits to glossary/TM/style-guide
+ * files are picked up without restarting the server.
+ */
+export declare function clearAllFileLoaderCaches(): void;
 export { getFileLoaderInstance as fileLoader };
 //# sourceMappingURL=file-loader.d.ts.map

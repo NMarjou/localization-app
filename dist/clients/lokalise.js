@@ -323,5 +323,16 @@ function getLokaliseClientInstance(projectId) {
     }
     return _lokaliseClients.get(id);
 }
+/**
+ * Drop every cached Lokalise client so /admin/reload picks up fresh
+ * project state on the next call. Each client also clears its own
+ * glossary cache so we don't leak stale data.
+ */
+export function clearAllLokaliseClients() {
+    for (const client of _lokaliseClients.values()) {
+        client.clearGlossaryCache();
+    }
+    _lokaliseClients.clear();
+}
 export { getLokaliseClientInstance as lokaliseClient };
 //# sourceMappingURL=lokalise.js.map

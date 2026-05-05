@@ -105,4 +105,11 @@ export function getProject(projectId) {
 export function getAllProjects() {
     return loadProjects();
 }
+/**
+ * Reset the in-memory project cache so the next loadProjects() call
+ * re-reads projects.json from disk. Used by the /admin/reload endpoint.
+ */
+export function resetProjectsCache() {
+    _projects = null;
+}
 //# sourceMappingURL=projects.js.map

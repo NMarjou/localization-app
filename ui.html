@@ -8,6 +8,7 @@
     :root {
       --bg: #0f172a;
       --card: #1e293b;
+      --card-2: #0b1220;
       --border: #334155;
       --text: #e2e8f0;
       --muted: #94a3b8;
@@ -15,66 +16,139 @@
       --yellow: #eab308;
       --red: #ef4444;
       --blue: #3b82f6;
+      --purple: #a855f7;
     }
     * { box-sizing: border-box; }
     body {
-      margin: 0;
+      margin: 0 auto;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: var(--bg);
       color: var(--text);
       padding: 24px;
-      max-width: 1100px;
-      margin: 0 auto;
+      max-width: 1200px;
     }
-    h1 { margin: 0 0 8px; font-weight: 600; }
-    .subtitle { color: var(--muted); margin-bottom: 24px; font-size: 14px; }
+    h1 { margin: 0 0 4px; font-weight: 600; }
+    .subtitle { color: var(--muted); margin-bottom: 16px; font-size: 13px; }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      padding: 10px 16px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 14px;
+      border-bottom: 2px solid transparent;
+      user-select: none;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active {
+      color: var(--text);
+      border-bottom-color: var(--blue);
+      font-weight: 500;
+    }
+    .panel { display: none; }
+    .panel.active { display: block; }
+
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 12px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
     .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 16px;
+      padding: 14px 16px;
     }
     .card-label {
-      font-size: 12px;
+      font-size: 11px;
       text-transform: uppercase;
       color: var(--muted);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
     }
-    .card-value {
-      font-size: 24px;
-      font-weight: 600;
-    }
+    .card-value { font-size: 22px; font-weight: 600; }
+    .card-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
     .value-ok { color: var(--green); }
     .value-warn { color: var(--yellow); }
     .value-err { color: var(--red); }
-    .actions {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-    }
+
     button {
       background: var(--blue);
       color: white;
       border: 0;
-      padding: 10px 16px;
+      padding: 9px 14px;
       border-radius: 6px;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       cursor: pointer;
     }
     button:hover { opacity: 0.9; }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
-    button.secondary {
-      background: var(--card);
+    button.secondary { background: var(--card); border: 1px solid var(--border); }
+    button.danger { background: var(--red); }
+
+    input[type="text"], input[type="number"], select, textarea {
+      background: var(--card-2);
+      color: var(--text);
       border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-family: inherit;
+      width: 100%;
     }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--blue);
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+    .field label {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .field-hint { font-size: 11px; color: var(--muted); }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } }
+
+    pre, code, .mono {
+      font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", monospace;
+      font-size: 12px;
+    }
+    pre {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      overflow: auto;
+      white-space: pre;
+      max-height: 60vh;
+    }
+
     .events {
       background: var(--card);
       border: 1px solid var(--border);
@@ -88,22 +162,23 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-size: 13px;
     }
     .event-row {
-      padding: 10px 16px;
+      padding: 9px 16px;
       border-bottom: 1px solid var(--border);
       display: grid;
-      grid-template-columns: 140px 130px 1fr;
-      gap: 16px;
-      font-size: 13px;
+      grid-template-columns: 130px 130px 1fr;
+      gap: 14px;
+      font-size: 12px;
       align-items: center;
     }
     .event-row:last-child { border-bottom: 0; }
     .event-time { color: var(--muted); font-variant-numeric: tabular-nums; }
     .event-type {
-      font-size: 11px;
+      font-size: 10px;
       text-transform: uppercase;
-      padding: 2px 8px;
+      padding: 2px 7px;
       border-radius: 4px;
       background: var(--bg);
       display: inline-block;
@@ -114,249 +189,577 @@
     .type-webhook_ignored { color: var(--muted); }
     .type-backfill_started, .type-backfill_completed { color: var(--yellow); }
     .type-error { color: var(--red); }
-    .event-message { color: var(--text); }
-    .event-details {
-      font-family: ui-monospace, SFMono-Regular, monospace;
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 4px;
+
+    /* Logs */
+    .log-toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+      flex-wrap: wrap;
     }
+    .log-toolbar input { flex: 1; min-width: 180px; }
+    .log-pane {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 11.5px;
+      line-height: 1.45;
+      height: 60vh;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .log-line { padding: 2px 0; }
+    .log-time { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .log-level { display: inline-block; padding: 0 6px; border-radius: 3px; margin: 0 6px; font-size: 10px; text-transform: uppercase; }
+    .level-debug { background: #1f2937; color: var(--muted); }
+    .level-info { background: #1e3a8a; color: #c7d2fe; }
+    .level-warn { background: #78350f; color: #fde68a; }
+    .level-error { background: #7f1d1d; color: #fecaca; }
+
+    .status-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .pill-on { background: rgba(34,197,94,0.15); color: var(--green); }
+    .pill-off { background: rgba(148,163,184,0.15); color: var(--muted); }
+
     .auth-prompt {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 24px;
+      padding: 14px;
+      margin-bottom: 16px;
     }
-    input[type="password"] {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 6px;
-      width: 300px;
-      font-family: inherit;
-    }
-    .empty {
-      padding: 32px;
-      text-align: center;
-      color: var(--muted);
-    }
-    .footer {
+    .empty { padding: 24px; text-align: center; color: var(--muted); }
+
+    .footer-note {
       margin-top: 24px;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--muted);
-      text-align: center;
     }
   </style>
 </head>
 <body>
+
   <h1>Localisation Service</h1>
-  <div class="subtitle">Lokalise ↔ Claude bridge</div>
+  <div class="subtitle">Operations dashboard.
+    <span id="last-refresh" style="float:right"></span>
+  </div>
 
+  <!-- Auth -->
   <div id="auth-prompt" class="auth-prompt" style="display:none">
-    <div style="margin-bottom:8px">Paste your <code>WEBHOOK_SECRET</code> to enable the "Run backfill" button (stored in sessionStorage, not sent anywhere except this server):</div>
-    <input type="password" id="secret-input" placeholder="WEBHOOK_SECRET" />
-    <button onclick="saveSecret()">Save</button>
+    <div style="margin-bottom:8px">
+      Paste any project's <code>webhookSecret</code> to enable actions.
+      Stored in <code>sessionStorage</code> only.
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input type="text" id="auth-input" placeholder="webhook secret" style="flex:1" />
+      <button id="auth-save">Save</button>
+    </div>
+    <div id="auth-error" style="color:var(--red);font-size:12px;margin-top:6px;display:none"></div>
   </div>
 
-  <div class="grid">
-    <div class="card">
-      <div class="card-label">Status</div>
-      <div class="card-value" id="status-value">—</div>
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" data-tab="status">Status</div>
+    <div class="tab" data-tab="costs">Costs</div>
+    <div class="tab" data-tab="backfill">Backfill</div>
+    <div class="tab" data-tab="logs">Logs</div>
+    <div class="tab" data-tab="admin">Admin</div>
+  </div>
+
+  <!-- ───── STATUS ───── -->
+  <div id="panel-status" class="panel active">
+    <div class="grid">
+      <div class="card">
+        <div class="card-label">Status</div>
+        <div class="card-value value-ok" id="health-status">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Uptime</div>
+        <div class="card-value" id="uptime">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Pending batches</div>
+        <div class="card-value" id="pending-batches">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Errors (1h)</div>
+        <div class="card-value" id="errors-1h">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Backfill cron</div>
+        <div class="card-value" id="cron" style="font-size:14px">—</div>
+      </div>
     </div>
-    <div class="card">
-      <div class="card-label">Uptime</div>
-      <div class="card-value" id="uptime-value">—</div>
+
+    <div class="events" style="margin-bottom:20px">
+      <div class="events-header">
+        Projects
+        <span style="font-weight:400;color:var(--muted);font-size:12px" id="project-count"></span>
+      </div>
+      <div id="project-list"></div>
     </div>
-    <div class="card">
-      <div class="card-label">Pending batches</div>
-      <div class="card-value" id="batches-value">—</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Errors (last hour)</div>
-      <div class="card-value" id="errors-value">—</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Schedule</div>
-      <div class="card-value" style="font-size:16px" id="cron-value">—</div>
+
+    <div class="events">
+      <div class="events-header">
+        Recent events
+        <span style="font-weight:400;color:var(--muted);font-size:12px" id="event-count"></span>
+      </div>
+      <div id="event-list"></div>
     </div>
   </div>
 
-  <div class="actions">
-    <button id="backfill-btn" onclick="runBackfill()">Run backfill now</button>
-    <button class="secondary" onclick="refresh()">Refresh</button>
-  </div>
-
-  <div class="events">
-    <div class="events-header">
-      <span>Recent events</span>
-      <span style="font-size:12px;color:var(--muted)" id="event-count"></span>
+  <!-- ───── COSTS ───── -->
+  <div id="panel-costs" class="panel">
+    <div class="form-grid" style="margin-bottom:14px">
+      <div class="field">
+        <label>Project</label>
+        <select id="cost-project">
+          <option value="">All projects</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Time window</label>
+        <select id="cost-window">
+          <option value="">All time</option>
+          <option value="3600">Last hour</option>
+          <option value="86400" selected>Last 24 hours</option>
+          <option value="604800">Last 7 days</option>
+          <option value="2592000">Last 30 days</option>
+        </select>
+      </div>
     </div>
-    <div id="events-list"></div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button id="cost-refresh">Refresh</button>
+      <button class="secondary" id="cost-copy">Copy as text</button>
+    </div>
+    <pre id="cost-output">Loading…</pre>
   </div>
 
-  <div class="footer">Auto-refreshes every 5 seconds.</div>
+  <!-- ───── BACKFILL ───── -->
+  <div id="panel-backfill" class="panel">
+    <div class="form-grid">
+      <div class="field">
+        <label>Project</label>
+        <select id="bf-project">
+          <option value="">— select project —</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Languages (comma-separated ISO codes)</label>
+        <input type="text" id="bf-languages" placeholder="e.g. translations.nl, fr-FR  (leave blank = all)" />
+      </div>
+      <div class="field">
+        <label>Max items (cap)</label>
+        <input type="number" id="bf-max-items" placeholder="optional, e.g. 100" min="1" />
+      </div>
+      <div class="field">
+        <label>Specific key IDs</label>
+        <input type="text" id="bf-key-ids" placeholder="optional, comma-separated numbers" />
+      </div>
+    </div>
 
-  <script>
-    const SECRET_KEY = 'localisation_webhook_secret';
+    <div class="checkbox-row" style="margin-bottom:8px">
+      <input type="checkbox" id="bf-force" />
+      <label for="bf-force" style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--text)">
+        Force — re-translate even if target is already up-to-date
+        <span class="field-hint" style="display:block">⚠ overwrites existing translations; humans need to re-review.</span>
+      </label>
+    </div>
+    <div class="checkbox-row" style="margin-bottom:16px">
+      <input type="checkbox" id="bf-include-unreviewed" />
+      <label for="bf-include-unreviewed" style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--text)">
+        Include keys whose source isn't reviewed yet
+        <span class="field-hint" style="display:block">By default backfill only runs on reviewed source strings.</span>
+      </label>
+    </div>
 
-    function getSecret() {
-      return sessionStorage.getItem(SECRET_KEY) || '';
-    }
-    function saveSecret() {
-      const v = document.getElementById('secret-input').value.trim();
-      if (v) {
-        sessionStorage.setItem(SECRET_KEY, v);
-        document.getElementById('auth-prompt').style.display = 'none';
-      }
-    }
-    function ensureSecret() {
-      if (!getSecret()) {
-        document.getElementById('auth-prompt').style.display = 'block';
-        return false;
-      }
-      return true;
-    }
+    <button id="bf-run">Run backfill</button>
+    <span id="bf-status" style="margin-left:12px;color:var(--muted);font-size:13px"></span>
 
-    function formatDuration(ms) {
-      const s = Math.floor(ms / 1000);
-      const days = Math.floor(s / 86400);
-      const hrs = Math.floor((s % 86400) / 3600);
-      const mins = Math.floor((s % 3600) / 60);
-      if (days > 0) return `${days}d ${hrs}h`;
-      if (hrs > 0) return `${hrs}h ${mins}m`;
-      if (mins > 0) return `${mins}m`;
-      return `${s}s`;
-    }
+    <div style="margin-top:20px;font-size:12px;color:var(--muted)">
+      Watch the Logs tab for progress. Backfill is idempotent — already-translated keys are skipped (unless Force is on).
+    </div>
+  </div>
 
-    function formatTime(ts) {
-      const d = new Date(ts);
-      return d.toLocaleTimeString('en-GB', { hour12: false }) + '.' + String(d.getMilliseconds()).padStart(3, '0');
-    }
+  <!-- ───── LOGS ───── -->
+  <div id="panel-logs" class="panel">
+    <div class="log-toolbar">
+      <input type="text" id="log-filter" placeholder="filter by text or message…" />
+      <select id="log-level-filter" style="width:auto">
+        <option value="">All levels</option>
+        <option value="20">debug+</option>
+        <option value="30">info+</option>
+        <option value="40">warn+</option>
+        <option value="50">error+</option>
+      </select>
+      <button class="secondary" id="log-clear">Clear</button>
+      <span id="log-status" class="status-pill pill-off">disconnected</span>
+    </div>
+    <div id="log-pane" class="log-pane">Connecting…</div>
+  </div>
 
-    async function fetchStatus() {
-      try {
-        const res = await fetch('/status');
-        if (!res.ok) throw new Error('status ' + res.status);
-        return await res.json();
-      } catch (err) {
-        return null;
-      }
-    }
+  <!-- ───── ADMIN ───── -->
+  <div id="panel-admin" class="panel">
+    <div class="card" style="margin-bottom:14px">
+      <div style="margin-bottom:10px;font-weight:500">Reload config & clear caches</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px">
+        Reads <code>projects.json</code> from disk again and drops every in-memory cache (glossary, TM, style guides, Lokalise project data).
+        Use after editing files on disk so changes take effect without a server restart.
+      </div>
+      <button id="admin-reload">Reload now</button>
+      <span id="admin-reload-status" style="margin-left:12px;color:var(--muted);font-size:13px"></span>
+    </div>
 
-    function render(data) {
-      if (!data) {
-        document.getElementById('status-value').textContent = 'Offline';
-        document.getElementById('status-value').className = 'card-value value-err';
-        return;
-      }
+    <div class="card">
+      <div style="margin-bottom:10px;font-weight:500">Sign out</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px">
+        Removes the saved webhook secret from this browser session.
+      </div>
+      <button class="secondary" id="admin-signout">Forget secret</button>
+    </div>
+  </div>
 
-      const statusEl = document.getElementById('status-value');
-      const errors = data.errorsLastHour;
-      if (errors === 0) {
-        statusEl.textContent = 'Healthy';
-        statusEl.className = 'card-value value-ok';
-      } else if (errors < 5) {
-        statusEl.textContent = 'Warning';
-        statusEl.className = 'card-value value-warn';
-      } else {
-        statusEl.textContent = 'Errors';
-        statusEl.className = 'card-value value-err';
-      }
+  <div class="footer-note">
+    Auth: paste a project's <code>webhookSecret</code>. Stored only in <code>sessionStorage</code>; clears on tab close.
+  </div>
 
-      document.getElementById('uptime-value').textContent = formatDuration(data.uptimeMs);
-      document.getElementById('batches-value').textContent = data.pendingBatches;
-      document.getElementById('errors-value').textContent = errors;
-      document.getElementById('errors-value').className =
-        'card-value ' + (errors === 0 ? 'value-ok' : errors < 5 ? 'value-warn' : 'value-err');
-      document.getElementById('cron-value').textContent = data.cron;
+<script>
+  // ---------------- Auth ----------------
+  const SECRET_KEY = "loc_service_secret";
+  function getSecret() { return sessionStorage.getItem(SECRET_KEY) || ""; }
+  function setSecret(s) { sessionStorage.setItem(SECRET_KEY, s); }
+  function clearSecret() { sessionStorage.removeItem(SECRET_KEY); }
+  function ensureSecret() {
+    if (getSecret()) return true;
+    document.getElementById("auth-prompt").style.display = "block";
+    document.getElementById("auth-input").focus();
+    return false;
+  }
+  document.getElementById("auth-save").onclick = () => {
+    const v = document.getElementById("auth-input").value.trim();
+    if (!v) return;
+    setSecret(v);
+    document.getElementById("auth-prompt").style.display = "none";
+    document.getElementById("auth-error").style.display = "none";
+    document.getElementById("auth-input").value = "";
+    init();
+  };
+  document.getElementById("auth-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("auth-save").click();
+  });
 
-      const list = document.getElementById('events-list');
-      document.getElementById('event-count').textContent = `${data.events.length} events`;
-      if (!data.events.length) {
-        list.innerHTML = '<div class="empty">No events yet. Edit and review a translation in Lokalise to trigger one.</div>';
-        return;
-      }
+  // ---------------- Tabs ----------------
+  document.querySelectorAll(".tab").forEach(t => {
+    t.onclick = () => activateTab(t.dataset.tab);
+  });
+  function activateTab(name) {
+    document.querySelectorAll(".tab").forEach(t =>
+      t.classList.toggle("active", t.dataset.tab === name)
+    );
+    document.querySelectorAll(".panel").forEach(p =>
+      p.classList.toggle("active", p.id === "panel-" + name)
+    );
+    if (name === "logs" && !logEs) connectLogs();
+    if (name === "costs") refreshCosts();
+  }
 
-      list.innerHTML = data.events.map(e => {
-        let details = '';
-        if (e.details) {
-          const keys = Object.keys(e.details).filter(k => !['runId','opts'].includes(k));
-          const parts = keys.slice(0, 4).map(k => {
-            const v = e.details[k];
-            if (typeof v === 'object') return `${k}=${JSON.stringify(v).slice(0, 40)}`;
-            return `${k}=${v}`;
-          });
-          if (parts.length) details = `<div class="event-details">${parts.join(' · ')}</div>`;
-        }
-        return `
+  // ---------------- Helpers ----------------
+  async function authedFetch(path, opts = {}) {
+    const headers = { "X-Secret": getSecret(), ...(opts.headers || {}) };
+    return fetch(path, { ...opts, headers });
+  }
+  function fmtTime(ts) {
+    const d = new Date(ts);
+    return d.toLocaleTimeString();
+  }
+  function fmtUptime(ms) {
+    const s = Math.floor(ms / 1000);
+    const d = Math.floor(s / 86400);
+    const h = Math.floor((s % 86400) / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    if (d > 0) return `${d}d ${h}h`;
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m`;
+  }
+  function escapeHtml(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c =>
+      ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[c]);
+  }
+
+  // ---------------- Status ----------------
+  async function refreshStatus() {
+    try {
+      const r = await fetch("/status");
+      if (!r.ok) throw new Error(r.status);
+      const d = await r.json();
+
+      document.getElementById("health-status").textContent = "OK";
+      document.getElementById("uptime").textContent = fmtUptime(d.uptimeMs);
+      document.getElementById("pending-batches").textContent = d.pendingBatches;
+      const errCount = d.errorsLastHour ?? 0;
+      const errEl = document.getElementById("errors-1h");
+      errEl.textContent = errCount;
+      errEl.className = "card-value " + (errCount === 0 ? "value-ok" : errCount < 5 ? "value-warn" : "value-err");
+      document.getElementById("cron").textContent = d.cron || "—";
+
+      // Projects list
+      const projList = document.getElementById("project-list");
+      const projects = d.projects || [];
+      document.getElementById("project-count").textContent = `${projects.length} configured`;
+      projList.innerHTML = projects.length === 0
+        ? '<div class="empty">No projects configured.</div>'
+        : projects.map(p => `
           <div class="event-row">
-            <div class="event-time">${formatTime(e.timestamp)}</div>
-            <div><span class="event-type type-${e.type}">${e.type.replace(/_/g, ' ')}</span></div>
-            <div>
-              <div class="event-message">${escapeHtml(e.message)}</div>
-              ${details}
+            <div class="mono" style="font-size:11px;color:var(--muted)">${escapeHtml(p.id.slice(0, 16))}…</div>
+            <div>${escapeHtml(p.name)} <span class="status-pill ${p.enabled === false ? 'pill-off' : 'pill-on'}">${p.enabled === false ? 'disabled' : 'enabled'}</span></div>
+            <div style="color:var(--muted);font-size:12px">
+              ${p.model || 'haiku-4-5'}
+              ${p.languages ? `· ${p.languages.length} lang(s)` : '· all langs'}
             </div>
           </div>
-        `;
-      }).join('');
-    }
+        `).join("");
 
-    function escapeHtml(s) {
-      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
-    }
+      // Populate project dropdowns elsewhere
+      const opts = '<option value="">— select project —</option>'
+        + projects.filter(p => p.enabled !== false).map(p =>
+            `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)}</option>`
+          ).join("");
+      const bfSel = document.getElementById("bf-project");
+      const csSel = document.getElementById("cost-project");
+      const bfPrev = bfSel.value;
+      const csPrev = csSel.value;
+      bfSel.innerHTML = opts;
+      csSel.innerHTML = '<option value="">All projects</option>'
+        + projects.filter(p => p.enabled !== false).map(p =>
+            `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)}</option>`
+          ).join("");
+      bfSel.value = bfPrev;
+      csSel.value = csPrev;
 
-    async function runBackfill() {
-      if (!ensureSecret()) return;
-      const btn = document.getElementById('backfill-btn');
-      btn.disabled = true;
-      btn.textContent = 'Starting...';
-      try {
-        const res = await fetch('/trigger/backfill', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Secret': getSecret(),
-          },
-          body: JSON.stringify({}),
-        });
-        if (res.status === 401) {
-          sessionStorage.removeItem(SECRET_KEY);
-          document.getElementById('auth-prompt').style.display = 'block';
-          btn.textContent = 'Run backfill now';
-          btn.disabled = false;
-          alert('Secret rejected. Paste again.');
-          return;
-        }
-        const data = await res.json();
-        btn.textContent = `Started: ${data.runId}`;
-        setTimeout(() => {
-          btn.textContent = 'Run backfill now';
-          btn.disabled = false;
-          refresh();
-        }, 2000);
-      } catch (err) {
-        btn.textContent = 'Failed';
-        setTimeout(() => {
-          btn.textContent = 'Run backfill now';
-          btn.disabled = false;
-        }, 2000);
+      // Events
+      const events = d.events || [];
+      document.getElementById("event-count").textContent = `${events.length}`;
+      const evList = document.getElementById("event-list");
+      evList.innerHTML = events.length === 0
+        ? '<div class="empty">No events yet. Edit and review a translation in Lokalise to trigger one.</div>'
+        : events.slice(0, 50).map(e => `
+          <div class="event-row">
+            <div class="event-time">${fmtTime(e.timestamp)}</div>
+            <div><span class="event-type type-${escapeHtml(e.type)}">${escapeHtml(e.type)}</span></div>
+            <div>${escapeHtml(e.message)}</div>
+          </div>
+        `).join("");
+
+      document.getElementById("last-refresh").textContent = "updated " + new Date().toLocaleTimeString();
+    } catch (err) {
+      document.getElementById("health-status").textContent = "DOWN";
+      document.getElementById("health-status").className = "card-value value-err";
+    }
+  }
+
+  // ---------------- Costs ----------------
+  async function refreshCosts() {
+    if (!ensureSecret()) return;
+    const out = document.getElementById("cost-output");
+    out.textContent = "Loading…";
+    const projectId = document.getElementById("cost-project").value;
+    const windowSec = document.getElementById("cost-window").value;
+    let url = "/cost?format=text";
+    if (projectId) url += "&projectId=" + encodeURIComponent(projectId);
+    if (windowSec) {
+      const since = Date.now() - Number(windowSec) * 1000;
+      url += "&since=" + since;
+    }
+    try {
+      const r = await fetch(url);
+      out.textContent = await r.text();
+    } catch (err) {
+      out.textContent = "Failed to load: " + err.message;
+    }
+  }
+  document.getElementById("cost-refresh").onclick = refreshCosts;
+  document.getElementById("cost-project").onchange = refreshCosts;
+  document.getElementById("cost-window").onchange = refreshCosts;
+  document.getElementById("cost-copy").onclick = () => {
+    navigator.clipboard.writeText(document.getElementById("cost-output").textContent);
+  };
+
+  // ---------------- Backfill ----------------
+  document.getElementById("bf-run").onclick = async () => {
+    if (!ensureSecret()) return;
+    const projectId = document.getElementById("bf-project").value;
+    if (!projectId) {
+      alert("Pick a project first.");
+      return;
+    }
+    const langs = document.getElementById("bf-languages").value
+      .split(",").map(s => s.trim()).filter(Boolean);
+    const keyIds = document.getElementById("bf-key-ids").value
+      .split(",").map(s => s.trim()).filter(Boolean).map(Number).filter(n => Number.isFinite(n));
+    const maxItems = Number(document.getElementById("bf-max-items").value) || undefined;
+    const force = document.getElementById("bf-force").checked;
+    const includeUnreviewed = document.getElementById("bf-include-unreviewed").checked;
+
+    const body = { projectId };
+    if (langs.length) body.languages = langs;
+    if (keyIds.length) body.keyIds = keyIds;
+    if (maxItems) body.maxItems = maxItems;
+    if (force) body.force = true;
+    if (includeUnreviewed) body.requireReviewedSource = false;
+
+    const btn = document.getElementById("bf-run");
+    const stat = document.getElementById("bf-status");
+    btn.disabled = true; stat.textContent = "Starting…";
+    try {
+      const r = await authedFetch("/trigger/backfill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (r.status === 401) {
+        clearSecret();
+        document.getElementById("auth-prompt").style.display = "block";
+        stat.textContent = "Secret rejected. Paste again.";
+        return;
       }
+      const data = await r.json();
+      stat.textContent = "Started: " + data.runId + " — see Logs tab";
+    } catch (err) {
+      stat.textContent = "Failed: " + err.message;
+    } finally {
+      setTimeout(() => { btn.disabled = false; }, 1500);
     }
+  };
 
-    async function refresh() {
-      const data = await fetchStatus();
-      render(data);
+  // ---------------- Logs ----------------
+  let logEs = null;
+  let logBuffer = [];   // last N parsed lines, for filtering
+  const LOG_KEEP = 1000;
+
+  function connectLogs() {
+    if (!ensureSecret()) return;
+    if (logEs) { logEs.close(); logEs = null; }
+    const pill = document.getElementById("log-status");
+    pill.textContent = "connecting…";
+    pill.className = "status-pill pill-off";
+    document.getElementById("log-pane").innerHTML = "";
+    logBuffer = [];
+    const url = "/admin/logs/stream?secret=" + encodeURIComponent(getSecret());
+    logEs = new EventSource(url);
+    logEs.onopen = () => {
+      pill.textContent = "live"; pill.className = "status-pill pill-on";
+    };
+    logEs.onerror = () => {
+      pill.textContent = "disconnected"; pill.className = "status-pill pill-off";
+    };
+    logEs.onmessage = (ev) => {
+      try {
+        const line = JSON.parse(ev.data);
+        logBuffer.push(line);
+        if (logBuffer.length > LOG_KEEP) logBuffer.shift();
+        renderLogLine(line);
+      } catch {}
+    };
+  }
+  function levelLabel(lv) {
+    if (typeof lv === "string") return lv;
+    if (lv >= 50) return "error";
+    if (lv >= 40) return "warn";
+    if (lv >= 30) return "info";
+    return "debug";
+  }
+  function renderLogLine(line) {
+    if (!shouldShowLine(line)) return;
+    const pane = document.getElementById("log-pane");
+    const wasAtBottom = pane.scrollTop + pane.clientHeight >= pane.scrollHeight - 30;
+    const lvl = levelLabel(line.level);
+    const t = line.time
+      ? new Date(line.time).toLocaleTimeString()
+      : new Date(line.ts || Date.now()).toLocaleTimeString();
+    const extra = Object.keys(line)
+      .filter(k => !["time","ts","level","msg","env","pid","hostname","name","v"].includes(k))
+      .map(k => `${k}=${typeof line[k] === "object" ? JSON.stringify(line[k]) : line[k]}`)
+      .join(" ");
+    const div = document.createElement("div");
+    div.className = "log-line";
+    div.innerHTML =
+      `<span class="log-time">${escapeHtml(t)}</span>`
+      + `<span class="log-level level-${lvl}">${lvl}</span>`
+      + `<span>${escapeHtml(line.msg || "")}</span>`
+      + (extra ? ` <span style="color:var(--muted)">${escapeHtml(extra)}</span>` : "");
+    pane.appendChild(div);
+    while (pane.children.length > LOG_KEEP) pane.removeChild(pane.firstChild);
+    if (wasAtBottom) pane.scrollTop = pane.scrollHeight;
+  }
+  function shouldShowLine(line) {
+    const filter = document.getElementById("log-filter").value.toLowerCase();
+    const minLevel = Number(document.getElementById("log-level-filter").value || 0);
+    const lvNum = typeof line.level === "number" ? line.level : 30;
+    if (minLevel && lvNum < minLevel) return false;
+    if (filter) {
+      const blob = JSON.stringify(line).toLowerCase();
+      if (!blob.includes(filter)) return false;
     }
+    return true;
+  }
+  function rerenderLogs() {
+    const pane = document.getElementById("log-pane");
+    pane.innerHTML = "";
+    for (const line of logBuffer) renderLogLine(line);
+  }
+  document.getElementById("log-filter").addEventListener("input", rerenderLogs);
+  document.getElementById("log-level-filter").addEventListener("change", rerenderLogs);
+  document.getElementById("log-clear").onclick = () => {
+    logBuffer = [];
+    document.getElementById("log-pane").innerHTML = "";
+  };
 
-    // Show secret prompt on first load if missing.
-    if (!getSecret()) {
-      document.getElementById('auth-prompt').style.display = 'block';
+  // ---------------- Admin ----------------
+  document.getElementById("admin-reload").onclick = async () => {
+    if (!ensureSecret()) return;
+    const btn = document.getElementById("admin-reload");
+    const stat = document.getElementById("admin-reload-status");
+    btn.disabled = true; stat.textContent = "Reloading…";
+    try {
+      const r = await authedFetch("/admin/reload", { method: "POST" });
+      if (r.status === 401) {
+        clearSecret();
+        document.getElementById("auth-prompt").style.display = "block";
+        stat.textContent = "Secret rejected.";
+        return;
+      }
+      const data = await r.json();
+      stat.textContent = `OK — ${data.projects.length} project(s) loaded`;
+      refreshStatus();
+    } catch (err) {
+      stat.textContent = "Failed: " + err.message;
+    } finally {
+      setTimeout(() => { btn.disabled = false; stat.textContent = ""; }, 4000);
     }
+  };
+  document.getElementById("admin-signout").onclick = () => {
+    clearSecret();
+    if (logEs) { logEs.close(); logEs = null; }
+    location.reload();
+  };
 
-    refresh();
-    setInterval(refresh, 5000);
-  </script>
+  // ---------------- Init ----------------
+  function init() {
+    if (!ensureSecret()) return;
+    document.getElementById("auth-prompt").style.display = "none";
+    refreshStatus();
+    setInterval(refreshStatus, 5000);
+  }
+  init();
+</script>
 </body>
 </html>

@@ -3,6 +3,7 @@ import { getEnv } from "../config/env.js";
 import { getLogger } from "../utils/logger.js";
 import { ClaudeError, ValidationError } from "../utils/errors.js";
 import { recordCost } from "../utils/cost-log.js";
+import { tolerantParse } from "../utils/json-repair.js";
 import type {
   TranslationJob,
   ClaudeResponse,
@@ -16,6 +17,38 @@ import type { PromptResponse } from "../types/prompt.js";
 const MODEL_MAP: Record<ModelOption, string> = {
   "haiku-4-5": "claude-haiku-4-5",
   "sonnet-4-6": "claude-sonnet-4-6",
+};
+
+/** Same tool definition the Messages client uses; forces structured output. */
+const TRANSLATIONS_TOOL: Anthropic.Tool = {
+  name: "submit_translations",
+  description:
+    "Return the completed translations to the caller. Always call this tool exactly once with all requested translations.",
+  input_schema: {
+    type: "object",
+    properties: {
+      translations: {
+        type: "object",
+        description:
+          "Map of source key_id (as a string) to the translated text in the target language.",
+        additionalProperties: { type: "string" },
+      },
+      flags: {
+        type: "array",
+        description:
+          "Strings that need human review (glossary mismatch, ambiguity, cultural references, etc.).",
+        items: {
+          type: "object",
+          properties: {
+            key_id: { type: "string" },
+            reason: { type: "string" },
+          },
+          required: ["key_id", "reason"],
+        },
+      },
+    },
+    required: ["translations"],
+  },
 };
 
 /** Attribution metadata used by the cost log when batch results land. */
@@ -207,7 +240,11 @@ export class ClaudeBatchClient {
           system: job.prompt_messages.system as Anthropic.Messages.BatchCreateParams.Request["params"]["system"],
           messages: job.prompt_messages.messages as Anthropic.Messages.BatchCreateParams.Request["params"]["messages"],
           max_tokens: 4096,
-        },
+          // Force structured output — same as the synchronous Messages
+          // client. Eliminates JSON-parse failures.
+          tools: [TRANSLATIONS_TOOL],
+          tool_choice: { type: "tool", name: "submit_translations" },
+        } as Anthropic.Messages.BatchCreateParams.Request["params"],
       };
     });
   }
@@ -223,15 +260,6 @@ export class ClaudeBatchClient {
       for await (const result of resultsStream) {
         if (result.result.type === "succeeded") {
           const message = result.result.message;
-          const content = message.content[0];
-
-          if (content.type !== "text") {
-            this.getLogger().warn(
-              { customId: result.custom_id },
-              "Non-text response in batch"
-            );
-            continue;
-          }
 
           // Cost log: record attribution + usage for this batch entry.
           const usage = this.extractUsage(message.usage);
@@ -247,7 +275,13 @@ export class ClaudeBatchClient {
           this.jobMetaByCustomId.delete(result.custom_id);
 
           try {
-            const parsed = this.parseResponse(content.text, result.custom_id);
+            // Cast to loose shape — Beta vs non-Beta message types
+            // diverge nominally but the content-block shapes we read
+            // (tool_use.input, text.text) are identical at runtime.
+            const parsed = this.parseFromToolUse(
+              message as unknown as Parameters<ClaudeBatchClient["parseFromToolUse"]>[0],
+              result.custom_id
+            );
             parsed.usage = usage;
             results.push(parsed);
           } catch (error) {
@@ -288,27 +322,86 @@ export class ClaudeBatchClient {
     }
   }
 
-  private parseResponse(content: string, jobId: string): ClaudeResponse {
-    try {
-      const cleaned = this.stripCodeFences(content);
-      const parsed = JSON.parse(cleaned) as PromptResponse;
+  /**
+   * Read translations from the message's tool_use block. Anthropic
+   * delivers `input` as a parsed object, so this path is JSON-safe.
+   * Falls through to text-JSON parsing (with jsonrepair) for the rare
+   * case Claude ignored tool_choice.
+   *
+   * Typed structurally because the Batch API returns BetaMessage and
+   * the synchronous Messages API returns Message; their content-block
+   * types diverge slightly but the shape we care about is identical.
+   */
+  private parseFromToolUse(
+    message: { content: Array<{ type: string; [key: string]: unknown }> },
+    jobId: string
+  ): ClaudeResponse {
+    const toolUse = message.content.find(
+      (b) => b.type === "tool_use" && (b as { name?: string }).name === "submit_translations"
+    ) as { type: "tool_use"; input: unknown } | undefined;
 
-      if (!parsed.translations || typeof parsed.translations !== "object") {
-        throw new ValidationError("Response missing translations object");
+    if (toolUse) {
+      const input = toolUse.input as PromptResponse;
+      if (!input || !input.translations || typeof input.translations !== "object") {
+        throw new ValidationError("tool_use input missing translations");
       }
-
       return {
         success: true,
         job_id: jobId,
-        translations: parsed.translations,
-        flags: parsed.flags,
+        translations: input.translations,
+        flags: input.flags,
       };
-    } catch (error) {
+    }
+
+    const textBlock = message.content.find((b) => b.type === "text") as
+      | { type: "text"; text: string }
+      | undefined;
+    if (textBlock) {
+      this.getLogger().warn(
+        { jobId },
+        "No tool_use in batch result; falling back to text-JSON parse"
+      );
+      return this.parseResponse(textBlock.text, jobId);
+    }
+
+    throw new ClaudeError(
+      "Batch result had neither tool_use nor text block",
+      500
+    );
+  }
+
+  private parseResponse(content: string, jobId: string): ClaudeResponse {
+    const cleaned = this.stripCodeFences(content);
+    let parsed: PromptResponse;
+    let repaired = false;
+    try {
+      const result = tolerantParse<PromptResponse>(cleaned);
+      parsed = result.value;
+      repaired = result.repaired;
+    } catch (err) {
       throw new ClaudeError(
-        `Failed to parse result: ${error instanceof Error ? error.message : String(error)}`,
+        `Failed to parse result: ${err instanceof Error ? err.message : String(err)}`,
         500
       );
     }
+
+    if (!parsed || !parsed.translations || typeof parsed.translations !== "object") {
+      throw new ValidationError("Response missing translations object");
+    }
+
+    if (repaired) {
+      this.getLogger().info(
+        { jobId, translations: Object.keys(parsed.translations).length },
+        "Used jsonrepair to recover malformed Claude batch response"
+      );
+    }
+
+    return {
+      success: true,
+      job_id: jobId,
+      translations: parsed.translations,
+      flags: parsed.flags,
+    };
   }
 
   private extractUsage(

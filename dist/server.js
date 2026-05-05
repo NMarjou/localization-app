@@ -6,8 +6,10 @@ import { fileURLToPath } from "url";
 import { webhookHandler } from "./handlers/webhook.js";
 import { runBackfill } from "./handlers/backfill.js";
 import { startScheduler } from "./scheduler.js";
-import { lokaliseClient } from "./clients/lokalise.js";
-import { getProject, loadProjects } from "./config/projects.js";
+import { lokaliseClient, clearAllLokaliseClients } from "./clients/lokalise.js";
+import { getProject, loadProjects, resetProjectsCache } from "./config/projects.js";
+import { clearAllFileLoaderCaches } from "./utils/file-loader.js";
+import { recentLogs, subscribeLogs } from "./utils/log-buffer.js";
 import { listEvents, getStartedAt, } from "./utils/event-log.js";
 import { summarizeCosts } from "./utils/cost-log.js";
 /**
@@ -287,6 +289,95 @@ app.post("/trigger/backfill", (req, res) => {
             : undefined,
         force: typeof body.force === "boolean" ? body.force : undefined,
     }).catch((err) => logger.error({ runId, error: err instanceof Error ? err.message : String(err) }, "Backfill run failed"));
+});
+/**
+ * Reusable secret-check for admin endpoints. Same convention as
+ * /trigger/backfill: X-Secret (or X-Api-Key) must match any configured
+ * project's webhookSecret. Returns true if valid, sends 401 + returns
+ * false otherwise.
+ */
+function checkAdminSecret(req, res) {
+    const received = req.headers["x-secret"] ||
+        req.headers["x-api-key"] ||
+        (typeof req.query.secret === "string" ? req.query.secret : undefined);
+    const allProjects = loadProjects();
+    const isValid = !!received &&
+        allProjects.some((p) => webhookHandler.validateSecret(received, p.webhookSecret));
+    if (!isValid) {
+        logger.warn({ path: req.path }, "Invalid or missing admin secret");
+        res.status(401).json({ error: "Invalid secret" });
+        return false;
+    }
+    return true;
+}
+/**
+ * Reload projects.json + clear all in-memory loader caches without
+ * restarting the server. Use after editing project config or any
+ * locale file on disk.
+ */
+app.post("/admin/reload", (req, res) => {
+    if (!checkAdminSecret(req, res))
+        return;
+    resetProjectsCache();
+    clearAllFileLoaderCaches();
+    clearAllLokaliseClients();
+    const projects = loadProjects();
+    logger.info({ projectCount: projects.length }, "Admin reload: caches cleared, projects.json re-read");
+    res.json({
+        status: "ok",
+        projects: projects.map((p) => ({ id: p.id, name: p.name, enabled: p.enabled })),
+    });
+});
+/**
+ * Snapshot of the most recent N log lines (default 250). Useful for the
+ * UI's initial paint before SSE takes over.
+ */
+app.get("/admin/logs/recent", (req, res) => {
+    if (!checkAdminSecret(req, res))
+        return;
+    const limit = Number(req.query.limit ?? 250);
+    res.json({ lines: recentLogs(Number.isFinite(limit) ? limit : 250) });
+});
+/**
+ * Server-Sent Events live tail. Emits the buffered recent lines on
+ * connect, then streams every new line as it's logged.
+ *
+ * EventSource doesn't let us set custom headers, so the secret comes
+ * via ?secret=... — same pattern as `?secret=` works on /admin/reload.
+ */
+app.get("/admin/logs/stream", (req, res) => {
+    if (!checkAdminSecret(req, res))
+        return;
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache, no-transform");
+    res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no"); // disable nginx buffering if proxied
+    res.flushHeaders?.();
+    // Initial snapshot so the UI has something to render immediately.
+    for (const line of recentLogs(200)) {
+        res.write(`data: ${JSON.stringify(line)}\n\n`);
+    }
+    // Periodic comment ping keeps connections alive through proxies.
+    const ping = setInterval(() => {
+        try {
+            res.write(`: ping\n\n`);
+        }
+        catch {
+            /* socket closed */
+        }
+    }, 15000);
+    const unsubscribe = subscribeLogs((line) => {
+        try {
+            res.write(`data: ${JSON.stringify(line)}\n\n`);
+        }
+        catch {
+            /* socket closed; cleanup happens via close handler */
+        }
+    });
+    req.on("close", () => {
+        clearInterval(ping);
+        unsubscribe();
+    });
 });
 // Respond 200 to any HEAD/GET probe on the webhook path so Lokalise URL
 // validation passes regardless of which verb it probes with.

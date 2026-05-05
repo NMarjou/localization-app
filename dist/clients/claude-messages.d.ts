@@ -7,8 +7,15 @@ export declare class ClaudeMessagesClient {
     private getClient;
     private getLogger;
     translate(job: TranslationJob): Promise<ClaudeResponse>;
+    /**
+     * Pull the translations out of a tool_use block. Anthropic guarantees
+     * the input is valid JSON parsed against our schema — no string
+     * parsing needed. If the model somehow ignored tool_choice and emitted
+     * text instead, fall through to parseResponse() so jsonrepair still
+     * gives us a chance.
+     */
+    private parseFromToolUse;
     private parseResponse;
-    private validateJSON;
     /**
      * Strip markdown code fences (```json ... ``` or ``` ... ```) that
      * Claude sometimes wraps JSON responses in, despite instructions.
