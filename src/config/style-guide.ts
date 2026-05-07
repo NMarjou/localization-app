@@ -35,8 +35,9 @@ export const localeSpecificRules: Record<string, string> = {
 - Always use the formal "vous" form (never "tu") with formal verb conjugations
 - Ensure gender agreement with nouns and adjectives
 - Avoid anglicisms; prefer French equivalents
-- Use proper French spacing (non-breaking space before ! ? : ; «»)
-- Numbers: use space as thousand separator (e.g., 1 000 instead of 1,000)`,
+- Use proper French spacing (non-breaking space before ! ? : ;)
+- Numbers: use space as thousand separator (e.g., 1 000 instead of 1,000)
+- Keep quotation marks ASCII-straight ("...") to match the source — do not substitute « »`,
 
   de: `German-Specific Rules:
 - Always use the formal "Sie" form (never "du") with capital "S"
@@ -50,7 +51,8 @@ export const localeSpecificRules: Record<string, string> = {
 - Ensure gender agreement with nouns and adjectives
 - Use inverted punctuation (¿ ¡) at start of sentences
 - Prefer neutral Spanish; avoid regional variations
-- Numbers: comma as decimal, period as thousand separator (e.g., 1.000,00)`,
+- Numbers: comma as decimal, period as thousand separator (e.g., 1.000,00)
+- Keep quotation marks ASCII-straight ("...") to match the source`,
 
   it: `Italian-Specific Rules:
 - Always use the formal "Lei" form ("dare del Lei") with third-person feminine verbs (never "tu")
@@ -74,7 +76,7 @@ export const localeSpecificRules: Record<string, string> = {
 - Default to polite verb endings (～ます, ～です)
 - Avoid gendered language and casual sentence-final particles
 - Keep line length reasonable for readability
-- Use full-width punctuation`,
+- Use full-width punctuation EXCEPT for double quotes — keep ASCII straight quotes ("...") wherever the source uses them, do not substitute 「」`,
 
   tr: `Turkish-Specific Rules:
 - Always use the formal plural "siz" form with second-person plural verb endings (never the singular "sen")

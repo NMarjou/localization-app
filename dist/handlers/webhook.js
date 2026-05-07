@@ -338,13 +338,27 @@ export class WebhookHandler {
                 const status = await claudeClient.pollBatchResult(batchId);
                 if (status && status.length > 0) {
                     const response = status[0];
-                    await this.pushResults(response, pending.context);
-                    this.pendingBatches.delete(batchId);
-                    this.getLogger().info({
-                        batchId,
-                        targetLanguage: pending.context.targetLanguage,
-                        pollCount: pending.pollCount,
-                    }, "Batch completed");
+                    // Always remove from the queue once results are in hand,
+                    // even if the push fails. Otherwise we re-fetch the same
+                    // results forever.
+                    try {
+                        await this.pushResults(response, pending.context);
+                        this.getLogger().info({
+                            batchId,
+                            targetLanguage: pending.context.targetLanguage,
+                            pollCount: pending.pollCount,
+                        }, "Batch completed");
+                    }
+                    catch (pushErr) {
+                        this.getLogger().error({
+                            batchId,
+                            targetLanguage: pending.context.targetLanguage,
+                            error: pushErr instanceof Error ? pushErr.message : String(pushErr),
+                        }, "Batch push failed — dropping batch from poll queue");
+                    }
+                    finally {
+                        this.pendingBatches.delete(batchId);
+                    }
                 }
             }
             catch (error) {
@@ -374,7 +388,11 @@ export class WebhookHandler {
                 if (!results)
                     continue;
                 this.getLogger().info({ batchId, resultCount: results.length }, "Backfill batch completed");
-                // Process each chunk result
+                // Process each chunk result. Wrap each push in its own try so a
+                // 404 on one chunk's translation_id doesn't abort the rest of the
+                // batch — and so we always reach the delete-from-pending step.
+                let pushedChunks = 0;
+                let failedChunks = 0;
                 for (const result of results) {
                     if (!result.success)
                         continue;
@@ -390,10 +408,25 @@ export class WebhookHandler {
                         keyIdToTags: meta.keyIdToTags,
                         timestamp: Date.now(),
                     };
-                    await this.pushResults(result, context);
+                    try {
+                        await this.pushResults(result, context);
+                        pushedChunks++;
+                    }
+                    catch (pushErr) {
+                        failedChunks++;
+                        this.getLogger().error({
+                            batchId,
+                            jobId: result.job_id,
+                            targetLang: meta.targetLang,
+                            error: pushErr instanceof Error ? pushErr.message : String(pushErr),
+                        }, "Push failed for one batch chunk — continuing with the rest");
+                    }
                 }
+                // Always remove the batch from the pending map, even if some
+                // chunks failed to push. Otherwise the next poll re-fetches the
+                // same results and we'd loop forever.
                 this.pendingBackfillBatches.delete(batchId);
-                recordEvent('backfill_completed', `Backfill batch processed: ${results.length} chunks`, { batchId, runId: pending.runId });
+                recordEvent('backfill_completed', `Backfill batch processed: ${pushedChunks} pushed, ${failedChunks} failed (${results.length} total)`, { batchId, runId: pending.runId, pushedChunks, failedChunks });
             }
             catch (err) {
                 const age = Date.now() - pending.createdAt;

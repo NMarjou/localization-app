@@ -24,6 +24,32 @@ export interface BackfillOptions {
      * narrow.
      */
     force?: boolean;
+    /**
+     * Submit chunks to Anthropic's Batch API (50% off input + output, but
+     * runs async — Anthropic processes batches over minutes to hours).
+     * Default: true. Set to false to use the synchronous Messages API
+     * (faster turnaround, full price). Sync mode also unlocks per-key
+     * fallback when chunks fail; batch mode skips errored chunks.
+     *
+     * Caveat: in-memory batch tracking is lost on server restart. If you
+     * restart while a batch is processing, you'll need to manually retry
+     * or accept the missed keys.
+     */
+    useBatch?: boolean;
+    /**
+     * If true, also include keys whose target translation is "stale"
+     * (target was modified before source — typically because the source
+     * value changed after a previous translation).
+     *
+     * Default: false. With the webhook now firing on
+     * `project.translation.updated`, source-value changes propagate to
+     * targets immediately, so backfill can safely default to translating
+     * only missing targets. Use includeStale=true to recover after
+     * extended webhook downtime, or to retroactively pick up changes the
+     * webhook missed. `force` always overrides this — when force is on,
+     * every matching key is re-translated.
+     */
+    includeStale?: boolean;
 }
 export interface BackfillSummary {
     runId: string;

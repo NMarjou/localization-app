@@ -15,18 +15,18 @@ const MODEL_MAP = {
  */
 const TRANSLATIONS_TOOL = {
     name: "submit_translations",
-    description: "Return the completed translations to the caller. Always call this tool exactly once with all requested translations.",
+    description: "Return the completed translations to the caller. Call this tool exactly once. The translations object MUST contain one entry for every requested key_id — never omit a key, even if the source is ambiguous. Use flags as additive metadata to mark concerns; flags NEVER replace a translation.",
     input_schema: {
         type: "object",
         properties: {
             translations: {
                 type: "object",
-                description: "Map of source key_id (as a string) to the translated text in the target language.",
+                description: "Map of source key_id (as a string) to the translated text in the target language. Required: one entry per requested key_id, no exceptions.",
                 additionalProperties: { type: "string" },
             },
             flags: {
                 type: "array",
-                description: "Strings that need human review (glossary mismatch, ambiguity, cultural references, etc.).",
+                description: "Optional review notes. Use to signal glossary mismatches, ambiguity, cultural references, or character-limit risks. A key listed here MUST also appear in translations with your best-effort translation.",
                 items: {
                     type: "object",
                     properties: {
@@ -139,6 +139,57 @@ export class ClaudeMessagesClient {
         throw new ClaudeError("Translation failed after retries", 500);
     }
     /**
+     * Claude occasionally emits a tool_use input where `translations` and/or
+     * `flags` are JSON STRINGS rather than the structured types declared by
+     * the schema. We detect that here, parse the inner JSON (with jsonrepair
+     * fallback), and return a normalized PromptResponse. If the input is
+     * already structured correctly, this is a pass-through.
+     */
+    normalizeToolInput(raw, jobId) {
+        if (!raw || typeof raw !== "object")
+            return null;
+        const obj = raw;
+        const out = {};
+        let didNormalize = false;
+        // translations: object preferred, string tolerated
+        if (obj.translations && typeof obj.translations === "object") {
+            out.translations = obj.translations;
+        }
+        else if (typeof obj.translations === "string") {
+            try {
+                const parsed = tolerantParse(obj.translations);
+                out.translations = parsed.value;
+                didNormalize = true;
+            }
+            catch (err) {
+                this.getLogger().warn({ jobId, err: err instanceof Error ? err.message : String(err) }, "tool_use translations was a string we could not parse");
+            }
+        }
+        // flags: array preferred, string tolerated
+        if (Array.isArray(obj.flags)) {
+            out.flags = obj.flags;
+        }
+        else if (typeof obj.flags === "string") {
+            try {
+                const parsed = tolerantParse(obj.flags);
+                out.flags = parsed.value;
+                didNormalize = true;
+            }
+            catch {
+                // Ignore — flags are optional.
+            }
+        }
+        if (didNormalize) {
+            this.getLogger().info({
+                jobId,
+                translationCount: out.translations && typeof out.translations === "object"
+                    ? Object.keys(out.translations).length
+                    : 0,
+            }, "Normalized double-stringified tool_use input");
+        }
+        return out;
+    }
+    /**
      * Pull the translations out of a tool_use block. Anthropic guarantees
      * the input is valid JSON parsed against our schema — no string
      * parsing needed. If the model somehow ignored tool_choice and emitted
@@ -148,15 +199,25 @@ export class ClaudeMessagesClient {
     parseFromToolUse(response, jobId) {
         const toolUse = response.content.find((b) => b.type === "tool_use" && b.name === "submit_translations");
         if (toolUse) {
-            const input = toolUse.input;
-            if (!input || !input.translations || typeof input.translations !== "object") {
+            const normalized = this.normalizeToolInput(toolUse.input, jobId);
+            const hasTranslations = !!normalized &&
+                normalized.translations &&
+                typeof normalized.translations === "object" &&
+                Object.keys(normalized.translations).length > 0;
+            if (!hasTranslations) {
+                const preview = JSON.stringify(toolUse.input ?? null).slice(0, 600);
+                this.getLogger().warn({
+                    jobId,
+                    hasFlags: Array.isArray(normalized?.flags) && normalized.flags.length > 0,
+                    inputPreview: preview,
+                }, "tool_use returned without translations");
                 throw new ValidationError("tool_use input missing translations");
             }
             return {
                 success: true,
                 job_id: jobId,
-                translations: input.translations,
-                flags: input.flags,
+                translations: normalized.translations,
+                flags: normalized.flags,
             };
         }
         // Fallback: model emitted a text block. parseResponse handles repair.

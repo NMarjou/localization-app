@@ -304,20 +304,49 @@ export class LokaliseClient {
 
   async bulkUpdateTranslations(
     updates: Array<{ translationId: string; translation: string; reviewed: boolean }>
-  ): Promise<void> {
-    // Lokalise doesn't support bulk PUT on /translations — use concurrent individual calls.
+  ): Promise<{ pushed: number; failed: number }> {
+    // Lokalise doesn't support bulk PUT on /translations — use concurrent
+    // individual calls. Use Promise.allSettled so one bad translation_id
+    // (e.g. 404 because the row doesn't exist on Lokalise's side anymore)
+    // doesn't tank the whole chunk.
     const CONCURRENCY = 3;
     this.logger.debug({ count: updates.length }, "Bulk updating translations");
+    let pushed = 0;
+    let failed = 0;
     for (let i = 0; i < updates.length; i += CONCURRENCY) {
       const batch = updates.slice(i, i + CONCURRENCY);
-      await Promise.all(batch.map(({ translationId, translation }) =>
-        this.http.put<void>(
-          `/projects/${this.projectId}/translations/${translationId}`,
-          { translation, is_reviewed: false, is_unverified: true }
+      const results = await Promise.allSettled(
+        batch.map(({ translationId, translation }) =>
+          this.http.put<void>(
+            `/projects/${this.projectId}/translations/${translationId}`,
+            { translation, is_reviewed: false, is_unverified: true }
+          )
         )
-      ));
+      );
+      for (let j = 0; j < results.length; j++) {
+        const r = results[j];
+        if (r.status === "fulfilled") {
+          pushed++;
+        } else {
+          failed++;
+          this.logger.warn(
+            {
+              translationId: batch[j].translationId,
+              error: r.reason instanceof Error ? r.reason.message : String(r.reason),
+            },
+            "PUT failed for one translation — skipping"
+          );
+        }
+      }
+    }
+    if (failed > 0) {
+      this.logger.warn(
+        { pushed, failed, total: updates.length },
+        "Bulk translation push completed with some failures"
+      );
     }
     this.glossaryCache.clear();
+    return { pushed, failed };
   }
 
   clearGlossaryCache(): void {

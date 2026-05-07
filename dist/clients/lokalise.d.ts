@@ -33,7 +33,10 @@ export declare class LokaliseClient {
         translationId: string;
         translation: string;
         reviewed: boolean;
-    }>): Promise<void>;
+    }>): Promise<{
+        pushed: number;
+        failed: number;
+    }>;
     clearGlossaryCache(): void;
     getProjectId(): string;
     /**

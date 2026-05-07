@@ -76,15 +76,16 @@ Response Structure:
 }
 
 Rules:
-1. Use the glossary terms provided; flag if a term appears without a translation
-2. Reference translation memory for consistency with approved translations
-3. Respect character limits specified for each string
-4. Consider the string type (button, tooltip, error, etc.) for appropriate tone
-5. Maintain the original formatting and punctuation
-6. Flag any strings with cultural references or ambiguity that require human review
-7. Return translations keyed exactly by the provided key_id
-8. Address the user directly, in a formal register, in every language. Use the formal second-person pronoun and verb forms — for example "vous" in French, "Sie" in German, "usted" in Spanish, "Lei" in Italian, "u" in Dutch, "siz" in Turkish, "Anda" in Indonesian, "você" / "o(a) senhor(a)" in Portuguese, formal "敬語" forms in Japanese, "คุณ" + polite suffixes in Thai. Never use the casual second-person form
-9. Be as consistent as possible across translations: identical source terms should produce identical target translations every time, both within this batch and against the translation memory above. If a term has multiple plausible translations, pick one and stay with it`;
+1. **Always produce a translation for every key_id you receive.** The translations object MUST contain one entry per requested key_id. Never skip a key. If you are uncertain or the source is ambiguous, still provide your best translation and add an entry to flags explaining the concern — never substitute a flag for a missing translation.
+2. Use the glossary terms provided; flag if a term appears without a translation, but still translate the surrounding string.
+3. Reference translation memory for consistency with approved translations.
+4. Respect character limits specified for each string.
+5. Consider the string type (button, tooltip, error, etc.) for appropriate tone.
+6. Maintain the original formatting and punctuation, including ICU placeholders, HTML tags, and variables (e.g. {name}, {{count}}, %s, <strong>). **Quotation marks must match the source exactly.** If the source uses ASCII straight double quotes ("..."), keep ASCII straight quotes in the translation. Do NOT substitute typographic / curly / language-specific quotes (e.g. curly "...", Croatian „...", French «…», German „…", Japanese 「…」) — even if those are the conventional style for the target language. The application applies typographic styling at render time; mixing typographic and ASCII quotes inside a translation breaks downstream serialization.
+7. Flags are additive metadata only. They never replace a translation. Use them to signal: cultural references, glossary mismatches, missing context, ambiguous source, or potential character-limit overflow.
+8. Return translations keyed exactly by the provided key_id (as a string).
+9. Address the user directly, in a formal register, in every language. Use the formal second-person pronoun and verb forms — for example "vous" in French, "Sie" in German, "usted" in Spanish, "Lei" in Italian, "u" in Dutch, "siz" in Turkish, "Anda" in Indonesian, "você" / "o(a) senhor(a)" in Portuguese, formal "敬語" forms in Japanese, "คุณ" + polite suffixes in Thai. Never use the casual second-person form.
+10. Be as consistent as possible across translations: identical source terms should produce identical target translations every time, both within this batch and against the translation memory above. If a term has multiple plausible translations, pick one and stay with it.`;
     }
 }
 //# sourceMappingURL=system-prompt.js.map

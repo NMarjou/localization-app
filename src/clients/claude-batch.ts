@@ -23,20 +23,20 @@ const MODEL_MAP: Record<ModelOption, string> = {
 const TRANSLATIONS_TOOL: Anthropic.Tool = {
   name: "submit_translations",
   description:
-    "Return the completed translations to the caller. Always call this tool exactly once with all requested translations.",
+    "Return the completed translations to the caller. Call this tool exactly once. The translations object MUST contain one entry for every requested key_id — never omit a key, even if the source is ambiguous. Use flags as additive metadata to mark concerns; flags NEVER replace a translation.",
   input_schema: {
     type: "object",
     properties: {
       translations: {
         type: "object",
         description:
-          "Map of source key_id (as a string) to the translated text in the target language.",
+          "Map of source key_id (as a string) to the translated text in the target language. Required: one entry per requested key_id, no exceptions.",
         additionalProperties: { type: "string" },
       },
       flags: {
         type: "array",
         description:
-          "Strings that need human review (glossary mismatch, ambiguity, cultural references, etc.).",
+          "Optional review notes. Use to signal glossary mismatches, ambiguity, cultural references, or character-limit risks. A key listed here MUST also appear in translations with your best-effort translation.",
         items: {
           type: "object",
           properties: {
@@ -261,18 +261,24 @@ export class ClaudeBatchClient {
         if (result.result.type === "succeeded") {
           const message = result.result.message;
 
-          // Cost log: record attribution + usage for this batch entry.
+          // Cost log: record attribution + usage exactly once per chunk.
+          // The presence of `meta` is our "first-encounter" marker —
+          // after we delete it below, subsequent re-polls (which can
+          // happen if the push step fails and the batch is re-fetched)
+          // skip the cost write so the log isn't inflated.
           const usage = this.extractUsage(message.usage);
           const meta = this.jobMetaByCustomId.get(result.custom_id);
-          void recordCost({
-            jobId: result.custom_id,
-            projectId: meta?.projectId,
-            targetLanguage: meta?.targetLanguage,
-            model: meta?.model ?? "haiku-4-5",
-            isBatch: true,
-            usage,
-          });
-          this.jobMetaByCustomId.delete(result.custom_id);
+          if (meta) {
+            void recordCost({
+              jobId: result.custom_id,
+              projectId: meta.projectId,
+              targetLanguage: meta.targetLanguage,
+              model: meta.model,
+              isBatch: true,
+              usage,
+            });
+            this.jobMetaByCustomId.delete(result.custom_id);
+          }
 
           try {
             // Cast to loose shape — Beta vs non-Beta message types
@@ -323,6 +329,63 @@ export class ClaudeBatchClient {
   }
 
   /**
+   * Same double-string handling as the synchronous Messages client.
+   * Claude occasionally produces tool_use input where translations or
+   * flags arrive as JSON strings instead of structured values; parse
+   * them through jsonrepair so we don't reject otherwise-valid output.
+   */
+  private normalizeToolInput(
+    raw: unknown,
+    jobId: string
+  ): Partial<PromptResponse> | null {
+    if (!raw || typeof raw !== "object") return null;
+    const obj = raw as Record<string, unknown>;
+    const out: Partial<PromptResponse> = {};
+    let didNormalize = false;
+
+    if (obj.translations && typeof obj.translations === "object") {
+      out.translations = obj.translations as Record<string, string>;
+    } else if (typeof obj.translations === "string") {
+      try {
+        const parsed = tolerantParse<Record<string, string>>(obj.translations);
+        out.translations = parsed.value;
+        didNormalize = true;
+      } catch (err) {
+        this.getLogger().warn(
+          { jobId, err: err instanceof Error ? err.message : String(err) },
+          "tool_use translations was a string we could not parse (batch)"
+        );
+      }
+    }
+
+    if (Array.isArray(obj.flags)) {
+      out.flags = obj.flags as PromptResponse["flags"];
+    } else if (typeof obj.flags === "string") {
+      try {
+        const parsed = tolerantParse<PromptResponse["flags"]>(obj.flags);
+        out.flags = parsed.value;
+        didNormalize = true;
+      } catch {
+        /* flags are optional */
+      }
+    }
+
+    if (didNormalize) {
+      this.getLogger().info(
+        {
+          jobId,
+          translationCount:
+            out.translations && typeof out.translations === "object"
+              ? Object.keys(out.translations).length
+              : 0,
+        },
+        "Normalized double-stringified tool_use input (batch)"
+      );
+    }
+    return out;
+  }
+
+  /**
    * Read translations from the message's tool_use block. Anthropic
    * delivers `input` as a parsed object, so this path is JSON-safe.
    * Falls through to text-JSON parsing (with jsonrepair) for the rare
@@ -341,15 +404,31 @@ export class ClaudeBatchClient {
     ) as { type: "tool_use"; input: unknown } | undefined;
 
     if (toolUse) {
-      const input = toolUse.input as PromptResponse;
-      if (!input || !input.translations || typeof input.translations !== "object") {
+      const normalized = this.normalizeToolInput(toolUse.input, jobId);
+      const hasTranslations =
+        !!normalized &&
+        normalized.translations &&
+        typeof normalized.translations === "object" &&
+        Object.keys(normalized.translations).length > 0;
+
+      if (!hasTranslations) {
+        const preview = JSON.stringify(toolUse.input ?? null).slice(0, 600);
+        this.getLogger().warn(
+          {
+            jobId,
+            hasFlags: Array.isArray(normalized?.flags) && normalized!.flags!.length > 0,
+            inputPreview: preview,
+          },
+          "tool_use returned without translations (batch)"
+        );
         throw new ValidationError("tool_use input missing translations");
       }
+
       return {
         success: true,
         job_id: jobId,
-        translations: input.translations,
-        flags: input.flags,
+        translations: normalized!.translations as Record<string, string>,
+        flags: normalized!.flags,
       };
     }
 

@@ -8,6 +8,14 @@ export declare class ClaudeMessagesClient {
     private getLogger;
     translate(job: TranslationJob): Promise<ClaudeResponse>;
     /**
+     * Claude occasionally emits a tool_use input where `translations` and/or
+     * `flags` are JSON STRINGS rather than the structured types declared by
+     * the schema. We detect that here, parse the inner JSON (with jsonrepair
+     * fallback), and return a normalized PromptResponse. If the input is
+     * already structured correctly, this is a pass-through.
+     */
+    private normalizeToolInput;
+    /**
      * Pull the translations out of a tool_use block. Anthropic guarantees
      * the input is valid JSON parsed against our schema — no string
      * parsing needed. If the model somehow ignored tool_choice and emitted

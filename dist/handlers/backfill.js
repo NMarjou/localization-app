@@ -125,7 +125,13 @@ async function runProjectBackfill(projectId, opts) {
                 const targetTs = target?.modified_at_timestamp ?? 0;
                 const isUntranslated = !target?.translation || target.translation === "";
                 const isStale = targetTs < sourceTs;
-                if (opts.force || isUntranslated || isStale) {
+                // Default: only missing targets. Stale targets need an explicit
+                // opt-in (includeStale) because the webhook covers most edits.
+                // Force overrides everything.
+                const shouldTranslate = opts.force ||
+                    isUntranslated ||
+                    (opts.includeStale === true && isStale);
+                if (shouldTranslate) {
                     workItems.push({ keyId: Number(key.key_id), targetLang });
                 }
                 else {
@@ -261,6 +267,75 @@ async function runProjectBackfill(projectId, opts) {
                 return false;
             }
         };
+        // ─── Batch API path (default) ──────────────────────────────────
+        // Anthropic's Batch API runs translations async at 50% off input +
+        // output. Backfill is already a "submit and wait" operation, so
+        // batch fits — the cost saving is significant (most of the ongoing
+        // spend is force-backfills).
+        //
+        // Caveats:
+        //   - Pending batches are tracked in-memory; a server restart loses
+        //     the tracking map. Restart while a batch is processing → those
+        //     keys won't get pushed to Lokalise. Re-run backfill to recover.
+        //   - Per-key fallback is sync-only. Errored chunks in batch mode
+        //     are logged and skipped, not retried key-by-key.
+        const useBatch = opts.useBatch ?? true;
+        if (useBatch && chunks.length > 0) {
+            // Anthropic's Batch API requires custom_id to match
+            // ^[a-zA-Z0-9_-]{1,64}$ — colons, dots, and other punctuation are
+            // rejected. Lokalise custom-prefix language codes contain dots
+            // (e.g. translations.bg), and our composed id uses colons as
+            // separators, so we sanitize to the allowed alphabet here.
+            const sanitizeId = (s) => s.replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 64);
+            const buildJobId = (targetLang, idx) => sanitizeId(`${runId}:${targetLang}:${idx}`);
+            const jobs = chunks.map((chunk, idx) => ({
+                id: buildJobId(chunk.targetLang, idx),
+                prompts: chunk.prompts,
+                model: chunk.model,
+                estimatedStringCount: chunk.keyIds.length,
+                projectId,
+                targetLanguage: chunk.targetLang,
+            }));
+            const jobMeta = new Map();
+            for (let i = 0; i < chunks.length; i++) {
+                const chunk = chunks[i];
+                const jobId = buildJobId(chunk.targetLang, i);
+                jobMeta.set(jobId, {
+                    targetLang: chunk.targetLang,
+                    keyIds: chunk.keyIds,
+                    keyIdToTranslationId: chunk.keyIdToTranslationId,
+                    keyIdToTags: chunk.keyIdToTags,
+                });
+            }
+            try {
+                const batchId = await claudeClient.submitBackfillBatch(jobs);
+                webhookHandler.registerBackfillBatch(batchId, jobMeta, runId);
+                logger.info({
+                    runId,
+                    batchId,
+                    chunkCount: chunks.length,
+                    languages: byLanguage.size,
+                    estimatedKeys: workItems.length,
+                }, "Backfill submitted to Batch API; results will land when Anthropic completes the batch");
+                recordEvent("backfill_started", `Batch submitted (${chunks.length} chunks, ~${limited.length} keys) — async`, { runId, batchId, chunkCount: chunks.length });
+                // For batch, "submitted" reflects chunks queued, not keys pushed.
+                // The polling loop will push results and emit a backfill_completed
+                // event when the batch finishes.
+                summary.submitted = 0;
+                summary.skipped = workItems.length - limited.length;
+                summary.errors = 0;
+                summary.durationMs = Date.now() - started;
+                return summary;
+            }
+            catch (err) {
+                logger.error({
+                    runId,
+                    error: err instanceof Error ? err.message : String(err),
+                }, "Batch submission failed; falling back to synchronous path");
+                // Fall through to sync mode below if batch submission errored.
+            }
+        }
+        // ─── Synchronous path (fallback / opt-in) ──────────────────────
         // Process chunks with bounded concurrency. On chunk-level failure
         // (after the Messages client's own 3 retries), fall back to per-key
         // calls so a single bad string doesn't drop 24 healthy ones.

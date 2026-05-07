@@ -6,5 +6,77 @@
   {
     "source": "Adoption Monitor",
     "target": "Suivi de l'adoption"
+  },
+  {
+    "source": "Expand workflow stages",
+    "target": "Développer les étapes de workflow"
+  },
+  {
+    "source": "Not started",
+    "target": "Non démarré"
+  },
+  {
+    "source": "Status",
+    "target": "Statut"
+  },
+  {
+    "source": "Name",
+    "target": "Nom"
+  },
+  {
+    "source": "Description",
+    "target": "Description"
+  },
+  {
+    "source": "Revised date",
+    "target": "Date de révision"
+  },
+  {
+    "source": "Actions",
+    "target": "Actions"
+  },
+  {
+    "source": "Edit calculated field",
+    "target": "Modifier le champ calculé"
+  },
+  {
+    "source": "Create calculated field",
+    "target": "Créer un champ calculé"
+  },
+  {
+    "source": "Get started by creating one.",
+    "target": "Créez-en un pour commencer."
+  },
+  {
+    "source": "The calculated field was successfully updated.",
+    "target": "Le champ calculé a été correctement mis à jour."
+  },
+  {
+    "source": "Save & exit",
+    "target": "Enregistrer & quitter"
+  },
+  {
+    "source": "Draft",
+    "target": "Ebauche"
+  },
+  {
+    "source": "Search by name",
+    "target": "Rechercher par nom"
+  },
+  {
+    "source": "Calculated fields",
+    "target": "Champs calculés"
+  },
+  {
+    "source": "Business logic",
+    "target": "Logique professionnelle"
+  },
+  {
+    "source": "No calculated fields yet",
+    "target": "Aucun champ calculé"
+  },
+  {
+    "source": "Edit details",
+    "target": "Modifier les détails"
   }
 ]

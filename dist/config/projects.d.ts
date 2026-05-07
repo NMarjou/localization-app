@@ -35,6 +35,35 @@ declare const ProjectSchema: z.ZodObject<{
      */
     glossaryContextSize: z.ZodOptional<z.ZodNumber>;
     /**
+     * Webhook events that enqueue keys for coalesced translation.
+     *
+     *   undefined  → legacy: each proofread translates immediately (one
+     *                Claude call per key per language; expensive).
+     *   []         → scheduled-fallback only (webhooks acknowledged but
+     *                no enqueue; cron flush picks up missing keys).
+     *   ["proofread"]                → enqueue on source proofread.
+     *   ["proofread", "import"]      → also enqueue on file imports
+     *                                  (e.g. GitHub integration push).
+     *   ["proofread", "edit", "import"] → also enqueue on raw source
+     *                                  edits without proofread (mirrors
+     *                                  Lokalise AI's auto-translate UX).
+     *
+     * Recommended: `["proofread"]` — keeps the human "ready" gate but
+     * batches the consequence into a single backfill run, cutting cost
+     * roughly 10× vs the legacy per-key path.
+     */
+    translationTriggers: z.ZodOptional<z.ZodArray<z.ZodEnum<["proofread", "import", "edit"]>, "many">>;
+    /** Debounce window: flush queue this many ms after the LAST enqueue. */
+    coalesceIdleMs: z.ZodOptional<z.ZodNumber>;
+    /** Hard cap: flush as soon as the queue reaches this size. */
+    coalesceMaxKeys: z.ZodOptional<z.ZodNumber>;
+    /**
+     * Cron expression for the scheduled fallback flush. Runs even with no
+     * recent enqueue events to catch anything stuck (e.g. lost across
+     * server restart). Set to "" / null to disable scheduled fallback.
+     */
+    scheduledFallback: z.ZodOptional<z.ZodString>;
+    /**
      * If true, every human-approved target-language translation
      * (translation.approved event from Lokalise) is also written into
      * the project-wide glossary.json — provided the source string passes
@@ -79,6 +108,10 @@ declare const ProjectSchema: z.ZodObject<{
     appContext?: string | undefined;
     tmContextSize?: number | undefined;
     glossaryContextSize?: number | undefined;
+    translationTriggers?: ("proofread" | "import" | "edit")[] | undefined;
+    coalesceIdleMs?: number | undefined;
+    coalesceMaxKeys?: number | undefined;
+    scheduledFallback?: string | undefined;
     glossaryAutoLearn?: boolean | undefined;
     glossaryAutoLearnMaxChars?: number | undefined;
     glossaryAutoLearnMaxWords?: number | undefined;
@@ -94,6 +127,10 @@ declare const ProjectSchema: z.ZodObject<{
     appContext?: string | undefined;
     tmContextSize?: number | undefined;
     glossaryContextSize?: number | undefined;
+    translationTriggers?: ("proofread" | "import" | "edit")[] | undefined;
+    coalesceIdleMs?: number | undefined;
+    coalesceMaxKeys?: number | undefined;
+    scheduledFallback?: string | undefined;
     glossaryAutoLearn?: boolean | undefined;
     glossaryAutoLearnMaxChars?: number | undefined;
     glossaryAutoLearnMaxWords?: number | undefined;

@@ -112,10 +112,13 @@ curl -X POST http://localhost:3000/trigger/backfill \
   -d '{"projectId":"<projectId>","languages":["translations.nl"]}'
 
 # Body fields (all optional):
-#   projectId  string     — restrict to one project
-#   languages  string[]   — restrict to specific target language ISOs
-#   keyIds     number[]   — only consider these keys
-#   maxItems   number     — cap how many (key, lang) pairs to fire
+#   projectId               string    — restrict to one project
+#   languages               string[]  — restrict to specific target language ISOs
+#   keyIds                  number[]  — only consider these keys
+#   maxItems                number    — cap how many (key, lang) pairs to fire
+#   force                   boolean   — re-translate even if target is up-to-date
+#   requireReviewedSource   boolean   — default true; false to also pick up unreviewed source
+#   useBatch                boolean   — default true; false uses sync Messages API (full price, real-time)
 ```
 
 ### Locale management
@@ -154,18 +157,33 @@ Adapt event:
 For each fanned-out event (target language):
   - Fetch key + translations + (for single-key requests) 2 keys before/after for context
   - Build two-layer prompt:
-       system  = style guide + appContext + glossary + TM + locale rules  (cached 5 min)
+       system  = style guide + appContext + per-lang style guide + glossary + TM + locale rules  (cached 5 min)
        user    = strings + context + UI metadata
-  - Route to Claude:
-       <  10K tokens → Messages API (sync)
-       ≥ 10K tokens → Batch API (async, 50% discount)
-  - Parse JSON response (translations + flags)
+  - Call Claude via tool_use (`submit_translations` tool, structured output)
+       Webhooks                → Messages API (sync, real-time)
+       Backfill (default)      → Batch API (async, 50% discount)
+       Backfill with useBatch=false → Messages API (sync, full price)
+  - Defensive parsing layers:
+       1. tool_use input is delivered as a parsed object — no JSON.parse needed
+       2. If tool input was double-stringified, normalize via jsonrepair
+       3. If model emitted text instead, fall back to JSON.parse + jsonrepair
+       4. If chunk still fails after retries, sync mode breaks it into per-key calls
   - Push to Lokalise:
        all translations marked is_unverified = true
        (a human translator reviews before approving)
     ↓
 Cost log: every Claude call appends {projectId, language, model, batch, tokens, $}
           to data/cost-log.jsonl
+
+Vendor approves a target translation in Lokalise:
+    ↓
+project.translation.proofread event (target-language edit)
+    ↓
+Service appends source/target pair to locales/<projectId>/<lang>/tm.json
+    ↓
+If glossaryAutoLearn is enabled and source is "term-like" (≤ 60 chars / ≤ 8 words):
+    ↓
+Service updates locales/<projectId>/glossary.json (existing row's column filled, or new row)
 ```
 
 ---
@@ -414,6 +432,18 @@ Validation pings (`X-Event: ping`) always return 200.
 Backfill scans every reviewed source key and translates any target
 that is missing or older than the source.
 
+### Default execution path: Batch API (50% off)
+
+Backfill submits all chunks to Anthropic's Batch API, which processes
+them async at half the input + output cost. Anthropic's typical batch
+SLA is 30 min – 1 hour. Webhook-driven translations stay on the
+synchronous Messages API for real-time turnaround; only backfill uses
+batch.
+
+The service polls every 30 s for completed batches; when one finishes,
+results are parsed and pushed to Lokalise automatically. You'll see
+`Batch submitted` immediately, then `Batch completed` when results land.
+
 ### Manual
 
 ```bash
@@ -426,6 +456,29 @@ curl -X POST http://localhost:3000/trigger/backfill \
 Idempotent — keys already up-to-date are skipped. Returns immediately
 with `{runId, status:"started"}`. Watch the logs for progress and the
 final `Backfill completed` summary.
+
+### Body options
+
+| Field | Type | Default | Effect |
+|-------|------|---------|--------|
+| `projectId` | string | — | Restrict to one project |
+| `languages` | string[] | — | Restrict to specific target language ISOs |
+| `keyIds` | number[] | — | Restrict to these key IDs |
+| `maxItems` | number | — | Cap how many (key, lang) pairs to fire |
+| `force` | boolean | `false` | Re-translate keys even if target is already up-to-date. **Overwrites approved translations** — they'll need to be re-reviewed. |
+| `requireReviewedSource` | boolean | `true` | Set to `false` to also pick up keys whose source isn't `is_reviewed` yet |
+| `useBatch` | boolean | `true` | Set to `false` to use the synchronous Messages API (real-time, full price). Sync also unlocks per-key fallback when chunks fail. |
+
+### Caveats with batch mode
+
+- **Server restart loses pending batch tracking.** If you restart while
+  a batch is processing, the result-push step won't happen. Re-run the
+  backfill or accept the missed keys.
+- **No per-key fallback in batch mode.** If a chunk fails after Claude's
+  internal retries, those 25 keys are skipped. With tool_use +
+  jsonrepair + double-stringify normalization, chunk failures are rare,
+  but if you see significant drops on a particular language switch
+  to sync (`useBatch: false`) for that run.
 
 ### Scheduled (off by default)
 
@@ -449,6 +502,7 @@ model, batch flag, token counts, and USD cost.
 
 - **Persistent**: appended to `data/cost-log.jsonl` (one JSON object per line).
 - **Pricing**: Haiku 4.5 ($1/$5 per Mtok in/out) or Sonnet 4.6 ($3/$15), with cache write/read rates and the 50% Batch discount.
+- **Where the savings come from**: backfill defaults to the Batch API (50% off). Webhook-driven translations stay sync (Messages API) for real-time turnaround. Look at the model breakdown in `/cost?format=text` — batch usage shows as `<model>+batch` and contributes the discount.
 
 ### Endpoint
 
@@ -482,13 +536,17 @@ ISO timestamps.
 | GET | `/health` | none | Liveness + pending batch count |
 | GET | `/status` | none | JSON snapshot: uptime, projects, recent events |
 | GET | `/cost` | none | Cost summary (see [Cost tracking](#cost-tracking)) |
-| GET | `/ui` | none | Dashboard (recent events, projects, run-backfill button) |
+| GET | `/ui` | none | Tabbed ops dashboard: status, costs, backfill, logs, admin |
 | POST | `/webhook/:projectId` | `X-Secret` header | Lokalise webhook (preferred) |
 | POST | `/webhook` | `X-Secret` header | Lokalise webhook (legacy) |
 | POST | `/trigger/backfill` | `X-Secret` header | Run backfill manually |
+| POST | `/admin/reload` | `X-Secret` (or `?secret=`) | Re-read `projects.json`, drop all in-memory caches without server restart |
+| GET | `/admin/logs/recent` | `X-Secret` (or `?secret=`) | JSON snapshot of recent log lines |
+| GET | `/admin/logs/stream` | `?secret=…` query | SSE live log tail (EventSource can't set custom headers) |
 
 The `X-Secret` header value must match a configured project's
-`webhookSecret` (constant-time compared).
+`webhookSecret` (constant-time compared). For SSE endpoints, pass
+`?secret=…` as a query param.
 
 ---
 
@@ -524,8 +582,9 @@ Check the server log for which warning fires:
 | `Invalid webhook secret` | Header value doesn't match the project's `webhookSecret` | Update `projects.json` (or regenerate in Lokalise) |
 | `URL projectId does not match payload project.id` | Webhook URL points at the wrong project | Fix the webhook URL in Lokalise |
 
-If `projects.json` is changed at runtime, **restart the server** —
-project config is loaded once at startup.
+If `projects.json` is changed at runtime, hit **Admin → Reload now**
+in `/ui` (or `POST /admin/reload`) — that re-reads the file and clears
+all in-memory caches without a server restart.
 
 ### Webhook returns 404
 
@@ -543,13 +602,59 @@ npm run build && npm start
 - `Lokalise API error` → check `LOKALISE_API_KEY` and that the
   translation_id resolution worked.
 - `No translation_id found for key` → the target language doesn't
-  actually exist on this Lokalise project.
+  actually exist on this Lokalise project, OR our 60s key cache has
+  stale data. Hit Admin → Reload to clear caches.
+
+### Backfill returns `targetLanguages: 0` despite passing the language
+
+The language allowlist in `projects.json` doesn't include that code,
+or the language isn't configured in Lokalise yet. Verify:
+
+```bash
+curl -s -H "X-Api-Token: $LOKALISE_API_KEY" \
+  "https://api.lokalise.com/api2/projects/<projectId>/languages?limit=500" \
+  | jq -r '.languages[].lang_iso'
+```
+
+The exact `lang_iso` from that list must match what you put in
+`projects.json` `languages` and what you pass in the backfill body.
+
+### Tool-use returned without translations
+
+Look for `tool_use returned without translations` in logs. The
+`inputPreview` field shows what Claude actually sent. Common causes:
+
+- **Translations as a JSON string** instead of an object — handled
+  automatically by `normalizeToolInput`. If you still see the warning,
+  the inner JSON is malformed beyond `jsonrepair`'s capability.
+- **Empty input** — Claude refused to translate. Source string may
+  contain content (HTML, code, sensitive material) the model considers
+  unsafe. Translate manually in Lokalise for that key.
 
 ### Pending batches stuck
 
 Check `/health` for `pendingBatches`. Batches expire after 24h; the
 poller drops expired batches automatically. Otherwise watch the logs
 for `Batch poll failed` warnings.
+
+### Backfill batch results never push to Lokalise
+
+Symptom: backfill submitted hours ago, no translations landed. Most
+likely cause: the server was restarted while the batch was processing
+on Anthropic's side. The in-memory map of pending backfill batches is
+lost on restart.
+
+Fix: re-run the backfill (it's idempotent — already-translated keys
+are skipped). For an in-flight batch you absolutely don't want to
+abandon, fetch results manually:
+
+```bash
+curl -H "X-Api-Key: $ANTHROPIC_API_KEY" \
+  "https://api.anthropic.com/v1/messages/batches/<batchId>/results"
+```
+
+…and translate any successful chunks into Lokalise updates by hand.
+Or just accept the keys missed and re-run.
 
 ### Cost analysis kicks off unexpectedly
 
@@ -574,16 +679,37 @@ sudo chmod -R u+rwX ~/localization-app
 
 - **Single Anthropic SDK client per process** (lazy-init).
 - **TM/glossary cached in-memory** per FileLoader instance, invalidated
-  on append.
+  on append. Cached results are also returned for missing files so we
+  don't probe disk on every chunk.
 - **Lokalise client also cached** — short-TTL (60s) cache on `listKeys`
   and `getKeyWithAllTranslations` plus in-flight dedupe so a webhook
   fan-out to N target languages doesn't issue N identical Lokalise
   requests.
+- **Structured output via tool_use** — every Claude call uses a
+  `submit_translations` tool with `tool_choice` forcing invocation.
+  Anthropic returns the input as an already-parsed object, so JSON parse
+  failures from text responses are eliminated for the happy path.
+- **Defensive parsing layers** for the rare cases where tool_use input
+  is malformed:
+  1. Direct read of structured `input` (~99.9% of calls)
+  2. `normalizeToolInput` — handles double-stringified `translations`
+     or `flags` fields by parsing through `jsonrepair`
+  3. Text-block fallback — if the model emitted text instead of tool_use,
+     run `jsonrepair` on the text
+  4. Per-key fallback (sync mode only) — split a failed chunk into
+     single-key calls
 - **Two-layer prompts**: system prompt (style guide + appContext +
-  glossary + TM + locale rules) is cached by Claude with a 5-minute TTL;
-  per-request user prompt holds just the strings + context.
+  per-language style guide + glossary top-N + TM top-N + locale rules)
+  is cached by Claude with a 5-minute TTL; per-request user prompt
+  holds just the strings + context.
+- **Backfill uses Batch API by default** (50% off, async). Webhook
+  translations stay sync. The 30 s batch poller picks up completed
+  batches and pushes results to Lokalise.
 - **Always 202 Accepted** to Lokalise webhooks (async processing) —
   prevents Lokalise retry loops on internal errors.
+- **Multi-stream Pino logger** — every log line goes to both the
+  pretty-printed (or JSON in prod) stdout sink AND a 1,000-line
+  in-memory ring buffer that powers the `/admin/logs` endpoints.
 
 ---
 

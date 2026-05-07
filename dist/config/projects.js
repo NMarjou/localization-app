@@ -38,6 +38,37 @@ const ProjectSchema = z.object({
      */
     glossaryContextSize: z.number().int().positive().optional(),
     /**
+     * Webhook events that enqueue keys for coalesced translation.
+     *
+     *   undefined  → legacy: each proofread translates immediately (one
+     *                Claude call per key per language; expensive).
+     *   []         → scheduled-fallback only (webhooks acknowledged but
+     *                no enqueue; cron flush picks up missing keys).
+     *   ["proofread"]                → enqueue on source proofread.
+     *   ["proofread", "import"]      → also enqueue on file imports
+     *                                  (e.g. GitHub integration push).
+     *   ["proofread", "edit", "import"] → also enqueue on raw source
+     *                                  edits without proofread (mirrors
+     *                                  Lokalise AI's auto-translate UX).
+     *
+     * Recommended: `["proofread"]` — keeps the human "ready" gate but
+     * batches the consequence into a single backfill run, cutting cost
+     * roughly 10× vs the legacy per-key path.
+     */
+    translationTriggers: z
+        .array(z.enum(["proofread", "import", "edit"]))
+        .optional(),
+    /** Debounce window: flush queue this many ms after the LAST enqueue. */
+    coalesceIdleMs: z.number().int().positive().optional(),
+    /** Hard cap: flush as soon as the queue reaches this size. */
+    coalesceMaxKeys: z.number().int().positive().optional(),
+    /**
+     * Cron expression for the scheduled fallback flush. Runs even with no
+     * recent enqueue events to catch anything stuck (e.g. lost across
+     * server restart). Set to "" / null to disable scheduled fallback.
+     */
+    scheduledFallback: z.string().optional(),
+    /**
      * If true, every human-approved target-language translation
      * (translation.approved event from Lokalise) is also written into
      * the project-wide glossary.json — provided the source string passes

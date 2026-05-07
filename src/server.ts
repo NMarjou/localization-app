@@ -8,9 +8,22 @@ import { webhookHandler } from "./handlers/webhook.js";
 import { runBackfill } from "./handlers/backfill.js";
 import { startScheduler } from "./scheduler.js";
 import { lokaliseClient, clearAllLokaliseClients } from "./clients/lokalise.js";
-import { getProject, loadProjects, resetProjectsCache } from "./config/projects.js";
+import { getProject, loadProjects, resetProjectsCache, getAllProjects } from "./config/projects.js";
 import { clearAllFileLoaderCaches } from "./utils/file-loader.js";
 import { recentLogs, subscribeLogs } from "./utils/log-buffer.js";
+import {
+  enqueueTranslation,
+  flush as flushQueue,
+  getAllQueueStates,
+  setRunBackfill,
+  DEFAULT_COALESCE_IDLE_MS,
+  DEFAULT_COALESCE_MAX_KEYS,
+} from "./utils/translation-queue.js";
+import cron, { type ScheduledTask } from "node-cron";
+
+// Hook the translation queue into runBackfill (lazy registration avoids
+// the circular import: queue → backfill → webhookHandler → queue).
+setRunBackfill(runBackfill);
 import {
   listEvents,
   getStartedAt,
@@ -25,10 +38,16 @@ import type {
 
 /**
  * Map Lokalise's real event names to the internal names the handler
- * switches on. We intentionally map "proofread" (reviewed) to the internal
- * "translation.updated" path — that is our re-translate trigger. Raw
- * value-change events (project.translation.updated) are ignored, because
- * the workflow is "edit → review → re-translate", not "edit → re-translate".
+ * switches on.
+ *
+ * **Only `project.translation.proofread` triggers re-translation.**
+ * Plain source edits (`project.translation.updated`) and bulk imports
+ * (`project.translations.updated`) do NOT auto-translate — the workflow
+ * is "edit / import → proofread → translate". Imports are acknowledged
+ * with 202 but produce zero fan-out events.
+ *
+ * For target-language proofread events, the adapter routes to
+ * "translation.approved" so the TM (and optional glossary) get updated.
  */
 const EVENT_NAME_MAP: Record<string, LokaliseWebhookEventType> = {
   "project.translation.proofread": "translation.updated",
@@ -56,6 +75,49 @@ async function adaptLokaliseEvent(
   raw: any,
   sourceLanguageIso: string
 ): Promise<LokaliseWebhookEvent[] | null> {
+  // ─── Bulk-import event ──────────────────────────────────────────
+  // Fired by Lokalise when source strings arrive via a file import
+  // (e.g. GitHub integration push). Behaviour depends on the project's
+  // translationTriggers config:
+  //   - undefined / no "import" trigger → ignored (return []).
+  //     Acknowledged 202; translation only happens once a human
+  //     proofreads.
+  //   - "import" in triggers → fan out the source-language entries to
+  //     every allowlisted target language. Server-side coalesce logic
+  //     then enqueues the unique keyIds for batched translation.
+  if (raw?.event === "project.translations.updated") {
+    const projectId = raw?.project?.id;
+    if (!projectId) return null;
+    const project = getProject(projectId);
+    const triggers = project?.translationTriggers;
+    if (!triggers || !triggers.includes("import")) return [];
+
+    const entries: any[] = Array.isArray(raw?.translations) ? raw.translations : [];
+    const sourceEntries = entries.filter(
+      (e) => e?.language?.iso === sourceLanguageIso && e?.key?.id
+    );
+    if (sourceEntries.length === 0) return [];
+
+    const allLanguages = await lokaliseClient(projectId).listProjectLanguages();
+    const allowedLanguages = project?.languages;
+    const targets = allLanguages.filter(
+      (l) => l !== sourceLanguageIso && (!allowedLanguages || allowedLanguages.includes(l))
+    );
+
+    return targets.map((target) => ({
+      event: "translation.updated",
+      project_id: projectId,
+      bundle: {
+        translations: sourceEntries.map((e) => ({
+          key_id: Number(e.key.id),
+          language_iso: target,
+          words: 0,
+          source_language_iso: sourceLanguageIso,
+        })),
+      },
+    }));
+  }
+
   const mappedEvent = EVENT_NAME_MAP[raw?.event];
   if (!mappedEvent) return null;
 
@@ -245,12 +307,19 @@ app.get("/status", (req: Request, res: Response) => {
   ).length;
 
   const allProjects = loadProjects();
+  const queueStates = getAllQueueStates();
+  const queueByProject = new Map(queueStates.map((q) => [q.projectId, q]));
   const projects = allProjects.map((p) => ({
     id: p.id,
     name: p.name,
     enabled: p.enabled,
     model: p.model ?? "haiku-4-5",
     languages: p.languages ?? null,
+    translationTriggers: p.translationTriggers ?? null,
+    coalesceIdleMs: p.coalesceIdleMs ?? null,
+    coalesceMaxKeys: p.coalesceMaxKeys ?? null,
+    scheduledFallback: p.scheduledFallback ?? null,
+    queue: queueByProject.get(p.id) ?? null,
   }));
 
   res.json({
@@ -262,6 +331,11 @@ app.get("/status", (req: Request, res: Response) => {
     cron: process.env.BACKFILL_CRON?.trim() || "0 */4 * * *",
     projects,
     events,
+    queues: queueStates,
+    queueDefaults: {
+      coalesceIdleMs: DEFAULT_COALESCE_IDLE_MS,
+      coalesceMaxKeys: DEFAULT_COALESCE_MAX_KEYS,
+    },
   });
 });
 
@@ -347,6 +421,9 @@ app.post("/trigger/backfill", (req: Request, res: Response) => {
         ? body.requireReviewedSource
         : undefined,
     force: typeof body.force === "boolean" ? body.force : undefined,
+    useBatch: typeof body.useBatch === "boolean" ? body.useBatch : undefined,
+    includeStale:
+      typeof body.includeStale === "boolean" ? body.includeStale : undefined,
   }).catch((err) =>
     logger.error(
       { runId, error: err instanceof Error ? err.message : String(err) },
@@ -389,14 +466,49 @@ app.post("/admin/reload", (req: Request, res: Response) => {
   clearAllFileLoaderCaches();
   clearAllLokaliseClients();
   const projects = loadProjects();
+  // Reload the per-project scheduled-fallback crons too, so changes to
+  // projects.json take effect without a process restart.
+  setupQueueCrons();
   logger.info(
     { projectCount: projects.length },
-    "Admin reload: caches cleared, projects.json re-read"
+    "Admin reload: caches cleared, projects.json re-read, queue crons re-registered"
   );
   res.json({
     status: "ok",
     projects: projects.map((p) => ({ id: p.id, name: p.name, enabled: p.enabled })),
   });
+});
+
+// Manually flush a project's translation queue (or every project's queue).
+// POST /admin/queue/flush?projectId=…   → flush one project
+// POST /admin/queue/flush                → flush every project with non-empty queue
+app.post("/admin/queue/flush", async (req: Request, res: Response) => {
+  if (!checkAdminSecret(req, res)) return;
+  const projectId = typeof req.query.projectId === "string"
+    ? req.query.projectId
+    : (req.body?.projectId as string | undefined);
+
+  const targets = projectId
+    ? [{ id: projectId }]
+    : getAllProjects().map((p) => ({ id: p.id }));
+
+  const results: Array<{ projectId: string; flushed: boolean; keyCount: number }> = [];
+  for (const t of targets) {
+    const r = await flushQueue(t.id, "manual");
+    results.push({
+      projectId: t.id,
+      flushed: !!r,
+      keyCount: r ? r.keyIds.length : 0,
+    });
+  }
+  res.json({ status: "ok", results });
+});
+
+// Read-only queue state (projectId → size, last enqueue, next flush ts).
+// Same auth as the rest of the admin endpoints.
+app.get("/admin/queue", (req: Request, res: Response) => {
+  if (!checkAdminSecret(req, res)) return;
+  res.json({ queues: getAllQueueStates() });
 });
 
 /**
@@ -523,6 +635,115 @@ app.post(
       return res.status(202).json({ eventId: baseEventId, ignored: true });
     }
 
+    // ─── Coalesce mode? ─────────────────────────────────────────
+    // If the project has `translationTriggers` configured AND the
+    // current Lokalise event matches one of those triggers, route the
+    // affected keyIds into the per-project queue instead of translating
+    // immediately. The queue's debounced flush will batch them through
+    // the Batch API at ~10× lower cost than per-key webhooks.
+    const project = incomingProjectId ? getProject(incomingProjectId) : undefined;
+    const triggers = project?.translationTriggers;
+    const rawEventName = req.body?.event as string | undefined;
+
+    // Source-language proofread → fan-out events all share the same key
+    // ids (one event per target lang). Dedupe before enqueueing.
+    const isSourceProofread =
+      rawEventName === "project.translation.proofread" &&
+      req.body?.language?.iso === sourceLanguageIso;
+    const isImport = rawEventName === "project.translations.updated";
+    const isEdit =
+      rawEventName === "project.translation.updated" &&
+      req.body?.language?.iso === sourceLanguageIso;
+
+    const triggerMatch =
+      triggers !== undefined &&
+      ((isSourceProofread && triggers.includes("proofread")) ||
+        (isImport && triggers.includes("import")) ||
+        (isEdit && triggers.includes("edit")));
+
+    if (triggers !== undefined && (isSourceProofread || isImport || isEdit) && !triggerMatch) {
+      // Project is in coalesce mode but this event isn't a configured
+      // trigger. Acknowledge silently — no immediate translation, no enqueue.
+      res.status(202).json({
+        eventId: baseEventId,
+        coalesce: { ignored: true, reason: "not in translationTriggers" },
+      });
+      return;
+    }
+
+    if (triggerMatch && incomingProjectId) {
+      // Collect unique source key IDs from the events and enqueue.
+      const enqueuedKeyIds = new Set<number>();
+      for (const event of events) {
+        if (event.event !== "translation.updated") continue; // skip approvals etc.
+        for (const t of event.bundle.translations ?? []) {
+          enqueuedKeyIds.add(Number(t.key_id));
+        }
+      }
+      let lastFlushAt = 0;
+      for (const keyId of enqueuedKeyIds) {
+        const r = enqueueTranslation(incomingProjectId, keyId);
+        if (r.flushAt) lastFlushAt = r.flushAt;
+      }
+      logger.info(
+        {
+          eventId: baseEventId,
+          projectId: incomingProjectId,
+          enqueuedKeys: enqueuedKeyIds.size,
+          flushAt: lastFlushAt,
+          trigger: rawEventName,
+        },
+        "Enqueued for coalesced translation"
+      );
+      recordEvent(
+        "webhook_completed",
+        `Queued ${enqueuedKeyIds.size} key(s) for coalesced translation`,
+        {
+          eventId: baseEventId,
+          projectId: incomingProjectId,
+          enqueuedKeys: enqueuedKeyIds.size,
+          flushAt: lastFlushAt,
+          trigger: rawEventName,
+        }
+      );
+
+      // Still process target-language approval events (TM/glossary update).
+      // Those are the events with type "translation.approved" — they bypass
+      // the queue and need immediate handling so the TM stays current.
+      const approvalEvents = events.filter((e) => e.event === "translation.approved");
+      res.status(202).json({
+        eventId: baseEventId,
+        coalesce: {
+          enqueuedKeys: enqueuedKeyIds.size,
+          flushAt: lastFlushAt,
+        },
+        approvals: approvalEvents.length,
+      });
+
+      for (const event of approvalEvents) {
+        const target = event.bundle.translations?.[0]?.language_iso ?? "";
+        const context: WebhookContext = {
+          eventId: `${baseEventId}:${target}`,
+          projectId: incomingProjectId,
+          sourceLanguage: "",
+          targetLanguage: "",
+          keyIds: [],
+          timestamp: Date.now(),
+        };
+        webhookHandler.handleEvent(event, context).catch((err) =>
+          logger.error(
+            {
+              eventId: context.eventId,
+              error: err instanceof Error ? err.message : String(err),
+            },
+            "handleEvent threw (approval path)"
+          )
+        );
+      }
+      return;
+    }
+
+    // ─── Legacy immediate path ─────────────────────────────────
     // Return 202 Accepted immediately (async processing)
     res.status(202).json({ eventId: baseEventId, fanOut: events.length });
 
@@ -576,19 +797,94 @@ const pollInterval = setInterval(() => {
 // Periodic backfill (default: every 4 hours, override with BACKFILL_CRON).
 const scheduledBackfill = startScheduler();
 
-// Graceful shutdown
-const shutdown = () => {
-  logger.info("Shutting down server");
+// Per-project cron jobs: scheduled fallback flush of the translation queue.
+// Each project that sets `scheduledFallback` (cron string) gets its own
+// schedule. Flushes only fire if there's something queued, so this is a
+// no-op for healthy projects; it just acts as recovery for queues stuck
+// across restart or transient errors.
+const queueCronJobs: ScheduledTask[] = [];
+function setupQueueCrons(): void {
+  // Tear down any existing crons first (called on /admin/reload too).
+  while (queueCronJobs.length) queueCronJobs.pop()?.stop();
+  for (const project of getAllProjects()) {
+    if (!project.enabled) continue;
+    const schedule = project.scheduledFallback;
+    if (!schedule || typeof schedule !== "string" || schedule.trim() === "") continue;
+    if (!cron.validate(schedule)) {
+      logger.warn(
+        { projectId: project.id, schedule },
+        "Invalid scheduledFallback cron expression — skipping"
+      );
+      continue;
+    }
+    const task = cron.schedule(schedule, async () => {
+      try {
+        const result = await flushQueue(project.id, "scheduled");
+        if (result) {
+          logger.info(
+            { projectId: project.id, keyCount: result.keyIds.length, reason: "scheduled" },
+            "Scheduled queue flush ran"
+          );
+        }
+      } catch (err) {
+        logger.error(
+          { projectId: project.id, error: err instanceof Error ? err.message : String(err) },
+          "Scheduled queue flush threw"
+        );
+      }
+    });
+    queueCronJobs.push(task);
+    logger.info(
+      { projectId: project.id, schedule },
+      "Registered queue scheduled-fallback cron"
+    );
+  }
+}
+setupQueueCrons();
+
+// Graceful shutdown.
+// server.close() alone hangs because long-lived connections (SSE log
+// stream, in-flight translate calls, batch polls) keep sockets open.
+// We force-close them and add a hard deadline so the process exits
+// quickly even if something is stuck.
+let shuttingDown = false;
+const SHUTDOWN_TIMEOUT_MS = 5000;
+const shutdown = (signal: string) => {
+  if (shuttingDown) return;
+  shuttingDown = true;
+
+  logger.info({ signal }, "Shutting down server");
   clearInterval(pollInterval);
   scheduledBackfill.stop();
+  while (queueCronJobs.length) queueCronJobs.pop()?.stop();
+
+  // Stop accepting new connections AND drop currently-open ones.
+  // closeIdleConnections / closeAllConnections were added in Node 18.2.
+  if (typeof (server as { closeIdleConnections?: () => void }).closeIdleConnections === "function") {
+    (server as { closeIdleConnections: () => void }).closeIdleConnections();
+  }
   server.close(() => {
-    logger.info("Server closed");
+    logger.info("Server closed cleanly");
     process.exit(0);
   });
+
+  // Hard deadline: if anything is still hanging after N seconds, force-kill connections.
+  const deadline = setTimeout(() => {
+    logger.warn(
+      { timeoutMs: SHUTDOWN_TIMEOUT_MS },
+      "Shutdown deadline exceeded — forcing connection close"
+    );
+    if (typeof (server as { closeAllConnections?: () => void }).closeAllConnections === "function") {
+      (server as { closeAllConnections: () => void }).closeAllConnections();
+    }
+    // Give the close callback one more tick, then exit anyway.
+    setTimeout(() => process.exit(1), 250).unref();
+  }, SHUTDOWN_TIMEOUT_MS);
+  deadline.unref();
 };
 
-process.on("SIGTERM", shutdown);
-process.on("SIGINT", shutdown);
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
 
 // Start server
 const server = app.listen(env.PORT, () => {

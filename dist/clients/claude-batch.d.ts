@@ -13,6 +13,13 @@ export declare class ClaudeBatchClient {
     private formatBatchRequests;
     private parseBatchResults;
     /**
+     * Same double-string handling as the synchronous Messages client.
+     * Claude occasionally produces tool_use input where translations or
+     * flags arrive as JSON strings instead of structured values; parse
+     * them through jsonrepair so we don't reject otherwise-valid output.
+     */
+    private normalizeToolInput;
+    /**
      * Read translations from the message's tool_use block. Anthropic
      * delivers `input` as a parsed object, so this path is JSON-safe.
      * Falls through to text-JSON parsing (with jsonrepair) for the rare

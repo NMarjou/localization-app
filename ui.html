@@ -308,6 +308,14 @@
       <div id="project-list"></div>
     </div>
 
+    <div class="events" style="margin-bottom:20px">
+      <div class="events-header">
+        Translation queues
+        <span style="font-weight:400;color:var(--muted);font-size:12px">debounced batch translation per project</span>
+      </div>
+      <div id="queue-list"></div>
+    </div>
+
     <div class="events">
       <div class="events-header">
         Recent events
@@ -374,11 +382,25 @@
         <span class="field-hint" style="display:block">⚠ overwrites existing translations; humans need to re-review.</span>
       </label>
     </div>
-    <div class="checkbox-row" style="margin-bottom:16px">
+    <div class="checkbox-row" style="margin-bottom:8px">
       <input type="checkbox" id="bf-include-unreviewed" />
       <label for="bf-include-unreviewed" style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--text)">
         Include keys whose source isn't reviewed yet
         <span class="field-hint" style="display:block">By default backfill only runs on reviewed source strings.</span>
+      </label>
+    </div>
+    <div class="checkbox-row" style="margin-bottom:8px">
+      <input type="checkbox" id="bf-include-stale" />
+      <label for="bf-include-stale" style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--text)">
+        Also re-translate stale keys (target older than source)
+        <span class="field-hint" style="display:block">Default: only missing targets. With the webhook covering source edits live, stale recovery is rarely needed. Use after webhook downtime or to clean up legacy mismatches.</span>
+      </label>
+    </div>
+    <div class="checkbox-row" style="margin-bottom:16px">
+      <input type="checkbox" id="bf-use-batch" checked />
+      <label for="bf-use-batch" style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--text)">
+        Use Batch API (50% cheaper, async)
+        <span class="field-hint" style="display:block">Recommended. Anthropic processes the batch over 30–60 min instead of 5–10 min sync. Uncheck for real-time results at full price (also unlocks per-key fallback).</span>
       </label>
     </div>
 
@@ -545,6 +567,44 @@
       bfSel.value = bfPrev;
       csSel.value = csPrev;
 
+      // Translation queues
+      const queueList = document.getElementById("queue-list");
+      const queues = d.queues || [];
+      const projectName = (id) => (projects.find((p) => p.id === id)?.name) || id;
+      const triggersOf = (id) => projects.find((p) => p.id === id)?.translationTriggers ?? null;
+      const queuedProjects = projects.filter((p) => p.enabled !== false && p.translationTriggers !== null);
+      if (queuedProjects.length === 0) {
+        queueList.innerHTML = '<div class="empty">No projects in coalesce mode.</div>';
+      } else {
+        queueList.innerHTML = queuedProjects.map((p) => {
+          const q = queues.find((qq) => qq.projectId === p.id);
+          const size = q?.size ?? 0;
+          const flushAt = q?.flushAt ?? 0;
+          const flushIn = flushAt && size > 0 ? Math.max(0, flushAt - Date.now()) : 0;
+          const flushLabel = size === 0
+            ? "idle"
+            : flushIn > 0
+              ? `flush in ${Math.ceil(flushIn / 1000)}s`
+              : "flushing…";
+          const trigs = (p.translationTriggers || []).join(", ") || "—";
+          return `
+            <div class="event-row" style="grid-template-columns: 180px 1fr 90px 120px">
+              <div>${escapeHtml(p.name)}</div>
+              <div style="color:var(--muted);font-size:12px">triggers: ${escapeHtml(trigs)}</div>
+              <div><span class="status-pill ${size > 0 ? 'pill-on' : 'pill-off'}">${size} key${size === 1 ? "" : "s"}</span></div>
+              <div style="display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted)">
+                <span>${escapeHtml(flushLabel)}</span>
+                <button class="secondary" data-flush-project="${escapeHtml(p.id)}" style="padding:4px 8px;font-size:11px" ${size === 0 ? "disabled" : ""}>Flush now</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+        // Wire flush buttons
+        for (const btn of queueList.querySelectorAll("[data-flush-project]")) {
+          btn.onclick = () => flushQueueNow(btn.getAttribute("data-flush-project"));
+        }
+      }
+
       // Events
       const events = d.events || [];
       document.getElementById("event-count").textContent = `${events.length}`;
@@ -608,6 +668,8 @@
     const maxItems = Number(document.getElementById("bf-max-items").value) || undefined;
     const force = document.getElementById("bf-force").checked;
     const includeUnreviewed = document.getElementById("bf-include-unreviewed").checked;
+    const includeStale = document.getElementById("bf-include-stale").checked;
+    const useBatch = document.getElementById("bf-use-batch").checked;
 
     const body = { projectId };
     if (langs.length) body.languages = langs;
@@ -615,6 +677,8 @@
     if (maxItems) body.maxItems = maxItems;
     if (force) body.force = true;
     if (includeUnreviewed) body.requireReviewedSource = false;
+    if (includeStale) body.includeStale = true;
+    body.useBatch = useBatch;
 
     const btn = document.getElementById("bf-run");
     const stat = document.getElementById("bf-status");
@@ -722,6 +786,25 @@
     logBuffer = [];
     document.getElementById("log-pane").innerHTML = "";
   };
+
+  // ---------------- Queue flush ----------------
+  async function flushQueueNow(projectId) {
+    if (!ensureSecret()) return;
+    try {
+      const r = await authedFetch("/admin/queue/flush?projectId=" + encodeURIComponent(projectId), {
+        method: "POST",
+      });
+      if (r.status === 401) {
+        clearSecret();
+        document.getElementById("auth-prompt").style.display = "block";
+        return;
+      }
+      await r.json();
+      refreshStatus();
+    } catch (err) {
+      alert("Flush failed: " + err.message);
+    }
+  }
 
   // ---------------- Admin ----------------
   document.getElementById("admin-reload").onclick = async () => {

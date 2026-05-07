@@ -67,6 +67,13 @@ export interface PendingBatch {
 }
 
 export interface BackfillChunkMeta {
+  /**
+   * Lokalise project ID this chunk belongs to. Required so the polling
+   * loop routes pushResults() to the correct project — without it,
+   * lokaliseClient() falls back to env.LOKALISE_PROJECT_ID and silently
+   * sends translation_ids to the wrong project (cause of mass 404s).
+   */
+  projectId: string;
   targetLang: string;
   keyIds: number[];
   keyIdToTranslationId: Record<string, string>;
